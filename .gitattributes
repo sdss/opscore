@@ -1,0 +1,16 @@
+* text=auto !eol
+examples/__init__.py -text
+examples/logparse.py -text
+examples/migration.py -text
+examples/tcc_sample.log -text
+python/opscore/__init__.py -text
+python/opscore/protocols/__init__.py -text
+python/opscore/protocols/keys.py -text
+python/opscore/protocols/keysformat.py -text
+python/opscore/protocols/messages.py -text
+python/opscore/protocols/parser.py -text
+python/opscore/protocols/types.py -text
+python/opscore/protocols/validation.py -text
+python/opscore/utility/__init__.py -text
+python/opscore/utility/astrotime.py -text
+python/opscore/utility/html.py -text
