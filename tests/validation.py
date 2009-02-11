@@ -1,8 +1,5 @@
 #!/usr/bin/env python
-"""
-Validation of SDSS-3 command and reply protocols
-
-Refer to https://trac.sdss3.org/wiki/Ops/Validation for details.
+"""Unit tests for opscore.protocols.validation
 """
 
 # Created 7-Nov-2008 by David Kirkby (dkirkby@uci.edu)
@@ -81,4 +78,5 @@ class ValidationTest(unittest.TestCase):
 		self.assertRaises(ValidationError,lambda:
 			self.cmd3.create('key1',values=['abc','0xbeef']))
 
-unittest.main()
+if __name__ == '__main__':
+	unittest.main()

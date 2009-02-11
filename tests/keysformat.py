@@ -1,10 +1,6 @@
 #!/usr/bin/env python
+"""Unit tests for opscore.protocols.keysformat
 """
-Keys format string parser for SDSS-3 command validation
-
-Refer to https://trac.sdss3.org/wiki/Ops/Validation for details.
-"""
-
 # Created 18-Nov-2008 by David Kirkby (dkirkby@uci.edu)
 
 import unittest
@@ -33,5 +29,6 @@ class KeysFormatTest(unittest.TestCase):
 		self.p.parse("<key1> (<key2> [<key3>])")
 		self.p.parse("@<key1> <key2> <key3>")
 		self.p.parse("<key1> [@<key2> [<key3>]]")		
-		
-unittest.main()
+
+if __name__ == '__main__':
+	unittest.main()

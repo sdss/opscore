@@ -1,8 +1,5 @@
 #!/usr/bin/env python
-"""
-Unit tests for opscore.protocols.keys
-
-Refer to https://trac.sdss3.org/wiki/Ops/Validation for details.
+"""Unit tests for opscore.protocols.keys
 """
 
 # Created 18-Nov-2008 by David Kirkby (dkirkby@uci.edu)
@@ -72,4 +69,5 @@ class KeysTest(unittest.TestCase):
 		self.assertRaises(protoKeys.KeysError,lambda: self.key3.create(0xdead,-1.2))
 		self.assertRaises(protoKeys.KeysError,lambda: self.key3.create(-1.2,'0xdead'))
 
-unittest.main()
+if __name__ == '__main__':
+	unittest.main()
