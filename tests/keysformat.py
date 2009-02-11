@@ -22,8 +22,8 @@ class KeysFormatTest(unittest.TestCase):
 
 	def test01(self):
 		"Valid format string with dict"
-		from opscore.protocols.keys import KeysDictionary
-		protoKeys.CmdKey.setKeys(KeysDictionary("<command>",protoKeys.Key("key1"),protoKeys.Key("key2"),protoKeys.Key("key3")))
+		protoKeys.CmdKey.setKeys(protoKeys.KeysDictionary(
+		    "<command>",protoKeys.Key("key1"),protoKeys.Key("key2"),protoKeys.Key("key3")))
 		self.p.parse("<key1> <key2> <key3>")
 		self.p.parse("<key1> <key2> [<key3>]")
 		self.p.parse("<key1> (<key2> [<key3>])")
