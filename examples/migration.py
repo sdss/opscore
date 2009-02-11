@@ -1,5 +1,6 @@
+#!/usr/bin/env python
 """
-Implements core functionality of the TUI dispatch model using ops.core.protocols.
+Implements core functionality of the TUI dispatch model using opscore.protocols.
 
 Refer to https://trac.sdss3.org/wiki/Ops/Examples#TUIMigration for details
 """
@@ -9,9 +10,9 @@ Refer to https://trac.sdss3.org/wiki/Ops/Examples#TUIMigration for details
 import sys
 import traceback
 import RO.AddCallback
-import ops.core.protocols.keys as keys
-import ops.core.protocols.parser as parser
-import ops.core.utility.astrotime as atime
+import opscore.protocols.keys as protoKeys
+import opscore.protocols.parser as protoParser
+import opscore.utility.astrotime as astrotime
 
 class KeyVarBase(RO.AddCallback.BaseMixin):
 	
@@ -28,8 +29,8 @@ class KeyVarBase(RO.AddCallback.BaseMixin):
 		self.actor = actor
 		self.keyword = keyword
 		self.doPrint = doPrint
-		# lookup this actor's dictionary (or raise keys.KeysDictionaryError)
-		kdict = keys.KeysDictionary.load(actor)
+		# lookup this actor's dictionary (or raise protoKeys.KeysDictionaryError)
+		kdict = protoKeys.KeysDictionary.load(actor)
 		# lookup this keyword's value types in the dictionary (or raise KeyError)
 		self._converterList = kdict[keyword].typedValues
 		# initialize our callback mixin
@@ -72,7 +73,7 @@ class KeyDispatcherBase(object):
 	def __init__(self):
 		self.keyVarListDict = { }
 		# create a reply message parser
-		self.parser = parser.ReplyParser()
+		self.parser = protoParser.ReplyParser()
 	
 	def add(self,keyVar):
 		"""
@@ -86,13 +87,13 @@ class KeyDispatcherBase(object):
 		"""
 		Invokes keyword callbacks based on the supplied message data.
 		
-		msgDict is a parsed Reply object (ops.core.protocols.messages.Reply) whose fields include:
+		msgDict is a parsed Reply object (opscore.protocols.messages.Reply) whose fields include:
 		 - header.program: name of the program that triggered the message (string)
 		 - header.commandId: command ID that triggered the message (int) 
 		 - header.actor: the actor that generated the message (string)
-		 - header.code: the message type code (ops.core.protocols.types.Enum)
+		 - header.code: the message type code (opscore.protocols.types.Enum)
 		 - string: the original unparsed message (string)
-		 - keywords: an ordered dictionary of message keywords (ops.core.protocols.messages.Keywords)		
+		 - keywords: an ordered dictionary of message keywords (opscore.protocols.messages.Keywords)		
 		Refer to https://trac.sdss3.org/wiki/Ops/Protocols for details.
 		"""
 		keyActor = msgDict.header.actor
@@ -127,7 +128,7 @@ if __name__ == '__main__':
 	def spiderHandler(valueList,isCurrent,keyVar):
 		pos,vel,tai = valueList
 		# convert the TAI timestamp to UTC and print as an ISO date string
-		timestamp = atime.AstroTime.fromMJD(tai/86400.,tz=atime.TAI).astimezone(atime.UTC)
+		timestamp = astrotime.AstroTime.fromMJD(tai/86400.,tz=astrotime.TAI).astimezone(astrotime.UTC)
 		print 'spiderHandler: got update at',timestamp.isoformat()
 		# print the full parsed reply that this keyword was found in
 		print keyVar._msgDict

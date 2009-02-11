@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Processes a TCC logfile as a stream of reply messages
 
@@ -8,25 +9,25 @@ Refer to https://trac.sdss3.org/wiki/Ops/Examples#TCCLogfileParser for details
 
 import re
 
-import ops.core.utility.astrotime as atime
-import ops.core.protocols.parser as parser
-import ops.core.protocols.keys as keys
-import ops.core.protocols.types as types
+import opscore.utility.astrotime as astrotime
+import opscore.protocols.parser as protoParser
+import opscore.protocols.keys as protoKeys
+import opscore.protocols.types as protoTypes
 
 def parseTCCLog(stream):
 	"""
 	Processes a stream TCC logfile lines as reply messages
 	"""
-	parseEngine = parser.ReplyParser()
+	parseEngine = protoParser.ReplyParser()
 	# regexp for a TCC reply as it appears in the telrun log
 	fields = re.compile('(0|[1-9][0-9]*) (0|[1-9][0-9]*) ([>iIwW:fF!])(.*)')
 
 	# Declare a callback for the TCCPos keyword
 	def tccPosHandler(keyword,reply,mjd):
 		# Reconstruct a TAI timestamp from the MJD seconds provided
-		timestamp = atime.AstroTime.fromMJD(mjd/86400.,tz=atime.TAI)
+		timestamp = astrotime.AstroTime.fromMJD(mjd/86400.,tz=astrotime.TAI)
 		# Special handling of invalid values
-		if types.InvalidValue in keyword.values:
+		if protoTypes.InvalidValue in keyword.values:
 			print '%s: Axes halted or positions not available' % timestamp
 			return
 		# Extract our values, which have been typed according to the TCC keys dictionary as
@@ -48,10 +49,10 @@ def parseTCCLog(stream):
 		try:
 			# Parse an initial ISO timestamp of the form YYYY-MM-DD HH:MM:SS.SSSZ
 			# strptime() cannot handle fractional seconds so we add them by hand.
-			timestamp = atime.AstroTime.strptime(line[:19],"%Y-%m-%d %H:%M:%S").replace(tzinfo=atime.UTC)
+			timestamp = astrotime.AstroTime.strptime(line[:19],"%Y-%m-%d %H:%M:%S").replace(tzinfo=astrotime.UTC)
 			timestamp = timestamp.replace(microsecond=1000*int(line[20:23]))
 			# Convert from UTC to TAI MJD seconds
-			mjd = timestamp.astimezone(atime.TAI).MJD()*86400
+			mjd = timestamp.astimezone(astrotime.TAI).MJD()*86400
 			# Does the text following the timestamp look like a TCC reply of the form %d %d %c ... ?
 			matched = fields.match(line[25:])
 			if not matched:
@@ -71,11 +72,11 @@ def parseTCCLog(stream):
 			# we always have actor=tcc here but, in general, each message can be
 			# from a different actor so we need to look up its dictionary now
 			actor = parsed.header.actor
-			kdict = keys.KeysDictionary.load(actor)
-		except parser.ParseError:
+			kdict = protoKeys.KeysDictionary.load(actor)
+		except protoParser.ParseError:
 			print 'Unable to parse line:',line
 			continue
-		except keys.KeysDictionaryError:
+		except protoKeys.KeysDictionaryError:
 			print 'Unknown actor:',actor
 			continue
 
