@@ -22,7 +22,7 @@ class KeysFormatTest(unittest.TestCase):
 
 	def test01(self):
 		"Valid format string with dict"
-		protoKeys.CmdKey.setKeys(protoKeys.KeysDictionary("<command>",1.0,
+		protoKeys.CmdKey.setKeys(protoKeys.KeysDictionary("<command>",(1,0),
 			protoKeys.Key("key1"),protoKeys.Key("key2"),protoKeys.Key("key3")))
 		self.p.parse("<key1> <key2> <key3>")
 		self.p.parse("<key1> <key2> [<key3>]")

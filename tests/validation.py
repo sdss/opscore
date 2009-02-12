@@ -23,7 +23,7 @@ class ValidationTest(unittest.TestCase):
 		self.c123 = protoMess.Command('cmd',keywords=[self.k1,self.k2,self.k3])
 		self.c321 = protoMess.Command('cmd',keywords=[self.k3,self.k2,self.k1])
 		self.c12v = protoMess.Command('cmd',keywords=[self.k1,self.k2],values=['1.23','0xbeef'])
-		protoKeys.CmdKey.setKeys(protoKeys.KeysDictionary('<command>',1.0,self.key2,self.key3))
+		protoKeys.CmdKey.setKeys(protoKeys.KeysDictionary('<command>',(1,0),self.key2,self.key3))
 		self.cmd1 = protoValid.Cmd('cmd','key1 <key2> <key3>')
 		self.cmd2 = protoValid.Cmd('cmd','@key1 <key2> [<key3>]')
 		self.cmd3 = protoValid.Cmd('cmd',protoTypes.Float(),protoTypes.Hex(),'(@key1 [<key2>]) [<key3>]')
