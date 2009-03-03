@@ -18,6 +18,7 @@ class TypesTest(unittest.TestCase):
 		self.assertEqual(types.String()('hello, world'),'hello, world')
 		self.assertEqual(types.UInt()('+123'),123)
 		self.assertEqual(types.Hex()('123'),0x123)
+		self.assertEqual(types.Long()('-123456789000'),-123456789000L)
 
 	def test01(self):
 		"Types created with valid non-string values"
@@ -106,6 +107,14 @@ class TypesTest(unittest.TestCase):
 		self.assertRaises(types.InvalidValueError,lambda: types.Float(invalid='???')('???'))
 		self.assertRaises(types.InvalidValueError,lambda: types.Enum('RED','GREEN','BLUE',invalid='PINK')('PINK'))
 		self.assertRaises(types.InvalidValueError,lambda: types.UInt(invalid='-')('-'))
+
+	def test12(self):
+		"Sign bit and overflow handling for 4-byte integers"
+		self.assertEqual(types.Hex()('ff00ff00'),0xff00ff00)
+		self.assertEqual(types.UInt()('4278255360'),4278255360)
+		self.assertRaises(OverflowError,lambda: types.Int()(0xff00ff00))
+		self.assertRaises(ValueError,lambda: types.UInt()(0x100000000))
+		self.assertEqual(types.Long()(0x100000000),0x100000000)
 
 if __name__ == '__main__':
 	unittest.main()
