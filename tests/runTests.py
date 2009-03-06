@@ -40,6 +40,5 @@ if __name__ == "__main__":
         testList = glob.glob(os.path.join(TestPath, "*.py"))
     else:
         testList = sys.argv[1:]
-    print "testList=", testList
     runTests(testList)
     
