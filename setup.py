@@ -7,6 +7,5 @@ python setup.py install
 import sdss3tools
 
 sdss3tools.setup(
-    name = "opscore",
     description = "Common code base for SDSS-III operations system",
 )
