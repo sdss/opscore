@@ -1,27 +1,12 @@
 #!/usr/bin/env python
-"""Install the keys package. Requires setuptools.
+"""Install this package. Requires sdss3tools.
 
 To use:
 python setup.py install
-
-Alternatively you can copy python/keys to site-packages
 """
+import sdss3tools
 
-from setuptools import setup, find_packages
-import sys
-import os
-
-Descr = "Common code base for SDSS-III operations system"
-PkgName = "opscore"
-
-PkgRoot = "python"
-PkgDir = os.path.join(PkgRoot, PkgName)
-
-setup(
-    name = PkgName,
-    description = Descr,
-    package_dir = {PkgName: PkgDir},
-    packages = find_packages(PkgRoot),
-    include_package_data = True,
-    scripts = [],
+sdss3tools.setup(
+    name = "opscore",
+    description = "Common code base for SDSS-III operations system",
 )
