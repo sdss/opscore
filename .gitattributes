@@ -16,3 +16,4 @@ python/opscore/utility/astrotime.py -text
 python/opscore/utility/html.py -text
 tests/messages.py -text
 tests/types.py -text
+ups/opscore.table -text
