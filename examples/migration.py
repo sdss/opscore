@@ -16,33 +16,33 @@ import opscore.utility.astrotime as astrotime
 
 class KeyVarBase(RO.AddCallback.BaseMixin):
 	
-	def __init__(self,keyword,actor,doPrint=False):
+	def __init__(self,keyName,actor,doPrint=False):
 		"""
 		Processes data associated with a keyword.
 		
 		Inputs are:
-		- keyword: the name of the keyword associated with this variable (string)
+		- keyName: the name of the keyword associated with this variable (string)
 		- actor: the name of the actor issuing this keyword (string)
 		- doPrint: controls whether data is printed as set (boolean)
 		The value type conversions are retrieved from the actor's dictionary.
 		"""
 		self.actor = actor
-		self.keyword = keyword
+		self.keyName = keyName
 		self.doPrint = doPrint
 		# lookup this actor's dictionary (or raise protoKeys.KeysDictionaryError)
 		kdict = protoKeys.KeysDictionary.load(actor)
 		# lookup this keyword's value types in the dictionary (or raise KeyError)
-		self._converterList = kdict[keyword].typedValues
+		self._converterList = kdict[keyName].typedValues
 		# initialize our callback mixin
 		RO.AddCallback.BaseMixin.__init__(self, defCallNow = True)
 	
 	def __repr__(self):
 		return "%s(%r, %r, %s)" % \
-			(self.__class__.__name__, self.actor, self.keyword, self._converterList)
+			(self.__class__.__name__, self.actor, self.keyName, self._converterList)
 
 	def __str__(self):
 		return "%s(%r, %r)" % \
-			(self.__class__.__name__, self.actor, self.keyword)
+			(self.__class__.__name__, self.actor, self.keyName)
 
 	def set(self,valueList,msgDict=None):
 		"""
@@ -79,7 +79,8 @@ class KeyDispatcherBase(object):
 		"""
 		Adds a keyword variable to the list of those that this dispatcher handles.
 		"""
-		dictKey = (keyVar.actor,keyVar.keyword.lower())
+		keyName = keyVar.keyName.lower()
+		dictKey = (keyVar.actor,keyName)
 		keyList = self.keyVarListDict.setdefault(dictKey, [])
 		keyList.append(keyVar)
 	
@@ -98,7 +99,8 @@ class KeyDispatcherBase(object):
 		"""
 		keyActor = msgDict.header.actor
 		for keyword in msgDict.keywords:
-			dictKey = (keyActor,keyword.name.lower())
+			keyName = keyword.name.lower()
+			dictKey = (keyActor,keyName)
 			keyVarList = self.keyVarListDict.get(dictKey, [])
 			for keyVar in keyVarList:
 				try:
