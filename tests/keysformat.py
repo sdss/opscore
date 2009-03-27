@@ -9,26 +9,26 @@ import opscore.protocols.keysformat as protoKeysFormat
 
 class KeysFormatTest(unittest.TestCase):
 
-	def setUp(self):
-		self.p = protoKeysFormat.KeysFormatParser()
+    def setUp(self):
+        self.p = protoKeysFormat.KeysFormatParser()
 
-	def test00(self):
-		"Valid format string without dict"
-		self.p.parse("key1 key2 key3")
-		self.p.parse("key1 key2 [key3]")
-		self.p.parse("key1 (key2 [key3])")
-		self.p.parse("@key1 key2 key3")
-		self.p.parse("key1 [@key2 [key3]]")
+    def test00(self):
+        "Valid format string without dict"
+        self.p.parse("key1 key2 key3")
+        self.p.parse("key1 key2 [key3]")
+        self.p.parse("key1 (key2 [key3])")
+        self.p.parse("@key1 key2 key3")
+        self.p.parse("key1 [@key2 [key3]]")
 
-	def test01(self):
-		"Valid format string with dict"
-		protoKeys.CmdKey.setKeys(protoKeys.KeysDictionary("<command>",(1,0),
-			protoKeys.Key("key1"),protoKeys.Key("key2"),protoKeys.Key("key3")))
-		self.p.parse("<key1> <key2> <key3>")
-		self.p.parse("<key1> <key2> [<key3>]")
-		self.p.parse("<key1> (<key2> [<key3>])")
-		self.p.parse("@<key1> <key2> <key3>")
-		self.p.parse("<key1> [@<key2> [<key3>]]")		
+    def test01(self):
+        "Valid format string with dict"
+        protoKeys.CmdKey.setKeys(protoKeys.KeysDictionary("<command>",(1,0),
+            protoKeys.Key("key1"),protoKeys.Key("key2"),protoKeys.Key("key3")))
+        self.p.parse("<key1> <key2> <key3>")
+        self.p.parse("<key1> <key2> [<key3>]")
+        self.p.parse("<key1> (<key2> [<key3>])")
+        self.p.parse("@<key1> <key2> <key3>")
+        self.p.parse("<key1> [@<key2> [<key3>]]")       
 
 if __name__ == '__main__':
-	unittest.main()
+    unittest.main()
