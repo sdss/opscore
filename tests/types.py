@@ -115,6 +115,16 @@ class TypesTest(unittest.TestCase):
         self.assertRaises(OverflowError,lambda: types.Int()(0xff00ff00))
         self.assertRaises(ValueError,lambda: types.UInt()(0x100000000))
         self.assertEqual(types.Long()(0x100000000),0x100000000)
+        
+    def test13(self):
+        "String comparisons for enumerated types"
+        COLOR = types.Enum('red','green','blue')
+        self.assertEqual(COLOR('red'),0)
+        self.assertEqual(COLOR('blue'),2)
+        self.assertEqual(COLOR('red'),'red')
+        self.assertEqual(COLOR('blue'),'blue')
+        self.assertNotEqual(COLOR('blue'),'green')
+        self.assertNotEqual(COLOR('blue'),'2')
 
 if __name__ == '__main__':
     unittest.main()
