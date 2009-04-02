@@ -125,6 +125,12 @@ class TypesTest(unittest.TestCase):
         self.assertEqual(COLOR('blue'),'blue')
         self.assertNotEqual(COLOR('blue'),'green')
         self.assertNotEqual(COLOR('blue'),'2')
+    
+    def test14(self):
+        "Invalid value tests"
+        myInvalid = types.Invalid()
+        self.assertEqual(types.InvalidValue,myInvalid)
+        self.assertEqual(types.InvalidValue,None)
 
 if __name__ == '__main__':
     unittest.main()
