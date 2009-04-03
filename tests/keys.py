@@ -68,6 +68,12 @@ class KeysTest(unittest.TestCase):
         self.assertRaises(protoKeys.KeysError,lambda: self.key2.create('abc'))
         self.assertRaises(protoKeys.KeysError,lambda: self.key3.create(0xdead,-1.2))
         self.assertRaises(protoKeys.KeysError,lambda: self.key3.create(-1.2,'0xdead'))
+        
+    def test07(self):
+        "Read testing dictionary"
+        kdict = protoKeys.KeysDictionary.load("testing")
+        self.failUnless('unsigned' in kdict)
+        self.failUnless('UnSigned' in kdict)
 
 if __name__ == '__main__':
     unittest.main()
