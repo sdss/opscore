@@ -157,6 +157,12 @@ class TypesTest(unittest.TestCase):
         self.assertRaises(types.ValueTypeError,lambda: types.Float(name='a Value'))
         self.assertRaises(types.ValueTypeError,lambda: types.Float(name='123Value'))
         self.assertRaises(types.ValueTypeError,lambda: types.Float(name='a-Value'))
-
+        
+    def test17(self):
+        "Enumerated value containment tests"
+        COLOR = types.Enum('Red','Green','Blue')
+        self.failUnless(COLOR('Red') in ['Red','Green'])
+        self.failUnless(COLOR('Red') in ['RED','GREEN'])
+        
 if __name__ == '__main__':
     unittest.main()
