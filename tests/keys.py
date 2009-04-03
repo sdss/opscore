@@ -15,9 +15,9 @@ class KeysTest(unittest.TestCase):
         self.k1 = protoMess.Keyword('key1')
         self.k2 = protoMess.Keyword('key2',['-1.2'])
         self.k3 = protoMess.Keyword('key3',['0xdead','0xbeef'])
-        self.key1 = protoKeys.Key('key1')
-        self.key2 = protoKeys.Key('key2', protoTypes.Float())
-        self.key3 = protoKeys.Key('key3', protoTypes.Hex()*2)
+        self.key1 = protoKeys.Key('Key1')
+        self.key2 = protoKeys.Key('Key2', protoTypes.Float())
+        self.key3 = protoKeys.Key('Key3', protoTypes.Hex()*2)
 
     def test00(self):
         "Key validation passes"
