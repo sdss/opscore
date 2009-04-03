@@ -45,15 +45,16 @@ class TypesTest(unittest.TestCase):
         
     def test04(self):
         "Enumeration created with valid values"
-        COLOR = types.Enum('red','green','blue')
-        self.assertEqual(COLOR('green'),1)
-        self.assertEqual(str(COLOR('red')),'red')
-        self.assertEqual(COLOR(2),2)
-        self.assertEqual(str(COLOR(2)),'blue')
+        COLOR = types.Enum('Red','Green','Blue')
+        self.assertEqual(COLOR('green'),'green')
+        self.assertEqual(COLOR('BLUE'),'blue')
+        self.assertEqual(COLOR(2),'blue')
+        self.assertEqual(str(COLOR('red')),'Red')
+        self.assertEqual(str(COLOR(2)),'Blue')
         
     def test05(self):
         "Enumeration created with invalid values"
-        COLOR = types.Enum('red','green','blue')
+        COLOR = types.Enum('Red','Green','Blue')
         self.assertRaises(ValueError,lambda: COLOR('brown'))
         self.assertRaises(ValueError,lambda: COLOR('0'))
         self.assertRaises(ValueError,lambda: COLOR(3))
@@ -96,16 +97,22 @@ class TypesTest(unittest.TestCase):
         
     def test10(self):
         "Repeated value types with invalid ctor"
-        self.assertRaises(types.ValueTypeError,lambda: types.RepeatedValueType(types.Float(),'1','2'))
-        self.assertRaises(types.ValueTypeError,lambda: types.RepeatedValueType(types.Float(),1.0,2.1))
-        self.assertRaises(types.ValueTypeError,lambda: types.RepeatedValueType(types.Float(),2,1))
-        self.assertRaises(types.ValueTypeError,lambda: types.RepeatedValueType(types.Float(),-1,1))
-        self.assertRaises(types.ValueTypeError,lambda: types.RepeatedValueType(types.Float(),1,'abc'))
+        self.assertRaises(types.ValueTypeError,
+            lambda: types.RepeatedValueType(types.Float(),'1','2'))
+        self.assertRaises(types.ValueTypeError,
+            lambda: types.RepeatedValueType(types.Float(),1.0,2.1))
+        self.assertRaises(types.ValueTypeError,
+            lambda: types.RepeatedValueType(types.Float(),2,1))
+        self.assertRaises(types.ValueTypeError,
+            lambda: types.RepeatedValueType(types.Float(),-1,1))
+        self.assertRaises(types.ValueTypeError,
+            lambda: types.RepeatedValueType(types.Float(),1,'abc'))
         
     def test11(self):
         "Values initialized with an invalid string literal"
         self.assertRaises(types.InvalidValueError,lambda: types.Float(invalid='???')('???'))
-        self.assertRaises(types.InvalidValueError,lambda: types.Enum('RED','GREEN','BLUE',invalid='PINK')('PINK'))
+        self.assertRaises(types.InvalidValueError,
+            lambda: types.Enum('RED','GREEN','BLUE',invalid='PINK')('PinK'))
         self.assertRaises(types.InvalidValueError,lambda: types.UInt(invalid='-')('-'))
 
     def test12(self):
@@ -115,22 +122,41 @@ class TypesTest(unittest.TestCase):
         self.assertRaises(OverflowError,lambda: types.Int()(0xff00ff00))
         self.assertRaises(ValueError,lambda: types.UInt()(0x100000000))
         self.assertEqual(types.Long()(0x100000000),0x100000000)
-        
+
     def test13(self):
-        "String comparisons for enumerated types"
+        "Storage values calculated for enumerated type"
         COLOR = types.Enum('red','green','blue')
-        self.assertEqual(COLOR('red'),0)
-        self.assertEqual(COLOR('blue'),2)
-        self.assertEqual(COLOR('red'),'red')
-        self.assertEqual(COLOR('blue'),'blue')
-        self.assertNotEqual(COLOR('blue'),'green')
-        self.assertNotEqual(COLOR('blue'),'2')
+        self.assertEqual(COLOR('red').storageValue(),'0')
+        self.assertEqual(COLOR('green').storageValue(),'1')
+        self.assertEqual(COLOR('blue').storageValue(),'2')
+        self.assertEqual(COLOR(0).storageValue(),'0')
+        self.assertEqual(COLOR(1).storageValue(),'1')
+        self.assertEqual(COLOR(2).storageValue(),'2')
     
     def test14(self):
         "Invalid value tests"
         myInvalid = types.Invalid()
         self.assertEqual(types.InvalidValue,myInvalid)
         self.assertEqual(types.InvalidValue,None)
+        
+    def test15(self):
+        "Float overflow tests"
+        F = types.Float()
+        maxFloat = float(3.4028234663852886e+38)
+        epsilon = float(2e22)
+        self.assertEqual(F(maxFloat),maxFloat)
+        self.assertEqual(F(-maxFloat),-maxFloat)
+        self.assertRaises(ValueError,lambda: F(maxFloat+epsilon))
+        self.assertRaises(ValueError,lambda: F(-maxFloat-epsilon))
+    
+    def test16(self):
+        "Name metadata must be valid identifier"
+        F = types.Float(name='aValue123')
+        self.assertEqual(F.name,'aValue123')
+        self.assertRaises(types.ValueTypeError,lambda: types.Float(name='_aValue'))
+        self.assertRaises(types.ValueTypeError,lambda: types.Float(name='a Value'))
+        self.assertRaises(types.ValueTypeError,lambda: types.Float(name='123Value'))
+        self.assertRaises(types.ValueTypeError,lambda: types.Float(name='a-Value'))
 
 if __name__ == '__main__':
     unittest.main()

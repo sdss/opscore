@@ -60,15 +60,13 @@ class MessageTests(unittest.TestCase):
         self.assertEqual('key1' in self.keywords[:-1],False)
     
     def test04(self):
-        "Clone/copy tests"
-        pass
-    
-    def test05(self):
         "Reply headers"
-        hdr = msg.ReplyHeader('prog','user',123,'actor',':')
-        self.assertEqual(hdr.code,msg.ReplyHeader.MsgCode('FINISHED'))
-        self.assertRaises(ValueError,lambda: msg.ReplyHeader('prog','user','abc','actor','!'))
-        self.assertRaises(msg.MessageError,lambda: msg.ReplyHeader('prog','user',123,'actor','?'))
+        hdr = msg.ReplyHeader('prog','user','',123,'actor',':')
+        self.assertEqual(hdr.code,':')
+        self.assertRaises(ValueError,
+            lambda: msg.ReplyHeader('prog','user','','abc','actor','!'))
+        self.assertRaises(msg.MessageError,
+            lambda: msg.ReplyHeader('prog','user','',123,'actor','?'))
 
 if __name__ == "__main__":
     unittest.main()
