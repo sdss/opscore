@@ -2,6 +2,7 @@
 examples/__init__.py -text
 examples/logparse.py -text
 examples/migration.py -text
+examples/secret.py -text
 examples/tcc_sample.log -text
 python/opscore/__init__.py -text
 python/opscore/protocols/__init__.py -text
@@ -15,6 +16,8 @@ python/opscore/utility/__init__.py -text
 python/opscore/utility/astrotime.py -text
 python/opscore/utility/config.py -text
 python/opscore/utility/html.py -text
+tests/config-test.ini -text
+tests/config.py -text
 tests/messages.py -text
 tests/parser.py -text
 tests/types.py -text
