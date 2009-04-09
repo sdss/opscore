@@ -13,6 +13,7 @@ python/opscore/protocols/types.py -text
 python/opscore/protocols/validation.py -text
 python/opscore/utility/__init__.py -text
 python/opscore/utility/astrotime.py -text
+python/opscore/utility/config.py -text
 python/opscore/utility/html.py -text
 tests/messages.py -text
 tests/parser.py -text
