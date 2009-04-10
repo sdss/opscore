@@ -102,14 +102,20 @@ class ConfigTest(unittest.TestCase):
             passphrase='The quick brown fox jumps over the lazy dog'))
 
     def test14(self):
-        """bin2hex - hex2bin roundtrip for short message"""
+        "bin2hex - hex2bin roundtrip for short message"
         hex = config.ConfigOptionParser.bin2hex(self.short_message)
         self.assertEqual(config.ConfigOptionParser.hex2bin(hex),self.short_message)
 
     def test15(self):
-        """bin2hex - hex2bin roundtrip for long message"""
+        "bin2hex - hex2bin roundtrip for long message"
         hex = config.ConfigOptionParser.bin2hex(self.long_message)
         self.assertEqual(config.ConfigOptionParser.hex2bin(hex),self.long_message)
+        
+    def test16(self):
+        "DEFAULT section option"
+        self.cli.add_option('--defaultSectionOpt')
+        (options,args) = self.cli.parse_args([])
+        self.assertEqual(options.defaultSectionOpt,'ok')
     
 
 if __name__ == '__main__':
