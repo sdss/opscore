@@ -17,6 +17,7 @@ python/opscore/utility/astrotime.py -text
 python/opscore/utility/config.py -text
 python/opscore/utility/html.py -text
 python/opscore/utility/qstr.py -text
+python/opscore/utility/sdss3logging.py -text
 tests/config-test.ini -text
 tests/config.py -text
 tests/messages.py -text
