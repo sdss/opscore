@@ -1,4 +1,6 @@
 setupRequired("external")
 setupRequired("actorkeys")
+setupOptional("RO")
+
 envPrepend(PATH, ${PRODUCT_DIR}/bin)
 envPrepend(PYTHONPATH, ${PRODUCT_DIR}/python)
