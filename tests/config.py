@@ -15,6 +15,8 @@ class ConfigTest(unittest.TestCase):
     def setUp(self):
         self.cli = config.ConfigOptionParser(
             config_file='config-test.ini',config_section='test')
+        if not self.cli.foundFiles:
+            raise Exception('This test must be run from the tests/ directory')
         self.short_message = 'hello, world'
         self.long_message = ''.join([chr(i%256) for i in range(1000)])
         
