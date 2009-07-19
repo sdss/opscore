@@ -183,5 +183,28 @@ class TypesTest(unittest.TestCase):
         pvt2 = RO.PVT.PVT(1,2,3)
         self.assertEqual(repr(pvt1),repr(pvt2))
         
+    def test20(self):
+        "Bitfield input conversions"
+        reg16 = types.Bits('addr:4',':4','data:8',inputBase=16)
+        self.assertEqual(reg16(0xff),0xff)
+        self.assertEqual(reg16('0xff'),0xff)
+        self.assertEqual(reg16('ff'),0xff)
+        self.assertEqual(reg16(0).inputBase,16)
+        reg10 = types.Bits('addr:4',':4','data:8',inputBase=10)
+        self.assertEqual(reg10(0xff),0xff)
+        self.assertEqual(reg10('255'),0xff)
+        self.assertEqual(reg10(0).inputBase,10)
+        self.assertRaises(ValueError,lambda: reg10('ff'))
+        reg8 = types.Bits('addr:4',':4','data:8',inputBase=8)
+        self.assertEqual(reg8(0xff),0xff)
+        self.assertEqual(reg8('377'),0xff)
+        self.assertEqual(reg8('0377'),0xff)
+        self.assertEqual(reg8(0).inputBase,8)
+        reg2 = types.Bits('addr:4',':4','data:8',inputBase=2)
+        self.assertEqual(reg2(0xff),0xff)
+        self.assertEqual(reg2('11111111'),0xff)
+        self.assertEqual(reg2(0).inputBase,2)
+        self.assertRaises(ValueError,lambda: reg2('123'))
+        
 if __name__ == '__main__':
     unittest.main()
