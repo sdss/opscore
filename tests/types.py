@@ -164,5 +164,24 @@ class TypesTest(unittest.TestCase):
         self.failUnless(COLOR('Red') in ['Red','Green'])
         self.failUnless(COLOR('Red') in ['RED','GREEN'])
         
+    def test18(self):
+        "Compound value type"
+        msgType = types.CompoundValueType(
+            types.Enum('INFO','WARN','ERROR','FAIL',name='code',help='Status code'),
+            types.String(name='text',help='Message body'),
+            types.UInt(name='source',help='Message source'),
+            name = 'message',
+            help = 'A tagged message'
+        )
+        
+    def test19(self):
+        "PVT type"
+        pvtType = types.PVT()
+        pvt1 = pvtType.wrapper(1,2,3)
+        import RO.PVT
+        self.failUnless(isinstance(pvt1,RO.PVT.PVT))
+        pvt2 = RO.PVT.PVT(1,2,3)
+        self.assertEqual(repr(pvt1),repr(pvt2))
+        
 if __name__ == '__main__':
     unittest.main()

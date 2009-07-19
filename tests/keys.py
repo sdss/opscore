@@ -74,6 +74,58 @@ class KeysTest(unittest.TestCase):
         kdict = protoKeys.KeysDictionary.load("testing")
         self.failUnless('unsigned' in kdict)
         self.failUnless('UnSigned' in kdict)
+        
+    def test08(self):
+        "Generic compound value type without explicit wrapper"
+        msgKey = protoKeys.Key('msg',protoTypes.CompoundValueType(
+            protoTypes.Enum('INFO','WARN','ERROR',name='code'),
+            protoTypes.String(name='text')
+        ))
+        msg = protoMess.Keyword('msg',['INFO','Hello, world'])
+        self.failUnless(msgKey.consume(msg))
+        self.assertEqual(len(msg.values),1)
+        self.failUnless(isinstance(msg.values[0],tuple))
+        self.failUnless(msg.values[0] == ('INFO','Hello, world'))
+    
+    def test09(self):
+        "Generic compound value type with explicit wrapper"
+        class Wrapped(object):
+            def __init__(self,code,text):
+                pass
+        msgKey = protoKeys.Key('msg',protoTypes.CompoundValueType(
+            protoTypes.Enum('INFO','WARN','ERROR',name='code'),
+            protoTypes.String(name='text'),
+            wrapper = Wrapped
+        ))
+        msg = protoMess.Keyword('msg',['INFO','Hello, world'])
+        self.failUnless(msgKey.consume(msg))
+        self.assertEqual(len(msg.values),1)
+        self.failUnless(isinstance(msg.values[0],Wrapped))
+
+    def test10(self):
+        "Generic compound value type with wrapping disabled"
+        msgKey = protoKeys.Key('msg',protoTypes.CompoundValueType(
+            protoTypes.Enum('INFO','WARN','ERROR',name='code'),
+            protoTypes.String(name='text')
+        ))
+        msg = protoMess.Keyword('msg',['INFO','Hello, world'])
+        protoTypes.CompoundValueType.WrapEnable = False
+        self.failUnless(msgKey.consume(msg))
+        protoTypes.CompoundValueType.WrapEnable = True
+        self.assertEqual(len(msg.values),2)
+        self.failUnless(msg.values[0] == 'INFO')
+        self.failUnless(msg.values[1] == 'Hello, world')
+        
+    def test11(self):
+        "PVT test"
+        pvtKey = protoKeys.Key('pvtMsg',protoTypes.PVT(),protoTypes.Float())
+        msg = protoMess.Keyword('pvtMsg',[1,2,3,4])
+        self.failUnless(pvtKey.consume(msg))
+        self.assertEqual(len(msg.values),2)
+        import RO.PVT
+        self.failUnless(isinstance(msg.values[0],RO.PVT.PVT))
+        self.assertEqual(repr(msg.values[0]),repr(RO.PVT.PVT(1,2,3)))
+        self.assertEqual(msg.values[1],4)
 
 if __name__ == '__main__':
     unittest.main()
