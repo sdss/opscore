@@ -5,6 +5,8 @@ Unit tests for opscore.utility.config
 
 # Created 9-Apr-2009 by David Kirkby (dkirkby@uci.edu)
 
+import os.path
+
 import unittest
 import optparse
 
@@ -13,10 +15,12 @@ from opscore.utility import config
 class ConfigTest(unittest.TestCase):
     
     def setUp(self):
+        testPath = os.path.split(__file__)[0]
+        testConfig = os.path.join(testPath,'config-test.ini')
         self.cli = config.ConfigOptionParser(
-            config_file='config-test.ini',config_section='test')
+            config_file=testConfig,config_section='test')
         if not self.cli.foundFiles:
-            raise Exception('This test must be run from the tests/ directory')
+            raise Exception('Unable to find %s' % testConfig)
         self.short_message = 'hello, world'
         self.long_message = ''.join([chr(i%256) for i in range(1000)])
         
