@@ -206,5 +206,12 @@ class TypesTest(unittest.TestCase):
         self.assertEqual(reg2(0).inputBase,2)
         self.assertRaises(ValueError,lambda: reg2('123'))
         
+    def test21(self):
+        "Hex literals for integer types"
+        self.assertEqual(types.Int()('0x123'),0x123)
+        self.assertEqual(types.UInt()('0x123'),0x123)         
+        self.assertEqual(types.Long()('0x123'),0x123)
+        self.assertRaises(ValueError,lambda: types.UInt()('ff'))
+        
 if __name__ == '__main__':
     unittest.main()
