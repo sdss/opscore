@@ -72,7 +72,11 @@ class TCPClient(Tkinter.Frame):
 
     def doRe(self, actorsToDisplay):
         """Set a new regexp"""
-        self.displayRegexp = r"^\S+\s+\d+\s+(%s)\s+(\S+)\s+" % "|".join(actorsToDisplay.split())
+        if actorsToDisplay:
+            self.displayRegexp = r"^\S+\s+\d+\s+(%s)\s+(\S+)\s+" % "|".join(actorsToDisplay.split())
+        else:
+            self.displayRegexp = None
+            
         self.setTitle(actorsToDisplay)
 
     def doCmd(self, cmd):
