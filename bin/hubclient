@@ -80,6 +80,9 @@ class TCPClient(Tkinter.Frame):
         self.setTitle(actorsToDisplay)
 
     def doCmd(self, cmd):
+        if not cmd:
+            return
+        
         cmd = "%s %d %s" % (self.cmdrName, self.cmdID, cmd)
         self.cmdID += 1
         if not self.conn.isConnected():
