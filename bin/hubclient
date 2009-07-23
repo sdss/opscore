@@ -81,6 +81,7 @@ class TCPClient(Tkinter.Frame):
 
     def doCmd(self, cmd):
         if not cmd:
+            self.logMsg('<cr>')
             return
         
         cmd = "%s %d %s" % (self.cmdrName, self.cmdID, cmd)
