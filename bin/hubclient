@@ -5,30 +5,47 @@
 History:
 2009-07-10 ROwen    Removed an inline conditional statement to be Python 2.4 compatible.
 """
-import os, platform, pwd, sys
+import re, os, platform, pwd, sys
 import Tkinter
 import RO.Comm.TCPConnection
 import RO.Wdg
 
+
 class TCPClient(Tkinter.Frame):
     def __init__(self, master, addr, port=None, cmdrName=None):
         Tkinter.Frame.__init__(self, master)
+        self.master = master
+        self.displayRegexp = None       # regexp must match to display output in window
+
         self.logWdg = RO.Wdg.LogWdg(
             master = self,
             maxLines = 1000,
         )
         self.logWdg.grid(row=0, column=0, sticky="nsew")
-#        self.logWdg.pack(side="top", expand=True, fill="both")
         
+        self.bottomWdg = Tkinter.Frame(self, background="")
+        self.bottomWdg.grid(row=1, column=0, sticky="ew")
+
         self.cmdWdg = RO.Wdg.CmdWdg(
-            master = self,
+            master = self.bottomWdg,
             maxCmds = 100,
             cmdFunc = self.doCmd,
         )
-        self.cmdWdg.grid(row=1, column=0, sticky="ew")
-#        self.cmdWdg.pack(side="top", expand=True, fill="x")
 
-        self.cmdrName = cmdrName if cmdrName else "me.me"
+        self.reWdg = RO.Wdg.CmdWdg(
+            master = self.bottomWdg,
+            maxCmds = 10,
+            cmdFunc = self.doRe,
+            width=20#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+        )
+
+        self.cmdWdg.pack(fill="x", side="left", expand=True)
+        Tkinter.Label(self.bottomWdg, text=" Filter actors:").pack(side="left")
+        self.reWdg.pack(side="right")
+
+        self.cmdrName = cmdrName if cmdrName else \
+                        "%s.%s" % (pwd.getpwuid(os.getuid()).pw_name, platform.node().split('.')[0])
         self.cmdID = 1
     
         self.conn = RO.Comm.TCPConnection.TCPConnection(
@@ -53,6 +70,11 @@ class TCPClient(Tkinter.Frame):
     def connRead(self, sock, readStr):
         self.logMsg(readStr)
 
+    def doRe(self, actorsToDisplay):
+        """Set a new regexp"""
+        self.displayRegexp = r"^\S+\s+\d+\s+(%s)\s+(\S+)\s+" % "|".join(actorsToDisplay.split())
+        self.setTitle(actorsToDisplay)
+
     def doCmd(self, cmd):
         cmd = "%s %d %s" % (self.cmdrName, self.cmdID, cmd)
         self.cmdID += 1
@@ -62,7 +84,17 @@ class TCPClient(Tkinter.Frame):
     
     def logMsg(self, msg):
         r"""Append msg to log, with terminating \n"""
+
+        if self.displayRegexp:
+            if not re.search(self.displayRegexp, msg):
+                return
+
         self.logWdg.addOutput(msg + "\n")
+
+    def setTitle(self, actorsToDisplay=""):
+        if actorsToDisplay:
+            actorsToDisplay = "    Actors: [%s]" % actorsToDisplay.replace("|", " ")
+        self.master.title("hubclient: %s%s" % (self.cmdrName, actorsToDisplay))
 
 
 if __name__ == "__main__":
@@ -75,9 +107,8 @@ if __name__ == "__main__":
     
     root = Tkinter.Tk()
     root.geometry("1000x500")
-    cmdrName="%s.%s" % (pwd.getpwuid(os.getuid()).pw_name, platform.node().split('.')[0])
-    root.title("hubclient: %s" % cmdrName)
-    client = TCPClient(root, addr, port, cmdrName=cmdrName)
+    client = TCPClient(root, addr, port)
+    client.setTitle()
 
     client.pack(side="top", expand=True, fill="both")
 
