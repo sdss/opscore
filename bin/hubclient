@@ -94,7 +94,7 @@ class TCPClient(Tkinter.Frame):
         r"""Append msg to log, with terminating \n"""
 
         if self.displayRegexp:
-            if not re.search(self.displayRegexp, msg):
+            if not re.search(self.displayRegexp, msg) and msg != "<cr>":
                 return
 
         self.logWdg.addOutput(msg + "\n")
