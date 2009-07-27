@@ -146,8 +146,8 @@ class TypesTest(unittest.TestCase):
         epsilon = float(2e22)
         self.assertEqual(F(maxFloat),maxFloat)
         self.assertEqual(F(-maxFloat),-maxFloat)
-        self.assertRaises(ValueError,lambda: F(maxFloat+epsilon))
-        self.assertRaises(ValueError,lambda: F(-maxFloat-epsilon))
+        self.assertRaises(OverflowError,lambda: F(maxFloat+epsilon))
+        self.assertRaises(OverflowError,lambda: F(-maxFloat-epsilon))
     
     def test16(self):
         "Name metadata must be valid identifier"
