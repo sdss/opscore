@@ -205,6 +205,12 @@ class TypesTest(unittest.TestCase):
         self.assertEqual(reg2('11111111'),0xff)
         self.assertEqual(reg2(0).inputBase,2)
         self.assertRaises(ValueError,lambda: reg2('123'))
+        # the default input base is 0
+        reg0 = types.Bits('addr:4',':4','data:8')
+        self.assertEqual(reg0(0xff),0xff)
+        self.assertEqual(reg0('0xff'),0xff)
+        self.assertEqual(reg0('0377'),0xff)
+        self.assertRaises(ValueError,lambda: reg0('ff'))
         
     def test21(self):
         "Hex literals for integer types"
