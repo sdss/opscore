@@ -14,10 +14,10 @@ class KeysTest(unittest.TestCase):
     def setUp(self):
         self.k1 = protoMess.Keyword('key1')
         self.k2 = protoMess.Keyword('key2',['-1.2'])
-        self.k3 = protoMess.Keyword('key3',['0xdead','0xbeef'])
+        self.k3 = protoMess.Keyword('key3',[0xdead,0xbeef])
         self.key1 = protoKeys.Key('Key1')
         self.key2 = protoKeys.Key('Key2', protoTypes.Float())
-        self.key3 = protoKeys.Key('Key3', protoTypes.Hex()*2)
+        self.key3 = protoKeys.Key('Key3', protoTypes.UInt()*2)
 
     def test00(self):
         "Key validation passes"
@@ -66,8 +66,8 @@ class KeysTest(unittest.TestCase):
     def test06(self):
         "Keyword creation with wrong value types"
         self.assertRaises(protoKeys.KeysError,lambda: self.key2.create('abc'))
-        self.assertRaises(protoKeys.KeysError,lambda: self.key3.create(0xdead,-1.2))
-        self.assertRaises(protoKeys.KeysError,lambda: self.key3.create(-1.2,'0xdead'))
+        self.assertRaises(protoKeys.KeysError,lambda: self.key3.create(0xdead,'abc'))
+        self.assertRaises(protoKeys.KeysError,lambda: self.key3.create('abc','0xdead'))
         
     def test07(self):
         "Read testing dictionary"

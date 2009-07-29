@@ -17,7 +17,6 @@ class TypesTest(unittest.TestCase):
         self.assertEqual(types.Int()('-123'),-123)
         self.assertEqual(types.String()('hello, world'),'hello, world')
         self.assertEqual(types.UInt()('+123'),123)
-        self.assertEqual(types.Hex()('123'),0x123)
         self.assertEqual(types.Long()('-123456789000'),-123456789000L)
 
     def test01(self):
@@ -27,21 +26,17 @@ class TypesTest(unittest.TestCase):
         self.assertEqual(types.Int()(-12.3),-12)
         self.assertEqual(types.String()(+123),'123')
         self.assertEqual(types.UInt()(+123),123)
-        self.assertEqual(types.Hex()(0x123),0x123)
-        self.assertEqual(types.Hex()(123),123)
+        self.assertEqual(types.Int()(0x123),0x123)
 
     def test02(self):
         "Types created with invalid string values"
         self.assertRaises(ValueError,lambda: types.Float()('1.2*3'))
         self.assertRaises(ValueError,lambda: types.Int()('1.2'))
-        self.assertRaises(ValueError,lambda: types.UInt()('-123'))
-        self.assertRaises(ValueError,lambda: types.Hex()('xyz'))
+        self.assertRaises(ValueError,lambda: types.UInt()('xyz'))
 
     def test03(self):
         "Types created with invalid non-string values"
         self.assertRaises(ValueError,lambda: types.String()(u'\u1234'))
-        self.assertRaises(ValueError,lambda: types.UInt()(-123))
-        self.assertRaises(ValueError,lambda: types.Hex()(-123))
         
     def test04(self):
         "Enumeration created with valid values"
@@ -120,7 +115,8 @@ class TypesTest(unittest.TestCase):
         self.assertEqual(types.Hex()('ff00ff00'),0xff00ff00)
         self.assertEqual(types.UInt()('4278255360'),4278255360)
         self.assertRaises(OverflowError,lambda: types.Int()(0xff00ff00))
-        self.assertRaises(ValueError,lambda: types.UInt()(0x100000000))
+        self.assertRaises(OverflowError,lambda: types.UInt()(0x100000000))
+        self.assertRaises(OverflowError,lambda: types.UInt()(-0x100000000))
         self.assertEqual(types.Long()(0x100000000),0x100000000)
 
     def test13(self):
@@ -218,6 +214,11 @@ class TypesTest(unittest.TestCase):
         self.assertEqual(types.UInt()('0x123'),0x123)         
         self.assertEqual(types.Long()('0x123'),0x123)
         self.assertRaises(ValueError,lambda: types.UInt()('ff'))
+        
+    def test22(self):
+        "Coercion of 32-bit signed to unsigned"
+        self.assertEqual(types.UInt()(-0x7fffffff),0xffffffff)
+        self.assertEqual(types.UInt()(-1),0x80000001)
         
 if __name__ == '__main__':
     unittest.main()
