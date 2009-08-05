@@ -16,6 +16,7 @@ class TCPClient(Tkinter.Frame):
         Tkinter.Frame.__init__(self, master)
         self.master = master
         self.displayRegexp = None       # regexp must match to display output in window
+        self.noDisplayRegexp = None     # regexp must not match to display output in window
 
         self.logWdg = RO.Wdg.LogWdg(
             master = self,
@@ -79,14 +80,25 @@ class TCPClient(Tkinter.Frame):
     def connRead(self, sock, readStr):
         self.logMsg(readStr)
 
-    def doRe(self, actorsToDisplay):
+    def doRe(self, actorsList):
         """Set a new regexp"""
+
+        actorsList = actorsList.split()
+
+        actorsToDisplay =    [x     for x in actorsList if not re.search(r"^!", x)]
+        actorsToNotDisplay = [x[1:] for x in actorsList if     re.search(r"^!", x)]
+
         if actorsToDisplay:
-            self.displayRegexp = r"^\S+\s+\d+\s+(%s)\s+(\S+)\s+" % "|".join(actorsToDisplay.split())
+            self.displayRegexp = r"^\S+\s+\d+\s+(%s)\s+(\S+)\s+" % "|".join(actorsToDisplay)
         else:
             self.displayRegexp = None
+
+        if actorsToNotDisplay:
+            self.noDisplayRegexp = r"^\S+\s+\d+\s+(%s)\s+(\S+)\s+" % "|".join(actorsToNotDisplay)
+        else:
+            self.noDisplayRegexp = None
             
-        self.setTitle(actorsToDisplay)
+        self.setTitle(" ".join(actorsToDisplay), " ".join(actorsToNotDisplay))
 
     def doCmd(self, cmd):
         if not cmd:
@@ -117,15 +129,25 @@ class TCPClient(Tkinter.Frame):
     def logMsg(self, msg):
         r"""Append msg to log, with terminating \n"""
 
-        if self.displayRegexp:
-            if not re.search(self.displayRegexp, msg) and msg != "<cr>":
-                return
+        if ((self.displayRegexp   and not re.search(self.displayRegexp,   msg))  or
+            (self.noDisplayRegexp and     re.search(self.noDisplayRegexp, msg))) and msg != "<cr>":
+
+            return
 
         self.logWdg.addOutput("%s %s\n" % (time.strftime("%H:%M:%S"), msg))
 
-    def setTitle(self, actorsToDisplay=""):
-        if actorsToDisplay:
+    def setTitle(self, actorsToDisplay="", actorsToNotDisplay=""):
+        if actorsToDisplay or actorsToNotDisplay:
+            if actorsToNotDisplay:
+                actorsToNotDisplay = "!" + actorsToNotDisplay.replace("|", " ").replace(" ", " !")
+
+                if actorsToDisplay:
+                    actorsToDisplay += " " + actorsToNotDisplay
+                else:
+                    actorsToDisplay = actorsToNotDisplay
+
             actorsToDisplay = "    Actors: [%s]" % actorsToDisplay.replace("|", " ")
+
         self.master.title("hubclient: %s%s" % (self.cmdrName, actorsToDisplay))
 
 
