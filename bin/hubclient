@@ -5,7 +5,7 @@
 History:
 2009-07-10 ROwen    Removed an inline conditional statement to be Python 2.4 compatible.
 """
-import re, os, platform, pwd, sys
+import re, os, platform, pwd, sys, time
 import Tkinter
 import RO.Comm.TCPConnection
 import RO.Wdg
@@ -121,7 +121,7 @@ class TCPClient(Tkinter.Frame):
             if not re.search(self.displayRegexp, msg) and msg != "<cr>":
                 return
 
-        self.logWdg.addOutput(msg + "\n")
+        self.logWdg.addOutput("%s %s\n" % (time.strftime("%H:%M:%S"), msg))
 
     def setTitle(self, actorsToDisplay=""):
         if actorsToDisplay:
