@@ -63,7 +63,8 @@ class TypesTest(unittest.TestCase):
         self.assertEqual(r1.strobe,1)
         r2 = REG(0).set('strobe',1).set('addr',0x7f)
         self.assertEqual(r2,0x27f)
-        self.assertEqual(str(r2),'(addr=01111111,strobe=1)')
+        self.assertEqual(repr(r2),'(addr=01111111,strobe=1)')
+        self.assertEqual(str(r2),'1001111111')
         
     def test07(self):
         "Invalid bitfield ctor"
@@ -181,32 +182,8 @@ class TypesTest(unittest.TestCase):
         
     def test20(self):
         "Bitfield input conversions"
-        reg16 = types.Bits('addr:4',':4','data:8',inputBase=16)
-        self.assertEqual(reg16(0xff),0xff)
-        self.assertEqual(reg16('0xff'),0xff)
-        self.assertEqual(reg16('ff'),0xff)
-        self.assertEqual(reg16(0).inputBase,16)
-        reg10 = types.Bits('addr:4',':4','data:8',inputBase=10)
-        self.assertEqual(reg10(0xff),0xff)
-        self.assertEqual(reg10('255'),0xff)
-        self.assertEqual(reg10(0).inputBase,10)
-        self.assertRaises(ValueError,lambda: reg10('ff'))
-        reg8 = types.Bits('addr:4',':4','data:8',inputBase=8)
-        self.assertEqual(reg8(0xff),0xff)
-        self.assertEqual(reg8('377'),0xff)
-        self.assertEqual(reg8('0377'),0xff)
-        self.assertEqual(reg8(0).inputBase,8)
-        reg2 = types.Bits('addr:4',':4','data:8',inputBase=2)
-        self.assertEqual(reg2(0xff),0xff)
-        self.assertEqual(reg2('11111111'),0xff)
-        self.assertEqual(reg2(0).inputBase,2)
-        self.assertRaises(ValueError,lambda: reg2('123'))
-        # the default input base is 0
-        reg0 = types.Bits('addr:4',':4','data:8')
-        self.assertEqual(reg0(0xff),0xff)
-        self.assertEqual(reg0('0xff'),0xff)
-        self.assertEqual(reg0('0377'),0xff)
-        self.assertRaises(ValueError,lambda: reg0('ff'))
+        # removed when Bits.inputBase attribute was dropped
+        pass
         
     def test21(self):
         "Hex literals for integer types"

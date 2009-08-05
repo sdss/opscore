@@ -5,7 +5,7 @@
 History:
 2009-07-10 ROwen    Removed an inline conditional statement to be Python 2.4 compatible.
 """
-import re, os, platform, pwd, sys
+import re, os, platform, pwd, sys, time
 import Tkinter
 import RO.Comm.TCPConnection
 import RO.Wdg
@@ -26,6 +26,14 @@ class TCPClient(Tkinter.Frame):
         self.bottomWdg = Tkinter.Frame(self, background="")
         self.bottomWdg.grid(row=1, column=0, sticky="ew")
 
+        self.prefixWdg = RO.Wdg.CmdWdg(
+            master = self.bottomWdg,
+            maxCmds = 10,
+            cmdFunc = self.prefixCmd,
+            relief="flat",
+            width=15
+        )
+
         self.cmdWdg = RO.Wdg.CmdWdg(
             master = self.bottomWdg,
             maxCmds = 100,
@@ -36,10 +44,11 @@ class TCPClient(Tkinter.Frame):
             master = self.bottomWdg,
             maxCmds = 10,
             cmdFunc = self.doRe,
-            width=20#-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+            width=20
 
         )
 
+        self.prefixWdg.pack(fill="x", side="left"); self.prefix = None
         self.cmdWdg.pack(fill="x", side="left", expand=True)
         Tkinter.Label(self.bottomWdg, text=" Filter actors:").pack(side="left")
         self.reWdg.pack(side="right")
@@ -83,13 +92,28 @@ class TCPClient(Tkinter.Frame):
         if not cmd:
             self.logMsg('<cr>')
             return
-        
+
         cmd = "%s %d %s" % (self.cmdrName, self.cmdID, cmd)
         self.cmdID += 1
         if not self.conn.isConnected():
             self.logMsg("*** Not connected")
         self.conn.writeLine(cmd)
-    
+
+        if self.prefix:
+            self.cmdWdg.set(self.prefix + " ")
+            self.cmdWdg.icursor("end")
+
+    def prefixCmd(self, prefix):
+        self.prefixWdg.clear()
+        self.prefix = prefix.strip()
+        self.prefixWdg.set(self.prefix)
+
+        self.cmdWdg.clear()
+        if self.prefix:
+            self.cmdWdg.insert(0, self.prefix + " ")
+            self.cmdWdg.icursor("end")
+        self.cmdWdg.focus_force()
+
     def logMsg(self, msg):
         r"""Append msg to log, with terminating \n"""
 
@@ -97,7 +121,7 @@ class TCPClient(Tkinter.Frame):
             if not re.search(self.displayRegexp, msg) and msg != "<cr>":
                 return
 
-        self.logWdg.addOutput(msg + "\n")
+        self.logWdg.addOutput("%s %s\n" % (time.strftime("%H:%M:%S"), msg))
 
     def setTitle(self, actorsToDisplay=""):
         if actorsToDisplay:

@@ -126,6 +126,6 @@ class KeysTest(unittest.TestCase):
         self.failUnless(isinstance(msg.values[0],RO.PVT.PVT))
         self.assertEqual(repr(msg.values[0]),repr(RO.PVT.PVT(1,2,3)))
         self.assertEqual(msg.values[1],4)
-
+        
 if __name__ == '__main__':
     unittest.main()
