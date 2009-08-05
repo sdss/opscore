@@ -127,8 +127,5 @@ class KeysTest(unittest.TestCase):
         self.assertEqual(repr(msg.values[0]),repr(RO.PVT.PVT(1,2,3)))
         self.assertEqual(msg.values[1],4)
         
-    def test12(self):
-        pass
-
 if __name__ == '__main__':
     unittest.main()

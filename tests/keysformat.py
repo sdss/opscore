@@ -19,6 +19,7 @@ class KeysFormatTest(unittest.TestCase):
         self.p.parse("key1 (key2 [key3])")
         self.p.parse("@key1 key2 key3")
         self.p.parse("key1 [@key2 [key3]]")
+        self.p.parse("key1 [@key2 [key3]] raw")
 
     def test01(self):
         "Valid format string with dict"

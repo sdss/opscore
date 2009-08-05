@@ -17,19 +17,29 @@ class ValidationTest(unittest.TestCase):
         self.k1 = protoMess.Keyword('key1')
         self.k2 = protoMess.Keyword('key2',['-1.2'])
         self.k3 = protoMess.Keyword('key3',['0xdead','0xbeef'])
+        self.rawkey = protoMess.RawKeyword('raw;text=goes"here')
         self.key1 = protoKeys.Key('key1')
         self.key2 = protoKeys.Key('key2',protoTypes.Float())
         self.key3 = protoKeys.Key('key3',protoTypes.Hex()*2)
         self.c0 = protoMess.Command('cmd')
         self.c123 = protoMess.Command('cmd',keywords=[self.k1,self.k2,self.k3])
         self.c321 = protoMess.Command('cmd',keywords=[self.k3,self.k2,self.k1])
-        self.c12v = protoMess.Command('cmd',keywords=[self.k1,self.k2],values=['1.23','0xbeef'])
-        protoKeys.CmdKey.setKeys(protoKeys.KeysDictionary('<command>',(1,0),self.key2,self.key3))
+        self.c12v = protoMess.Command('cmd',
+            keywords=[self.k1,self.k2],values=['1.23',0xbeef])
+        self.raw1 = protoMess.Command('cmd',keywords=[self.rawkey])
+        self.raw2 = protoMess.Command('cmd',keywords=[self.k1,self.rawkey])
+        self.raw3 = protoMess.Command('cmd',keywords=[self.k1,self.k2,self.rawkey])
+        self.raw4 = protoMess.Command('cmd',keywords=[self.k1,self.rawkey,self.k2])
+        protoKeys.CmdKey.setKeys(
+            protoKeys.KeysDictionary('<command>',(1,0),self.key2,self.key3))
         self.cmd0a = protoValid.Cmd('cmd',help='no keywords')
         self.cmd0b = protoValid.Cmd('cmd','',help='no keywords (empty keysformat)')
         self.cmd1 = protoValid.Cmd('cmd','key1 <key2> <key3>')
         self.cmd2 = protoValid.Cmd('cmd','@key1 <key2> [<key3>]')
-        self.cmd3 = protoValid.Cmd('cmd',protoTypes.Float(),protoTypes.Hex(),'(@key1 [<key2>]) [<key3>]')
+        self.cmd3 = protoValid.Cmd('cmd',protoTypes.Float(),protoTypes.UInt(),
+            '(@key1 [<key2>]) [<key3>]')
+        # key2 will never be matched here because it follows raw
+        self.rawcmd = protoValid.Cmd('cmd','@[key1] raw [<key2>]')
     
     def test00(self):
         "Cmd validation passes"
@@ -78,7 +88,8 @@ class ValidationTest(unittest.TestCase):
         self.assertRaises(ValidationError,lambda:
             self.cmd1.create('key4',('key2','1.2'),('key3',['0xdead','0xbeef'])))       
         self.assertRaises(ValidationError,lambda:
-            self.cmd1.create('key1',('key2','1.2'),('key3',['0xdead','0xbeef']),values=[1.2,2.3]))
+            self.cmd1.create('key1',('key2','1.2'),
+                ('key3',['0xdead','0xbeef']),values=[1.2,2.3]))
         self.assertRaises(ValidationError,lambda:
             self.cmd3.create('key1',values=['abc','0xbeef']))
             
@@ -86,6 +97,14 @@ class ValidationTest(unittest.TestCase):
         "Validate Cmd that takes no keywords"
         self.failUnless(self.cmd0a.consume(self.c0))
         self.failUnless(self.cmd0b.consume(self.c0))
+        
+    def test06(self):
+        "Raw keyword validation"
+        self.failUnless(self.rawcmd.consume(self.raw1))
+        self.failUnless(self.rawkey.values[0] == 'raw;text=goes"here')
+        self.failUnless(self.rawcmd.consume(self.raw2))        
+        self.failUnless(self.rawcmd.consume(self.raw3))        
+        self.failUnless(self.rawcmd.consume(self.raw4))
 
 if __name__ == '__main__':
     unittest.main()
