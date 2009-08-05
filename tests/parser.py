@@ -6,7 +6,8 @@ Unit tests for opscore.protocols.parser
 # Created 2-Mar-2009 by David Kirkby (dkirkby@uci.edu)
 
 import unittest
-import opscore.protocols.parser as parser
+
+from opscore.protocols import parser,validation,messages
 
 class ParserTests(unittest.TestCase):
     def test00(self):
@@ -70,6 +71,20 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(len(reply.keywords[0].values),1)
         self.assertEqual(len(reply.keywords[1].values),3)
         self.assertEqual(len(reply.keywords[2].values),0)
+    def test04(self):
+        "Valid command keywords"
+        cParser = parser.CommandParser()
+        msg = 'cmd key1 raw=raw;text=goes"here key2'
+        cmd = cParser.parse(msg)
+        self.assertEqual(cmd.string,msg)
+        rawcmd = validation.Cmd('cmd','@[key1] raw [key2]')
+        self.failUnless(rawcmd.consume(cmd))
+        self.assertEqual(cmd.keywords[0].name,'key1')
+        self.assertEqual(cmd.keywords[1].name,'raw')
+        self.assertEqual(len(cmd.keywords),2)
+        self.failUnless(isinstance(cmd.keywords[1],messages.RawKeyword))
+        self.assertEqual(len(cmd.keywords[1].values),1)
+        self.assertEqual(cmd.keywords[1].values[0],'raw;text=goes"here key2')
 
 if __name__ == "__main__":
    unittest.main()
