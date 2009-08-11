@@ -135,7 +135,6 @@ class TCPClient(Tkinter.Frame):
             if False:
                 print '"%s"' % msg, self.displayRegexp, (self.displayRegexp   and not re.search(self.displayRegexp,   msg)), \
                       self.noDisplayRegexp, (self.noDisplayRegexp and     re.search(self.noDisplayRegexp, msg))
-
             return
 
         self.logWdg.addOutput("%s %s\n" % (time.strftime("%H:%M:%S"), msg))
