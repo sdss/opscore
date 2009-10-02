@@ -19,7 +19,7 @@ class ConfigTest(unittest.TestCase):
         testConfig = os.path.join(testPath,'config-test.ini')
         self.cli = config.ConfigOptionParser(
             config_file=testConfig,config_section='test')
-        if not self.cli.foundFiles:
+        if not self.cli.configOptions.foundFiles:
             raise Exception('Unable to find %s' % testConfig)
         self.short_message = 'hello, world'
         self.long_message = ''.join([chr(i%256) for i in range(1000)])
@@ -123,6 +123,13 @@ class ConfigTest(unittest.TestCase):
         (options,args) = self.cli.parse_args([])
         self.assertEqual(options.defaultSectionOpt,'ok')
     
+    def test17(self):
+        "ProductConfig test"
+        testPath = os.path.split(__file__)[0]
+        testConfig = os.path.join(testPath,'config-test.ini')
+        options = config.ProductConfig(
+            productName=None,fileName=testConfig,sectionName='test')
+        self.assertEqual(options.getValue('boolOpt2','boolean'),True)
 
 if __name__ == '__main__':
     unittest.main()
