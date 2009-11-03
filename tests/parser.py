@@ -10,6 +10,12 @@ import unittest
 from opscore.protocols import parser,validation,messages
 
 class ParserTests(unittest.TestCase):
+
+    def roundTrip(self,parser,msg):
+        parsed1 = parser.parse(msg).canonical()
+        parsed2 = parser.parse(parsed1).canonical()
+        self.assertEqual(parsed1,parsed2)
+
     def test00(self):
         """Valid reply headers"""
         rParser = parser.ReplyParser()
@@ -45,6 +51,7 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(hdr.commandId,911)
         self.assertEqual(hdr.actor,"BossICC")
         self.assertEqual(hdr.cmdrName,"tui.operator.actor1.actor2.actor3")
+
     def test02(self):
         """Invalid reply headers"""
         rParser = parser.ReplyParser()
@@ -58,6 +65,7 @@ class ParserTests(unittest.TestCase):
             lambda: rParser.parse(". 911 BossICC : key=value"))
         self.assertRaises(parser.ParseError,
             lambda: rParser.parse(".. 911 BossICC : key=value"))
+
     def test03(self):
         """Valid reply keywords"""
         rParser = parser.ReplyParser()
@@ -71,6 +79,7 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(len(reply.keywords[0].values),1)
         self.assertEqual(len(reply.keywords[1].values),3)
         self.assertEqual(len(reply.keywords[2].values),0)
+
     def test04(self):
         "Valid command keywords"
         cParser = parser.CommandParser()
@@ -85,6 +94,11 @@ class ParserTests(unittest.TestCase):
         self.failUnless(isinstance(cmd.keywords[1],messages.RawKeyword))
         self.assertEqual(len(cmd.keywords[1].values),1)
         self.assertEqual(cmd.keywords[1].values[0],'raw;text=goes"here key2')
+
+    def test05(self):
+        """Canonical round trips"""
+        rParser = parser.ReplyParser()
+        self.roundTrip(rParser,"tui.op 911 CoffeeMakerICC : type=decaf;blend = 20:80, Kenyan,Bolivian ; now")
 
 if __name__ == "__main__":
    unittest.main()

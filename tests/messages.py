@@ -67,6 +67,6 @@ class MessageTests(unittest.TestCase):
             lambda: msg.ReplyHeader('prog','user','','abc','actor','!'))
         self.assertRaises(msg.MessageError,
             lambda: msg.ReplyHeader('prog','user','',123,'actor','?'))
-
+            
 if __name__ == "__main__":
     unittest.main()
