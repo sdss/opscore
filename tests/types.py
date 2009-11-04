@@ -64,7 +64,7 @@ class TypesTest(unittest.TestCase):
         r2 = REG(0).set('strobe',1).set('addr',0x7f)
         self.assertEqual(r2,0x27f)
         self.assertEqual(repr(r2),'(addr=01111111,strobe=1)')
-        self.assertEqual(str(r2),'1001111111')
+        self.assertEqual(str(r2),str(int('1001111111',2)))
         
     def test07(self):
         "Invalid bitfield ctor"
