@@ -1,5 +1,6 @@
 * text=auto !eol
 bin/hubclient -text
+bin/messageTrace.py -text
 examples/__init__.py -text
 examples/logparse.py -text
 examples/migration.py -text
