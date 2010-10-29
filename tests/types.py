@@ -197,5 +197,12 @@ class TypesTest(unittest.TestCase):
         self.assertEqual(types.UInt()(-0x7fffffff),0xffffffff)
         self.assertEqual(types.UInt()(-1),0x80000001)
         
+    def test23(self):
+        "Invalid reprFmt or strFmt metadata"
+        self.assertRaises(types.ValueTypeError,lambda: types.Int(reprFmt='=%s='))
+        self.assertRaises(types.ValueTypeError,lambda: types.Int(reprFmt='=%r='))
+        self.assertRaises(types.ValueTypeError,lambda: types.Int(strFmt='=%s='))
+        self.assertRaises(types.ValueTypeError,lambda: types.Int(strFmt='=%r='))
+        
 if __name__ == '__main__':
     unittest.main()
