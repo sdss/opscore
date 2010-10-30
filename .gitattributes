@@ -1,4 +1,5 @@
 * text=auto !eol
+bin/dictionaryValidate.py -text
 bin/hubclient -text
 bin/messageTrace.py -text
 examples/__init__.py -text
