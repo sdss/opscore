@@ -2,7 +2,8 @@
 """
 Command line tool for tracing how a reply message is handled.
 
-Refer to https://trac.sdss3.org/wiki/Ops/Fetch for details.
+Refer to https://trac.sdss3.org/wiki/Ops/Core for details on the message
+parsing and validation process.
 """
 
 # Created 29-Oct-2010 by David Kirkby (dkirkby@uci.edu)
