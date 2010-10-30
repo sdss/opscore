@@ -12,7 +12,7 @@ import httplib,socket
 from opscore.protocols import keys
 
 if len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] == '--help'):
-    print 'usage: %s [ <ArchiverHost> | offline ]' % sys.argv[0]
+    print 'usage: %s [ <ArchiverHost> | --offline ]' % sys.argv[0]
     sys.exit(-1)
 
 # try to load the server's latest actor info
@@ -21,7 +21,7 @@ if len(sys.argv) > 1:
     archiverHost = sys.argv[1]
 
 actorInfo = { }
-if archiverHost != 'offline':
+if archiverHost != '--offline':
     try:
         server = httplib.HTTPConnection(archiverHost)
         server.request('GET','/static/data/actors.txt')

@@ -46,6 +46,9 @@ try:
                 else:
                     print '*** Invalid keyword values for %s: %s' % (keytag,keyword.values)
             except KeyError:
-                print '*** Unknown keyword',keytag        
+                print '*** Unknown keyword',keytag
+            except Exception,e:
+                print '*** Validation error for',keytag
+                print str(e)
 except KeyboardInterrupt:
     print '\nbye'
