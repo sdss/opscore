@@ -2,8 +2,9 @@
 """
 Command line tool for tracing how a reply message is handled.
 
-Refer to https://trac.sdss3.org/wiki/Ops/Core for details on the message
-parsing and validation process.
+Refer to https://trac.sdss3.org/wiki/Ops/Core for details on the message parsing
+and validation process. Refer to https://trac.sdss3.org/wiki/Ops/KeysDictionary
+for examples of using this tool.
 """
 
 # Created 29-Oct-2010 by David Kirkby (dkirkby@uci.edu)

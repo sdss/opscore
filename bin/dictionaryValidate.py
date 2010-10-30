@@ -11,8 +11,8 @@ import os,sys
 import httplib,socket
 from opscore.protocols import keys
 
-if len(sys.argv) > 2 or sys.argv[1] == '--help':
-    print 'usage: %s [ <ArchiverHost> | offline ]'
+if len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] == '--help'):
+    print 'usage: %s [ <ArchiverHost> | offline ]' % sys.argv[0]
     sys.exit(-1)
 
 # try to load the server's latest actor info
@@ -70,11 +70,16 @@ try:
                         print '%s %d.%d has changed and needs a version bump' % (
                             actorname,kdict.version[0],kdict.version[1])
                     else:
-                        print '%s %d.%d already in use' % (
+                        print '%s %d.%d already in use and unchanged' % (
                             actorname,kdict.version[0],kdict.version[1])
                 else:
-                    print '%s %d.%d replaces %d.%d' % (
-                        actorname,kdict.version[0],kdict.version[1],major,minor)
+                    if major > kdict.version[0] or (
+                        major == kdict.version[0] and minor > kdict.version[1]):
+                        print '%s %d.%d has invalid version, should be >= %d.%d' % (
+                            actorname,kdict.version[0],kdict.version[1],major,minor)
+                    else:
+                        print '%s %d.%d replaces %d.%d' % (
+                            actorname,kdict.version[0],kdict.version[1],major,minor)
             else:
                 print '%s %d.%d is new' % (
                     actorname,kdict.version[0],kdict.version[1])
