@@ -9,7 +9,7 @@ Refer to https://trac.sdss3.org/wiki/Ops/KeysDictionary for details.
 
 import os,sys
 import httplib,socket
-from opscore.protocols import keys
+from opscore.protocols import keys,types
 
 if len(sys.argv) > 2 or (len(sys.argv) == 2 and sys.argv[1] == '--help'):
     print 'usage: %s [ <ArchiverHost> | --offline ]' % sys.argv[0]
@@ -84,6 +84,8 @@ try:
                 print '%s %d.%d is new' % (
                     actorname,kdict.version[0],kdict.version[1])
         except keys.KeysDictionaryError,e:
+            print str(e)
+        except types.ValueTypeError,e:
             print str(e)
 except ImportError:
     print "Cannot import 'actorkeys' module. Is your PYTHONPATH correct?"
