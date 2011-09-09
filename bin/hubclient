@@ -55,7 +55,7 @@ class TCPClient(Tkinter.Frame):
         self.reWdg.pack(side="right")
 
         self.cmdrName = cmdrName if cmdrName else \
-                        "%s.%s" % (pwd.getpwuid(os.getuid()).pw_name, platform.node().split('.')[0])
+                        "%s.%s" % ("client", pwd.getpwuid(os.getuid()).pw_name)
         self.cmdID = 1
     
         self.conn = RO.Comm.TCPConnection.TCPConnection(
