@@ -5,4 +5,5 @@ from model import *
 from keyvar import *
 from keydispatcher import *
 from cmdkeydispatcher import *
+from actordispatcher import *
 from scriptrunner import *

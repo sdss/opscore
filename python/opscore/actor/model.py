@@ -6,13 +6,14 @@ History:
 2009-07-18 ROwen    Modified to set the refreshCmd for each keyVar before adding it to the dispatcher.
 2009-07-18 ROwen    Added keyVarDict property.
 2010-06-28 ROwen    Removed many unused imports (thanks to pychecker).
+2012-07-24 ROwen    Improved the documentation
 """
 import RO.Comm.HubConnection
 import RO.Constants
 import RO.StringUtil
 
-import opscore.protocols.keys as protoKeys
-import keyvar
+from opscore.protocols.keys import KeysDictionary
+from .keyvar import KeyVar
 
 __all__ = ["Model"]
 
@@ -20,13 +21,16 @@ __all__ = ["Model"]
 NumKeysToGetAtOnce = 20
 
 class Model(object):
-    """Subclass for your actor. Your subclass must use a singleton pattern
-    because this class may only be instantiated once per actor.
+    """Model for an actor.
     
-    Before instantiating the first model, call setDispatcher (else you'll get a RuntimeError).
+    The actor's keyword variables are available as named attributes.
+    In addition, registers the actor's keyword variables with the dispatcher.
     
-    Note: only keyVars defined in the actor's dictionary are refreshed automatically.
-    Any keyVars you add to the subclass are synthetic keyVars that you should set yourself.
+    Warnings:
+    * You must have only one instance of this class per actor.
+    * Before instantiating the first model, call setDispatcher (else you'll get a RuntimeError).
+    * Only keyVars defined in the actor's dictionary are refreshed automatically.
+      Any keyVars you add to the subclass are synthetic keyVars that you should set yourself.
     """
     _registeredActors = set()
     dispatcher = None
@@ -41,9 +45,9 @@ class Model(object):
             raise RuntimeError("Dispatcher not set")
 
         cachedKeyVars = []
-        keysDict = protoKeys.KeysDictionary.load(actor)
+        keysDict = KeysDictionary.load(actor)
         for key in keysDict.keys.itervalues():
-            keyVar = keyvar.KeyVar(actor, key)
+            keyVar = KeyVar(actor, key)
             if key.doCache and not keyVar.hasRefreshCmd:
                 cachedKeyVars.append(keyVar)
             else:
@@ -67,12 +71,19 @@ class Model(object):
         """
         retDict = dict()
         for name, item in self.__dict__.iteritems():
-            if isinstance(item, keyvar.KeyVar):
+            if isinstance(item, KeyVar):
                 retDict[name] = item
         return retDict
 
     @classmethod
     def setDispatcher(cls, dispatcher):
+        """Set the keyword dispatcher.
+        
+        Inputs:
+        - dispatcher: a keyword dispatcher. An instance of KeyVarDispatcher or a subclass
+        
+        Warning: must be called exactly once, before instantiating the first Model.
+        """
         #print "%s.setDispatcher(dispatcher=%s)" % (cls.__name__, dispatcher)
         if cls.dispatcher:
             raise RuntimeError("Dispatcher cannot be modified once set")

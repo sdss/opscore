@@ -17,15 +17,16 @@ History:
                     Changed dispatchReply to log its replies, instead of CmdKeyDispatcher.
                     Added setKeyVarsFromReply which is called by dispatchReply.
 2011-06-13 ROwen    API change: added cmdID to the logging function argument list.
+2012-07-24 ROwen    Added _ParserClass class attribute.
 """
 import sys
 import traceback
-import opscore.protocols.parser
+from opscore.protocols.parser import ReplyParser
 import opscore.protocols.messages
 import keyvar
 
 import RO.Constants
-import RO.StringUtil
+from RO.StringUtil import strFromException
 
 __all__ = ["logToStdOut", "KeyVarDispatcher"]
 
@@ -37,6 +38,7 @@ def logToStdOut(msgStr, *dumArgs, **dumKeyArgs):
 class KeyVarDispatcher(object):
     """Parse replies and set KeyVars.
     """
+    _ParserClass = ReplyParser
     def __init__(self,
         name = "KeyVarDispatcher",
         logFunc = None,
@@ -54,15 +56,13 @@ class KeyVarDispatcher(object):
             See logMsg for details on the arguments.
         """
         self.name = str(name)
-        self.parser = opscore.protocols.parser.ReplyParser()
+        self.parser = self._ParserClass()
 
-        # dictionary of lists of KeyVars; keys are (actor.lower(), keyName.lower()) tuples;
+        # dictionary of lists of KeyVars; keys are as returned by _makeDictKey;
         # values are lists of KeyVars
-        # (having a list of KeyVars allows more than one KeyVar for the same actor keyword)
+        # (having a list of KeyVars allows more than one KeyVar for the same actor keyword,
+        # which is a historical feature that is probably not needed)
         self.keyVarListDict = dict()
-
-        # set of actors for which loadActorDictionary has been called
-        self.loadedActors = set()
 
         self.setLogFunc(logFunc)        
     
@@ -83,14 +83,7 @@ class KeyVarDispatcher(object):
     def dispatchReply(self, reply, doCallbacks=True):
         """Log the reply and set KeyVars based on the supplied Reply
         
-        reply is a parsed Reply object (opscore.protocols.messages.Reply) whose fields include:
-         - header.program: name of the program that triggered the message (string)
-         - header.commandId: command ID that triggered the message (int) 
-         - header.actor: the actor that generated the message (string)
-         - header.code: the message type code (opscore.protocols.types.Enum)
-         - string: the original unparsed message (string)
-         - keywords: an ordered dictionary of message keywords (opscore.protocols.messages.Keywords)        
-        Refer to https://trac.sdss3.org/wiki/Ops/Protocols for details.
+        reply is a parsed Reply object (opscore.protocols.messages.Reply)
         """
         self.logReply(reply)
         self.setKeyVarsFromReply(reply, doCallbacks=doCallbacks)
@@ -107,7 +100,7 @@ class KeyVarDispatcher(object):
             reply = self.parser.parse(replyStr)
         except Exception, e:
             self.logMsg(
-                msgStr = "CouldNotParse; Reply=%r; Text=%r" % (replyStr, RO.StringUtil.strFromException(e)),
+                msgStr = "CouldNotParse; Reply=%r; Text=%r" % (replyStr, strFromException(e)),
                 severity = RO.Constants.sevError,
             )
             return
@@ -191,21 +184,14 @@ class KeyVarDispatcher(object):
             )
         except Exception, e:
             sys.stderr.write("Could not log msgStr=%r; severity=%r; actor=%r; cmdr=%r; keywords=%r\n    error: %s\n" % \
-                (msgStr, severity, actor, cmdr, keywords, RO.StringUtil.strFromException(e)))
+                (msgStr, severity, actor, cmdr, keywords, strFromException(e)))
             traceback.print_exc(file=sys.stderr)
     
     def logReply(self, reply, fallbackToStdOut = False):
         """Log a reply (an opscore.protocols.messages.Reply)
 
         Inputs:
-        - reply is a parsed Reply object (opscore.protocols.messages.Reply) whose fields include:
-          - header.program: name of the program that triggered the message (string)
-          - header.commandId: command ID that triggered the message (int)
-          - header.actor: the actor that generated the message (string)
-          - header.code: the message type code (opscore.protocols.types.Enum)
-          - string: the original unparsed message (string)
-          - keywords: an ordered dictionary of message keywords (opscore.protocols.messages.Keywords)        
-          Refer to https://trac.sdss3.org/wiki/Ops/Protocols for details.
+        - reply is a parsed Reply object (opscore.protocols.messages.Reply)
         - fallbackToStdOut: if True and there is no logFunc then prints the message to stdout.
         """
         try:
@@ -221,8 +207,7 @@ class KeyVarDispatcher(object):
                 fallbackToStdOut = fallbackToStdOut,
             )
         except Exception, e:
-            sys.stderr.write("Could not log reply=%r\n    error=%s\n" % \
-                (reply, RO.StringUtil.strFromException(e)))
+            sys.stderr.write("Could not log reply=%r\n    error=%s\n" % (reply, strFromException(e)))
             traceback.print_exc(file=sys.stderr)
 
     def removeKeyVar(self, keyVar):
@@ -247,14 +232,7 @@ class KeyVarDispatcher(object):
     def setKeyVarsFromReply(self, reply, doCallbacks=True):
         """Set KeyVars based on the supplied Reply
         
-        reply is a parsed Reply object (opscore.protocols.messages.Reply) whose fields include:
-         - header.program: name of the program that triggered the message (string)
-         - header.commandId: command ID that triggered the message (int) 
-         - header.actor: the actor that generated the message (string)
-         - header.code: the message type code (opscore.protocols.types.Enum)
-         - string: the original unparsed message (string)
-         - keywords: an ordered dictionary of message keywords (opscore.protocols.messages.Keywords)        
-        Refer to https://trac.sdss3.org/wiki/Ops/Protocols for details.
+        reply is a parsed Reply object (opscore.protocols.messages.Reply)
         """
 #         print "dispatchReply(reply=%s, doCallbacks=%s)" % (reply, doCallbacks)
         actor = reply.header.actor.lower()

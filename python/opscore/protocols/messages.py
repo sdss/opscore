@@ -317,6 +317,41 @@ class ReplyHeader(Canonized):
     def __repr__(self):
         return 'HDR(%s,%s,%d,%s,%s)' % (self.program,self.user,self.commandId,self.actor,self.code)
 
+
+class ActorReplyHeader(Canonized):
+    """
+    Represents the header of a reply from an actor (as opposed to the hub)
+    """
+    MsgCode = types.Enum('>','D','I','W','E',':','F','!',
+        labelHelp=['Queued','Debug','Information','Warning','Error','Finished','Error','Fatal'],
+        name='code',help='Reply header status code')
+    
+    def __init__(self,commandId,userId,code):
+        self.commandId = int(commandId)
+        self.userId = int(userId)
+        try:
+            self.code = ReplyHeader.MsgCode(code)
+        except ValueError:
+            raise MessageError("Invalid reply header code: %s" % code)
+
+    def canonical(self):
+        return "%d %d %s" % (self.commandId,self.userId,self.code)
+        
+    def tokenized(self):
+        return '123 1 %s' % self.code
+    
+    def clone(self):
+        return ReplyHeader(self.commandId,self.userId,self.code)
+    
+    def copy(self,other):
+        self.commandId = other.commandId
+        self.userId = other.userId
+        self.code = other.code
+        
+    def __repr__(self):
+        return 'ACTHDR(%d,%d,%s)' % (self.commandId,self.userId,self.code)
+
+
 class Reply(Canonized):
     """
     Represents a reply

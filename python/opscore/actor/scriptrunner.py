@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-"""Code to run scripts that can wait for various things
-without messing up the main event loop
+"""Code to run scripts that can wait for various things without messing up the main event loop
 (and thus starving the rest of your program).
 
 ScriptRunner allows your script to wait for the following:
@@ -11,9 +10,8 @@ ScriptRunner allows your script to wait for the following:
   - start each command with startCmd,
   - wait for one or more commands to finish using waitCmdVars
 - wait for a keyword variable to be set using waitKeyVar
-- wait for a subscript by yielding it (i.e. yield subscript(...))
-  note that the subscript must contain a yield for this to work;
-  if it has no yield then just call it directly
+- wait for a sub-script by yielding it (i.e. yield subscript(...));
+  the sub-script must contain a yield for this to work; if it has no yield then just call it directly
 
 An example is given as the test code at the end.
   
@@ -450,14 +448,13 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
         keyVars = None,
         checkFail = True,
     ):
-        """Start a command using the same arguments as waitCmd (which see).
+        """Start a command using the same arguments as waitCmd.
+        
+        Inputs: same as waitCmd, which see.
+
         Returns a command variable that you can wait for using waitCmdVars.
 
         Do not use yield because it does not wait for anything.
-        
-        Inputs: same as waitCmd, which see.
-        
-        Returns a command variable which you can wait for using waitCmdVars.
         """
         cmdVar = keyvar.CmdVar(
             actor=actor,

@@ -8,6 +8,7 @@ examples/migration.py -text
 examples/secret.py -text
 examples/tcc_sample.log -text
 python/opscore/__init__.py -text
+python/opscore/actor/actordispatcher.py -text
 python/opscore/protocols/__init__.py -text
 python/opscore/protocols/keys.py -text
 python/opscore/protocols/keysformat.py -text
@@ -23,9 +24,13 @@ python/opscore/utility/html.py -text
 python/opscore/utility/qstr.py -text
 python/opscore/utility/sdss3logging.py -text
 python/opscore/utility/tback.py -text
+tests/actordispatcher.py -text
+tests/cmdkeyvardispatcher.py -text
 tests/config-test.ini -text
 tests/config.py -text
+tests/keyvardispatcher.py -text
 tests/messages.py -text
+tests/model.py -text
 tests/parser.py -text
 tests/types.py -text
 ups/opscore.table -text

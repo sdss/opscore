@@ -39,10 +39,20 @@ class Timer(object):
         self._timer = _reactor.callLater(sec, callFunc, *args, **keyArgs)
 
     def cancel(self):
-        """Cancel the timer; a no-op if the timer is not active"""
-        if self._timer != None and self._timer.active():
+        """Cancel the timer; a no-op if the timer is not active
+        
+        Return True if timer was running, False otherwise
+        """
+        if self.isActive:
             self._timer.cancel()
+            return True
+        return False
 
-    def active(self):
+    @property
+    def isActive(self):
         """Return True if the timer is active"""
-        return self._timer.active()
+        return (self._timer is not None) and self._timer.active()
+        
+    def active(self):
+        """Deprecated version of isActive"""
+        return self.isActive

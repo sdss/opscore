@@ -55,16 +55,11 @@ class ParserTests(unittest.TestCase):
     def test02(self):
         """Invalid reply headers"""
         rParser = parser.ReplyParser()
-        self.assertRaises(parser.ParseError,
-            lambda: rParser.parse("tui 911 BossICC : key=value"))
-        self.assertRaises(parser.ParseError,
-            lambda: rParser.parse("tui. 911 BossICC : key=value"))
-        self.assertRaises(parser.ParseError,
-            lambda: rParser.parse("tui.operator. 911 BossICC : key=value"))
-        self.assertRaises(parser.ParseError,
-            lambda: rParser.parse(". 911 BossICC : key=value"))
-        self.assertRaises(parser.ParseError,
-            lambda: rParser.parse(".. 911 BossICC : key=value"))
+        self.assertRaises(parser.ParseError, rParser.parse, "tui 911 BossICC : key=value")
+        self.assertRaises(parser.ParseError, rParser.parse, "tui. 911 BossICC : key=value")
+        self.assertRaises(parser.ParseError, rParser.parse, "tui.operator. 911 BossICC : key=value")
+        self.assertRaises(parser.ParseError, rParser.parse, ". 911 BossICC : key=value")
+        self.assertRaises(parser.ParseError, rParser.parse, ".. 911 BossICC : key=value")
 
     def test03(self):
         """Valid reply keywords"""
@@ -99,6 +94,38 @@ class ParserTests(unittest.TestCase):
         """Canonical round trips"""
         rParser = parser.ReplyParser()
         self.roundTrip(rParser,"tui.op 911 CoffeeMakerICC : type=decaf;blend = 20:80, Kenyan,Bolivian ; now")
+
+    def testActorReplyValid(self):
+        """Valid actor reply headers"""
+        rParser = parser.ActorReplyParser()
+        reply = rParser.parse("911 5 : key=value")
+        hdr = reply.header
+        self.assertEqual(hdr.commandId,911)
+        self.assertEqual(hdr.userId,5)
+
+        rParser = parser.ActorReplyParser()
+        reply = rParser.parse("7  35  f ") # final space is necessary
+        hdr = reply.header
+        self.assertEqual(hdr.commandId,7)
+        self.assertEqual(hdr.userId,35)
+    
+    def testActorReplyInvalid(self):
+        """Invalid actor reply headers
+        
+        Could also test initial whitespace and a empty message with no space after the message code,
+        but those are errors that may be made valid someday.
+        """
+        rParser = parser.ActorReplyParser()
+        self.assertRaises(parser.ParseError, rParser.parse, "911 5 + key=value") # invalid code
+        self.assertRaises(parser.ParseError, rParser.parse, "911 : key=value") # missing userId
+        self.assertRaises(parser.ParseError, rParser.parse, ": key=value") # missing commandId and userId
+        self.assertRaises(parser.ParseError, rParser.parse, "911 5 Fkey=value") # missing space between code and key
+        # could also test initial whitespace and 
+    
+    def testActorRepyRoundTrip(self):
+        rParser = parser.ActorReplyParser()
+        self.roundTrip(rParser,"911 5 : key=value")
+
 
 if __name__ == "__main__":
    unittest.main()

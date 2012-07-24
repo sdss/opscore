@@ -107,6 +107,9 @@ History:
 2011-06-13 ROwen    Added static method getMaxUserCmdID.
                     Changed to log cmdID when issuing a command.
 2011-07-28 ROwen    Modified to not log commands as they are sent; use cmds actor data instead.
+2012-07-24 ROwen    Added _formatCmdStr and _formatReplyHeader to simplify subclassing.
+                    Improved error handling in makeReply.
+                    Removed some duplication from KeyVarDispatcher.
 """
 import sys
 import time
@@ -114,13 +117,11 @@ import traceback
 
 import RO.Alg
 import RO.Constants
-import RO.StringUtil
+from RO.StringUtil import quoteStr, strFromException
 
 from opscore.utility.timer import Timer
 import opscore.protocols.keys as protoKeys
-import opscore.protocols.parser as protoParse
-import opscore.protocols.messages as protoMess
-import keydispatcher
+from keydispatcher import KeyVarDispatcher
 import keyvar
 
 __all__ = ["CmdKeyVarDispatcher"]
@@ -134,7 +135,7 @@ _CmdNumWrap = 1000 # value at which user command ID numbers wrap
 
 _RefreshTimeLim = 20 # time limit for refresh commands (sec)
 
-class CmdKeyVarDispatcher(keydispatcher.KeyVarDispatcher):
+class CmdKeyVarDispatcher(KeyVarDispatcher):
     """Parse replies and sets KeyVars. Also manage CmdVars and their replies.
 
     Fields:
@@ -173,16 +174,16 @@ class CmdKeyVarDispatcher(keydispatcher.KeyVarDispatcher):
             until all refresh commands have completed (at which point callbacks are made
             for each keyVar that has been set). Thus the set of keyVars will be maximally
             self-consistent, but it may take awhile after connecting before callbacks begin.
+        - parser: reply parser; if None then use opscore.protocols.parser.ReplyParser
 
         Raises ValueError if name cannot be used as an actor name
         """
-        keydispatcher.KeyVarDispatcher.__init__(self, name=name, logFunc=logFunc)
+        KeyVarDispatcher.__init__(self, name=name, logFunc=logFunc)
         
         self.includeName = bool(includeName)
         self.delayCallbacks = bool(delayCallbacks)
         self.readUnixTime = 0
         
-        self.parser = protoParse.ReplyParser()
         self._isConnected = False
 
         # cmdDict keys are command ID and values are KeyCommands
@@ -218,7 +219,7 @@ class CmdKeyVarDispatcher(keydispatcher.KeyVarDispatcher):
             self.makeReply(dataStr="TestName")
         except Exception, e:
             raise ValueError("Invalid name=%s cannot be parsed as an actor name; error: %s" % \
-                (name, RO.StringUtil.strFromException(e)))
+                (name, strFromException(e)))
         
         # start background tasks (refresh variables and check command timeout)
         self.refreshAllVar()
@@ -265,8 +266,8 @@ class CmdKeyVarDispatcher(keydispatcher.KeyVarDispatcher):
         Inputs:
         - keyVar: the keyword variable (opscore.actor.keyvar.KeyVar)
         """
-#        print "%s.addKeyVar(%s); hasRefreshCmd=%s; refreshInfo=%s" % (self.__class__.__name__, keyVar, keyVar.hasRefreshCmd, keyVar.refreshInfo)
-        keydispatcher.KeyVarDispatcher.addKeyVar(self, keyVar)
+#        print "%s.addKeyVar(%s); hasRefreshCmd=%s; refreshInfo=%s" % (self, keyVar, keyVar.hasRefreshCmd, keyVar.refreshInfo)
+        KeyVarDispatcher.addKeyVar(self, keyVar)
         if keyVar.hasRefreshCmd:
             refreshInfo = keyVar.refreshInfo
             keyVarSet = self.refreshCmdDict.get(refreshInfo)
@@ -293,17 +294,10 @@ class CmdKeyVarDispatcher(keydispatcher.KeyVarDispatcher):
     def dispatchReply(self, reply):
         """Log the reply, set KeyVars and CmdVars.
         
-        reply is a parsed Reply object (opscore.protocols.messages.Reply) whose fields include:
-         - header.program: name of the program that triggered the message (string)
-         - header.commandId: command ID that triggered the message (int) 
-         - header.actor: the actor that generated the message (string)
-         - header.code: the message type code (opscore.protocols.types.Enum)
-         - string: the original unparsed message (string)
-         - keywords: an ordered dictionary of message keywords (opscore.protocols.messages.Keywords)        
-        Refer to https://trac.sdss3.org/wiki/Ops/Protocols for details.
+        reply is a parsed Reply object (opscore.protocols.messages.Reply)
         """
         # log message and set KeyVars
-        keydispatcher.KeyVarDispatcher.dispatchReply(self, reply, doCallbacks=self._enableCallbacks)
+        KeyVarDispatcher.dispatchReply(self, reply, doCallbacks=self._enableCallbacks)
 
         # if you are the commander for this message, execute the command callback (if any)
         if self.replyIsMine(reply):
@@ -349,16 +343,7 @@ class CmdKeyVarDispatcher(keydispatcher.KeyVarDispatcher):
         cmdVar._setStartInfo(self, cmdID)
     
         try:
-            if self.includeName:
-                # internal actor; must specify the commander
-                if cmdVar.forUserCmd:
-                    cmdrStr = "%s.%s " % (cmdVar.forUserCmd.cmdr, self.connection.cmdr)
-                else:
-                    cmdrStr = "%s.%s " % (self.connection.cmdr, self.connection.cmdr)
-            else:
-                # external actor; do not specify the commander
-                cmdrStr = ""
-            fullCmdStr = "%s%d %s %s" % (cmdrStr, cmdVar.cmdID, cmdVar.actor, cmdVar.cmdStr)
+            fullCmdStr = self._formatCmdStr(cmdVar)
             self.connection.writeLine(fullCmdStr)
 #             self.logMsg (
 #                 msgStr = fullCmdStr,
@@ -370,7 +355,7 @@ class CmdKeyVarDispatcher(keydispatcher.KeyVarDispatcher):
             errReply = self.makeReply(
                 cmdID = cmdVar.cmdID,
                 dataStr = "WriteFailed; Actor=%r; Cmd=%r; Text=%r" % (
-                    cmdVar.actor, cmdVar.cmdStr, RO.StringUtil.strFromException(e)),
+                    cmdVar.actor, cmdVar.cmdStr, strFromException(e)),
             )
             self._replyToCmdVar(cmdVar, errReply)
     
@@ -395,42 +380,32 @@ class CmdKeyVarDispatcher(keydispatcher.KeyVarDispatcher):
         Useful for reporting internal errors.
         """
 #        print "%s.makeReply(cmdr=%s, cmdID=%s, actor=%s, msgCode=%s, dataStr=%r)" % \
-#            (self.__class__.__name__, cmdr, cmdID, actor, msgCode, dataStr)
-        msgStr = None
+#            (self, cmdr, cmdID, actor, msgCode, dataStr)
         try:
-            if cmdr == None:
-                if self.includeName:
-                    cmdr = "%s.%s" % (self.connection.cmdr, self.connection.cmdr)
-                else:
-                    cmdr = self.connection.cmdr or "me.me"
-            if actor == None:
-                actor = self.name
-            if cmdID == None:
-                cmdID = 0
-    
-            headerStr = "%s %d %s %s" % (cmdr, cmdID, actor, msgCode)
+            headerStr = self._formatReplyHeader(cmdr=cmdr, cmdID=cmdID, actor=actor, msgCode=msgCode)
             msgStr = " ".join((headerStr, dataStr))
-            reply = self.parser.parse(msgStr)
-        except Exception:
-            sys.stderr.write("%s.makeReply could not make reply from msgStr=%r; will try again with simplified msgStr\n" % \
-                (self.__class__.__name__, msgStr))
-            traceback.print_exc(file=sys.stderr)
-            # try again with simpler data; give up and raise an exception if that fails
-            newMsgStr = None
+
             try:
-                newDataStr = "Text=%s" % (RO.StringUtil.quoteStr(dataStr))
-                newMsgStr = " ".join((headerStr, newDataStr))
-                reply = self.parser.parse(newMsgStr)            
+                reply = self.parser.parse(msgStr)
             except Exception:
-                sys.stderr.write("%s.makeReply could not make reply from simplified msgStr=%r; giving up\n" % \
-                    (self.__class__.__name__, newMsgStr,))
+                sys.stderr.write("%s.makeReply could not parse msgStr=%r; trying a simplified msgStr\n" % (self, msgStr))
                 traceback.print_exc(file=sys.stderr)
-                logMsgStr = "Internal error; could not create message from msgStr=%r; see log for details" % (msgStr,)
-                self.logMsg(msgStr = logMsgStr, severity = RO.Constants.sevError)
-                raise
-            else:
-                sys.stderr.write("%s.makeReply succeeded with simplified msgStr=%r\n" % (self.__class__.__name__, newMsgStr,))
-        return reply
+                simplerDataStr = "Text=%s" % (quoteStr(dataStr),)
+                simplerMsgStr = " ".join((headerStr, simplerDataStr))
+                try:
+                    reply = self.parser.parse(simplerMsgStr)
+                except Exception:
+                    sys.stderr.write("%s.makeReply could not parse simplified msgStr=%r; giving up\n" % (self, simplerMsgStr))
+                    raise
+            return reply
+
+        except Exception, e:
+            sys.stderr.write("%s.makeReply(cmdr=%r, cmdID=%r, actor=%r, msgCode=%r, dataStr=%r) could not make message string:\n" % \
+                (self, cmdr, cmdID, actor, msgCode, dataStr))
+            traceback.print_exc(file=sys.stderr)
+            logMsgStr = "Could not create message from dataStr=%r; see log for details" % (dataStr,)
+            self.logMsg(msgStr = logMsgStr, severity = RO.Constants.sevError)
+            raise
 
     def refreshAllVar(self, resetAll=True):
         """Issue all keyVar refresh commands after optionally setting them all to notCurrent.
@@ -438,7 +413,7 @@ class CmdKeyVarDispatcher(keydispatcher.KeyVarDispatcher):
         Inputs:
         - resetAll: reset all keyword variables to notCurrent
         """
-#         print "%s.refreshAllVar(resetAll=%s); refeshCmdDict=%s" % (self.__class__.__name__, resetAll, self.refreshCmdDict)
+#         print "%s.refreshAllVar(resetAll=%s); refeshCmdDict=%s" % (self, resetAll, self.refreshCmdDict)
 
         # cancel pending update, if any
         self._refreshAllTimer.cancel()
@@ -465,7 +440,7 @@ class CmdKeyVarDispatcher(keydispatcher.KeyVarDispatcher):
         Returns:
         - the removed keyVar, if present, None otherwise.
         """
-        keyVar = keydispatcher.KeyVarDispatcher.removeKeyVar(self, keyVar)
+        keyVar = KeyVarDispatcher.removeKeyVar(self, keyVar)
 
         keyVarSet = self.refreshCmdDict.get(keyVar.refreshInfo)
         if keyVarSet and keyVar in keyVarSet:
@@ -532,7 +507,7 @@ class CmdKeyVarDispatcher(keydispatcher.KeyVarDispatcher):
                         # time out this command
                         errReply = self.makeReply (
                             cmdID = cmdVar.cmdID,
-                            dataStr = "Timeout; Actor=%r; Cmd=%s" % (cmdVar.actor, RO.StringUtil.quoteStr(cmdVar.cmdStr)),
+                            dataStr = "Timeout; Actor=%r; Cmd=%s" % (cmdVar.actor, quoteStr(cmdVar.cmdStr)),
                         )
                     if errReply:
                         self._replyToCmdVar(cmdVar, errReply)
@@ -543,23 +518,51 @@ class CmdKeyVarDispatcher(keydispatcher.KeyVarDispatcher):
                         self._checkRemCmdTimer.start(_ShortInterval, self._checkRemCmdTimeouts, cmdVarIter)
                 except Exception:
                     sys.stderr.write("%s._checkRemCmdTimeouts failed to timeout command %s\n" % \
-                        (self.__class__.__name__, cmdVar))
+                        (self, cmdVar))
                     traceback.print_exc(file=sys.stderr)
                     cmdVar.maxEndTime = None
         except Exception:
             # this is very, very unlikely
-            sys.stderr.write("%s._checkRemCmdTimeouts failed\n" % (self.__class__.__name__,))
+            sys.stderr.write("%s._checkRemCmdTimeouts failed\n" % (self,))
             traceback.print_exc(file=sys.stderr)
 
         # finished checking all commands in the current cmdVarIter;
         # schedule a new checkCmdTimeouts at the usual interval
         self._checkCmdTimer.start(_TimeoutInterval, self.checkCmdTimeouts)
-
-    @staticmethod
-    def _makeDictKey(actor, keyName):
-        """Make a keyVarListDict key out of an actor and keyword name
+    
+    def _formatCmdStr(self, cmdVar):
+        """Format a command. The cmdVar must have cmdID set (you must have called cmdVar._setStartInfo).
         """
-        return (actor.lower(), keyName.lower())
+        if self.includeName:
+            # internal actor; must specify the commander
+            if cmdVar.forUserCmd:
+                cmdrStr = "%s.%s " % (cmdVar.forUserCmd.cmdr, self.connection.cmdr)
+            else:
+                cmdrStr = "%s.%s " % (self.connection.cmdr, self.connection.cmdr)
+        else:
+            # external actor; do not specify the commander
+            cmdrStr = ""
+        return "%s%d %s %s" % (cmdrStr, cmdVar.cmdID, cmdVar.actor, cmdVar.cmdStr)
+    
+    def _formatReplyHeader(self,
+        cmdr = None,
+        cmdID = 0,
+        actor = None,
+        msgCode = "F",
+    ):
+        """Generate header for Reply object
+        """
+        if cmdr == None:
+            if self.includeName:
+                cmdr = "%s.%s" % (self.connection.cmdr, self.connection.cmdr)
+            else:
+                cmdr = self.connection.cmdr or "me.me"
+        if actor == None:
+            actor = self.name
+        if cmdID == None:
+            cmdID = 0
+
+        return "%s %d %s %s" % (cmdr, cmdID, actor, msgCode)        
 
     def _nextKeyVarCallback(self, keyVarListIter, includeNotCurrent=True):
         """Issue next keyVar callback
@@ -646,7 +649,7 @@ class CmdKeyVarDispatcher(keydispatcher.KeyVarDispatcher):
         - refreshCmdItemIter: iterator over items in refreshCmdDict;
           if None then set to self.refreshCmdDict.iteritems()
         """
-#         print "%s._sendNextRefreshCmd(%s)" % (self.__class__.__name__, refreshCmdItemIter)
+#         print "%s._sendNextRefreshCmd(%s)" % (self, refreshCmdItemIter)
         if not self._isConnected:
             return
 
@@ -670,9 +673,13 @@ class CmdKeyVarDispatcher(keydispatcher.KeyVarDispatcher):
             self._runningRefreshCmdSet.add(cmdVar)
             self.executeCmd(cmdVar)
         except:
-            sys.stderr.write("%s._sendNextRefreshCmd: refresh command %s failed:\n" % (self.__class__.__name__, cmdVar,))
+            sys.stderr.write("%s._sendNextRefreshCmd: refresh command %s failed:\n" % (self, cmdVar,))
             traceback.print_exc(file=sys.stderr)
         self._refreshNextTimer.start(_ShortInterval, self._sendNextRefreshCmd, refreshCmdItemIter)
+    
+    def __str__(self):
+        return self.__class__.__name__
+
 
 class NullConnection(object):
     """Null connection for test purposes.

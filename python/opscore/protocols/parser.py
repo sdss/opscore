@@ -17,7 +17,7 @@ import re
 
 name_pattern = re.compile('[A-Za-z][A-Za-z0-9_.]*$')
 
-from opscore.protocols.messages import Keyword,RawKeyword,ReplyHeader,Reply,Command,MessageError
+from opscore.protocols.messages import Keyword,RawKeyword,ReplyHeader,ActorReplyHeader,Reply,Command,MessageError
 
 import external.ply.lex as lex
 import external.ply.yacc as yacc
@@ -72,6 +72,28 @@ class ReplyParser(TemporaryBase):
         if not matched:
             raise ParseError("Badly formed reply header in: %s" % self.string)
         self.header = ReplyHeader(*matched.groups())
+        return self.string[matched.end():]
+
+
+class ActorReplyParser(ReplyParser):
+    """
+    Specifies the parsing rules for reply strings from actors
+    
+    The basic format is:
+    commandID userID code data
+    
+    The base class will eventually be ParserBase but is not declared
+    above since PLY applies grammar rules in the order in which they are
+    declared.
+    """
+    hdr_pattern = re.compile('(%s)[ \t]+(%s)[ \t]+(.)[ \t]+'
+        % (ReplyParser._number,ReplyParser._number))
+
+    def unwrap(self):
+        matched = ActorReplyParser.hdr_pattern.match(self.string)
+        if not matched:
+            raise ParseError("Badly formed reply header in: %s" % self.string)
+        self.header = ActorReplyHeader(*matched.groups())
         return self.string[matched.end():]
 
 

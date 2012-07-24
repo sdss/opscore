@@ -160,7 +160,7 @@ class ConfigOptionParser(optparse.OptionParser):
                 from Crypto.Hash import MD5 as hasher
                 from Crypto.Cipher import AES as cipher
             except ImportError:
-                raise 'secret options require the Crypto package'
+                raise RuntimeError('secret options require the Crypto package')
             if not passphrase:
                 passphrase = getpass.getpass(prompt)
             key = hasher.new(passphrase).digest()
