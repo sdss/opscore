@@ -15,18 +15,17 @@ except ImportError:
     pass
 from opscore.actor import Model, ActorDispatcher, CmdVar
 
-Model.setDispatcher(ActorDispatcher("hub"))
-HubModel = Model("hub")
+HubDispatcher = ActorDispatcher("hub")
 
 class ModelTests(unittest.TestCase):
-    model = HubModel
-    dispatcher = HubModel.dispatcher
+    model = HubDispatcher.model
+    dispatcher = model.dispatcher
 
     def testDispatch(self):
         """Test dispatching"""
         # keywords are initialized to empty tuples or tuples of None
         for keyName in ("actors", "commanders", "user", "users", "version", "httpRoot"):
-            keyVar = getattr(HubModel, keyName)
+            keyVar = getattr(self.model, keyName)
             self.assertEquals(keyVar[:], (None,)*len(keyVar))
 
         reply = self.dispatcher.makeReply(dataStr="actors=calvin,hobbes; commanders=tu01.mice,tu02.men; users=anon,you,me; version=1.0; httpRoot=hub25m.apo, image/dir")
@@ -101,6 +100,16 @@ class ModelTests(unittest.TestCase):
     def testWrongActorModel(self):
         """Test that we can only add the correct model to this dispatcher"""
         self.assertRaises(Exception, Model, "apo")
+    
+    def testModel(self):
+        """Test most or all aspects of the model (an instance of SimpleModel)"""
+        for keyName in ("actors", "commanders", "user", "users", "version", "httpRoot"):
+            if not hasattr(self.model, keyName):
+                self.fail("model is missing attribute %s" % (keyName,))
+        self.assertEqual(self.model.actor, "hub")
+
+        keyNames = set(self.model.keyVarDict.keys())
+        self.assertTrue(keyNames > set(("actors", "commanders", "user", "users", "version", "httpRoot")))
 
 
 if __name__ == "__main__":

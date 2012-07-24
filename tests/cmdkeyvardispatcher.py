@@ -20,19 +20,19 @@ HubModel = Model("hub")
 
 class ModelTests(unittest.TestCase):
     model = HubModel
-    dispatcher = HubModel.dispatcher
+    dispatcher = model.dispatcher
 
     def testDispatch(self):
         """Test dispatching"""
         # keywords are initialized to empty tuples or tuples of None
         for keyName in ("actors", "commanders", "user", "users", "version", "httpRoot"):
-            keyVar = getattr(HubModel, keyName)
+            keyVar = getattr(self.model, keyName)
             self.assertEquals(keyVar[:], (None,)*len(keyVar))
 
         reply = self.dispatcher.makeReply(actor="badactor", dataStr="actors=calvin,hobbes; commanders=tu01.mice,tu02.men; users=anon,you,me; version=1.0; httpRoot=hub25m.apo, image/dir")
         self.dispatcher.dispatchReply(reply)
         for keyName in ("actors", "commanders", "user", "users", "version", "httpRoot"):
-            keyVar = getattr(HubModel, keyName)
+            keyVar = getattr(self.model, keyName)
             self.assertEquals(keyVar[:], (None,)*len(keyVar))
         
         reply = self.dispatcher.makeReply(actor="hub", dataStr="actors=calvin,hobbes; commanders=tu01.mice,tu02.men; users=anon,you,me; version=1.0; httpRoot=hub25m.apo, image/dir")

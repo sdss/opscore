@@ -10,11 +10,43 @@ import traceback
 
 import RO.Constants
 from opscore.protocols.parser import ActorReplyParser
-from .keyvar import MsgCodeSeverity
+from opscore.protocols.keys import KeysDictionary
+from .keyvar import KeyVar, MsgCodeSeverity
 from .keydispatcher import KeyVarDispatcher
 from .cmdkeydispatcher import CmdKeyVarDispatcher
 
 __all__ = ["ActorDispatcher"]
+
+class SimpleModel(object):
+    """Model for an ActorDispatcher
+    
+    This is a variant opscore.actor.Model that has no common registry
+    and knows nothing about refresh commands. It is intended for use with ActorDispatcher.
+    
+    The actor's keyword variables are available as named attributes.
+    """
+    def __init__(self, dispatcher):
+        #print "%s.__init__(actor=%s)" % (self.__class__.__name__, actor)
+        self._keyNameVarDict = dict()
+        self.dispatcher = dispatcher
+        self.actor = dispatcher.name
+
+        keysDict = KeysDictionary.load(self.actor)
+        for key in keysDict.keys.itervalues():
+            keyVar = KeyVar(self.actor, key)
+            self.dispatcher.addKeyVar(keyVar)
+            setattr(self, keyVar.name, keyVar)
+    
+    @property
+    def keyVarDict(self):
+        """Return a dictionary of keyVar name:keyVar
+        """
+        retDict = dict()
+        for name, item in self.__dict__.iteritems():
+            if isinstance(item, KeyVar):
+                retDict[name] = item
+        return retDict
+
 
 class ActorDispatcher(CmdKeyVarDispatcher):
     """Parse replies and sets KeyVars. Also manage CmdVars and their replies.
@@ -32,7 +64,7 @@ class ActorDispatcher(CmdKeyVarDispatcher):
         """Create a new ActorDispatcher
     
         Inputs:
-        - name: actor name;
+        - name: actor name; must have an associated dictionary in actorkeys.
         - connection: an RO.Comm.HubConnection object or similar;
           if omitted, a NullConnection is used, which is useful for testing.
         - logFunc: a function that logs a message. Argument list must be:
@@ -40,8 +72,10 @@ class ActorDispatcher(CmdKeyVarDispatcher):
             where the first argument is positional and the others are by name
             and severity is an RO.Constants.sevX constant
             If None then nothing is logged.
+        
+        Useful attributes
 
-        Raises ValueError if name cannot be used as an actor name
+        Raises ValueError if name has no actor dictionary in actorkeys.
         """
         self._myUserID = 0
         CmdKeyVarDispatcher.__init__(self,
@@ -51,6 +85,8 @@ class ActorDispatcher(CmdKeyVarDispatcher):
             includeName = False,
             delayCallbacks = False,
         )
+        
+        self.model = SimpleModel(self)
         
         if self.refreshCmdDict:
             raise RuntimeError("Internal error: refreshCmdDict should be empty but contains %s" % (self.refreshCmdDict,))
