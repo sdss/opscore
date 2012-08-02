@@ -110,6 +110,7 @@ History:
 2012-07-24 ROwen    Added _formatCmdStr and _formatReplyHeader to simplify subclassing.
                     Improved error handling in makeReply.
                     Removed some duplication from KeyVarDispatcher.
+2012-08-02 ROwen    Updated for RO 3.0.
 """
 import sys
 import time
@@ -211,7 +212,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
             self.connection.addStateCallback(self.updConnState)
         else:
             self.connection = NullConnection()
-        self._isConnected = self.connection.isConnected()
+        self._isConnected = self.connection.isConnected
         self.userCmdIDGen = RO.Alg.IDGen(1, _CmdNumWrap)
         self.refreshCmdIDGen = RO.Alg.IDGen(_CmdNumWrap + 1, 2 * _CmdNumWrap)
         
@@ -280,7 +281,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
 
     def checkCmdTimeouts(self):
         """Check all pending commands for timeouts"""
-#       print "opscore.actor.CmdKeyVarDispatcher.checkCmdTimeouts()"
+#         print "opscore.actor.CmdKeyVarDispatcher.checkCmdTimeouts()"
         
         # cancel pending update, if any
         self._checkCmdTimer.cancel()
@@ -350,7 +351,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
 #                 actor = cmdVar.actor,
 #                 cmdID = cmdVar.cmdID,
 #             )
-            # print >> sys.stderr, "executing:", fullCmdStr
+#             print >> sys.stderr, "executing:", fullCmdStr
         except Exception, e:
             errReply = self.makeReply(
                 cmdID = cmdVar.cmdID,
@@ -469,7 +470,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         """If connection state changes, update refresh variables.
         """
         wasConnected = self._isConnected
-        self._isConnected = conn.isConnected()
+        self._isConnected = conn.isConnected
 #         print "updConnState; wasConnected=%s, isConnected=%s" % (wasConnected, self._isConnected)
 
         if wasConnected != self._isConnected:
@@ -486,7 +487,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         my parent function checkCmdTimeouts to run
         at the usual interval later.
         """
-#       print "opscore.actor.CmdKeyVarDispatcher._checkRemCmdTimeouts(%s)" % cmdVarIter
+#         print "opscore.actor.CmdKeyVarDispatcher._checkRemCmdTimeouts(%s)" % cmdVarIter
         try:
             for cmdVar in cmdVarIter:
                 errReply = None
@@ -580,6 +581,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         Timer(0.001, self._nextKeyVarCallback, keyVarListIter, includeNotCurrent)
 
     def _readCallback(self, sock, data):
+#         print "%s._readCallback(sock=%r, data=%r)" % (self, sock, data)
         self.readUnixTime = time.time()
         self.dispatchReplyStr(data)
 

@@ -59,7 +59,6 @@ class ActorDispatcher(CmdKeyVarDispatcher):
         name,
         connection = None,
         logFunc = None,
-        delayCallbacks = False,
     ):
         """Create a new ActorDispatcher
     
