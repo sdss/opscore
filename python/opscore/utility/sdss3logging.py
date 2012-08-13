@@ -2,7 +2,7 @@
 
 """ sdss3logging.py -- provide APO-standard shims for the python logging module.
 
-APO's operational cycle is the MJD, rolled over at 10AM local time.
+APO's operational cycle is the MJD, rolled over at ~10AM local time.
 
 For nearly all uses, this module only needs to be imported once, to
 setup an application's named loggers. That import should happen
@@ -53,7 +53,7 @@ class OpsLogFormatter(logging.Formatter):
         self.converter = time.gmtime
         
 class OpsRotatingFileHandler(logging.StreamHandler):
-    APOrolloverHour = 24 * 0.3
+    APOrolloverTime = 24 * 3600 * 0.3
     
     def __init__(self, dirname='.', basename='', rolloverTime=None):
         """ create a logging.FileHandler which:
@@ -75,7 +75,7 @@ class OpsRotatingFileHandler(logging.StreamHandler):
         self.formatter = OpsLogFormatter()
         
         if rolloverTime == None:
-            self.rolloverTime = self.APOrolloverHour * 3600.0
+            self.rolloverTime = self.APOrolloverTime
         else:
             self.rolloverTime = rolloverTime
         if self.rolloverTime < 0 or self.rolloverTime >= 3600.0 * 24:
@@ -105,7 +105,9 @@ class OpsRotatingFileHandler(logging.StreamHandler):
         # Add a day if we are past today's rolloverTime.
         if now >= self.rolloverAt:
             self.rolloverAt += 24*3600
-        
+
+        print >> sys.stderr, "new rollover = %0.2f s from now, at %s\n" % (self.rolloverAt - time.time(),
+                                                                           time.localtime(self.rolloverAt))
         assert(now < self.rolloverAt)
 
     def emit(self, record):
@@ -204,7 +206,7 @@ class OpsRotatingFileHandler(logging.StreamHandler):
             print "Failed to create current.log symlink to %s" % (filename)
 
            
-def makeOpsFileHandler(dirname, basename='', propagate=True):
+def makeOpsFileHandler(dirname, basename='', rolloverTime=None):
     """ create a rotating file handler with APO-style filenames and timestamps..
 
     Args:
@@ -213,12 +215,13 @@ def makeOpsFileHandler(dirname, basename='', propagate=True):
         basename   ? If set, a prefix to the filenames. ['']
     """
     
-    handler = OpsRotatingFileHandler(dirname=dirname, basename=basename)
+    handler = OpsRotatingFileHandler(dirname=dirname, basename=basename,
+                                     rolloverTime=rolloverTime)
     handler.setFormatter(OpsLogFormatter())
 
     return handler
 
-def makeOpsFileLogger(dirname, name, basename='', propagate=True):
+def makeOpsFileLogger(dirname, name, basename='', propagate=True, rolloverTime=None):
     """ create a rotating file logger with APO-style filenames and timestamps..
 
     Args:
@@ -249,7 +252,7 @@ def setConsoleLevel(level):
         
     consoleHandler.setLevel(level)
         
-def setupRootLogger(basedir, level=logging.INFO):
+def setupRootLogger(basedir, level=logging.INFO, hackRollover=False):
     """ (re-)configure the root logger to save all output to a APO-style rotating file Handler, plus a console Handler. """
 
     global rootHandler
@@ -258,7 +261,12 @@ def setupRootLogger(basedir, level=logging.INFO):
     # Make sure we are able to delete/replace any existing handler
     lastRootHandler = rootHandler
 
-    rootHandler = makeOpsFileHandler(basedir)
+    if hackRollover:
+        now = time.localtime(time.time() + 3*60)
+        rolloverTime = now.tm_sec + 60*(now.tm_min + 60*now.tm_hour)
+    else:
+        rolloverTime = None
+    rootHandler = makeOpsFileHandler(basedir, rolloverTime=rolloverTime)
     rootHandler.setLevel(logging.DEBUG)
 
     rootLogger = logging.getLogger()
@@ -269,15 +277,19 @@ def setupRootLogger(basedir, level=logging.INFO):
 
     # Shut stdout output down if we are not a terminal.
     for h in rootLogger.handlers:
+        rootLogger.warn('checking for stderr on %s,%s' % (h, h.stream))
         if isinstance(h, logging.StreamHandler) and h.stream == sys.stderr:
             consoleHandler = h
             if h.stream.isatty():
                 setConsoleLevel(level)
             else:
                 # Basically disable stderr output
-                rootLogger.warn('disabling all but critical stderr output')
+                rootLogger.warn('disabling all but critical stderr output on %s,%s' % (h, h.stream))
                 setConsoleLevel(logging.CRITICAL + 1)
-        
+                rootLogger.removeHandler(h)
+        else:
+            rootLogger.warn('leaving output on %s,%s alone' % (h, h.stream))
+
     return rootLogger
     
 def main():
@@ -287,8 +299,6 @@ def main():
     
     myLogger = makeOpsFileLogger('/tmp', 'tlog')
     myLogger.setLevel(logging.DEBUG)
-    # Force a rollover by cheating.
-    myLogger.handlers[0].rolloverAt = int(time.time() + 10.0)
 
     # Should propagate up to the root as well as log to its own logfile.
     c2Logger = logging.getLogger('c2')
