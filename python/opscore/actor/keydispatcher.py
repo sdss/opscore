@@ -18,6 +18,7 @@ History:
                     Added setKeyVarsFromReply which is called by dispatchReply.
 2011-06-13 ROwen    API change: added cmdID to the logging function argument list.
 2012-07-24 ROwen    Added _ParserClass class attribute.
+2012-09-21 ROwen    Removed __main__ example code; use the unit test instead.
 """
 import sys
 import traceback
@@ -270,44 +271,3 @@ class KeyVarDispatcher(object):
         """Make a keyVarListDict key out of an actor and keyword name
         """
         return (actor.lower(), keyName.lower())
-
-if __name__ == "__main__":
-    print "\nDemonstrating KeyVarDispatcher\n"
-    import time
-    import opscore.protocols.types as protoTypes
-    import opscore.protocols.keys as protoKeys
-    import twisted.internet.reactor
-    
-    kvd = KeyVarDispatcher()
-
-    def showVal(keyVar):
-        print "keyVar %s.%s = %r, isCurrent = %s" % (keyVar.actor, keyVar.name, keyVar.valueList, keyVar.isCurrent)
-
-    # scalars
-    keyList = (
-        protoKeys.Key("StringKey", protoTypes.String()),
-        protoKeys.Key("IntKey", protoTypes.Int()),
-        protoKeys.Key("FloatKey", protoTypes.Float()),
-        protoKeys.Key("BooleanKey", protoTypes.Bool("F", "T")),
-        protoKeys.Key("KeyList", protoTypes.String(), protoTypes.Int()),
-    )
-    keyVarList = [keyvar.KeyVar("test", key) for key in keyList]
-    for keyVar in keyVarList:
-        keyVar.addCallback(showVal)
-        kvd.addKeyVar(keyVar)
-    
-    dataList = [
-        "StringKey=hello",
-        "IntKey=1",
-        "FloatKey=1.23456789",
-        "BooleanKey=T",
-        "KeyList=three, 3",
-        "Coord2Key=45.0, 0.1, 32.1, -0.1, %s" % (time.time(),),
-    ]
-    dataStr = "; ".join(dataList)
-
-    replyStr = "myprog.me 11 test : " + dataStr
-    print "\nDispatching message correctly; CmdVar done so only KeyVar callbacks should be called:"
-    kvd.dispatchReplyStr(replyStr)
-    
-    twisted.internet.reactor.run()

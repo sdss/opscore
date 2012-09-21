@@ -111,6 +111,8 @@ History:
                     Improved error handling in makeReply.
                     Removed some duplication from KeyVarDispatcher.
 2012-08-02 ROwen    Updated for RO 3.0.
+2012-09-21 ROwen    Added disconnect method.
+                    Removed __main__ example code; use the unit test instead.
 """
 import sys
 import time
@@ -291,6 +293,17 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         # so we can modify the dictionary while checking command timeouts
         cmdVarIter = iter(self.cmdDict.values())
         self._checkRemCmdTimeouts(cmdVarIter)
+        
+    def disconnect(self):
+        """Close connection and cancel all timers
+        
+        This can be useful for shutting down cleanly.
+        """
+        self._checkCmdTimer.cancel()
+        self._checkRemCmdTimer.cancel()
+        self._refreshAllTimer.cancel()
+        self._refreshNextTimer.cancel()
+        self.connection.disconnect()
     
     def dispatchReply(self, reply):
         """Log the reply, set KeyVars and CmdVars.
@@ -474,7 +487,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
 #         print "updConnState; wasConnected=%s, isConnected=%s" % (wasConnected, self._isConnected)
 
         if wasConnected != self._isConnected:
-            Timer(_ShortInterval, self.refreshAllVar)
+            self._refreshAllTimer.start(_ShortInterval, self.refreshAllVar)
 
     def _checkRemCmdTimeouts(self, cmdVarIter):
         """Helper function for checkCmdTimeouts.
@@ -713,86 +726,3 @@ class NullConnection(object):
 
     def writeLine(self, str):
         sys.stdout.write("Null connection asked to write: %s\n" % (str,))
-    
-
-if __name__ == "__main__":
-    print "\nTesting opscore.actor.CmdKeyVarDispatcher\n"
-    import opscore.protocols.types as protoTypes
-    import twisted.internet.tksupport
-    import Tkinter
-    root = Tkinter.Tk()
-    twisted.internet.tksupport.install(root)
-    
-    kvd = CmdKeyVarDispatcher()
-
-    def showVal(keyVar):
-        print "keyVar %s.%s = %r, isCurrent = %s" % (keyVar.actor, keyVar.name, keyVar.valueList, keyVar.isCurrent)
-
-    # scalars
-    keyList = (
-        protoKeys.Key("StringKey", protoTypes.String()),
-        protoKeys.Key("IntKey", protoTypes.Int()),
-        protoKeys.Key("FloatKey", protoTypes.Float()),
-        protoKeys.Key("BooleanKey", protoTypes.Bool("F", "T")),
-        protoKeys.Key("KeyList", protoTypes.String(), protoTypes.Int()),
-    )
-    keyVarList = [keyvar.KeyVar("test", key) for key in keyList]
-    for keyVar in keyVarList:
-        keyVar.addCallback(showVal)
-        kvd.addKeyVar(keyVar)
-    
-    # command callback
-    def cmdCall(cmdVar):
-        print "command callback for actor=%s, cmdID=%d, cmdStr=%r, isDone=%s" % \
-            (cmdVar.actor, cmdVar.cmdID, cmdVar.cmdStr, cmdVar.isDone)
-    
-    # command
-    cmdVar = keyvar.CmdVar(
-        cmdStr = "THIS IS A SAMPLE COMMAND",
-        actor="test",
-        callFunc=cmdCall,
-        callCodes = keyvar.DoneCodes,
-    )
-    kvd.executeCmd(cmdVar)
-    cmdID = cmdVar.cmdID
-
-    dataList = [
-        "StringKey=hello",
-        "IntKey=1",
-        "FloatKey=1.23456789",
-        "BooleanKey=T",
-        "KeyList=three, 3",
-        "Coord2Key=45.0, 0.1, 32.1, -0.1, %s" % (time.time(),),
-    ]
-    dataStr = "; ".join(dataList)
-
-    reply = kvd.makeReply(
-        cmdr = "myprog.me",
-        cmdID = cmdID - 1,
-        actor = "test",
-        msgCode = ":",
-        dataStr = dataStr,
-    )
-    print "\nDispatching message with wrong cmdID; only KeyVar callbacks should called:"
-    kvd.dispatchReply(reply)
-
-    reply = kvd.makeReply(
-        cmdID = cmdID,
-        actor = "wrongActor",
-        msgCode = ":",
-        dataStr = dataStr,
-    )
-    print "\nDispatching message with wrong actor; only CmdVar callbacks should be called:"
-    kvd.dispatchReply(reply)
-
-    reply = kvd.makeReply(
-        cmdID = cmdID,
-        actor = "test",
-        msgCode = ":",
-        dataStr = dataStr,
-    )
-    print "\nDispatching message correctly; CmdVar done so only KeyVar callbacks should be called:"
-    kvd.dispatchReply(reply)
-    
-    print "\nTesting keyVar refresh"
-    kvd.refreshAllVar()
