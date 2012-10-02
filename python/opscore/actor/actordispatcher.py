@@ -50,6 +50,9 @@ class SimpleModel(object):
 
 class ActorDispatcher(CmdKeyVarDispatcher):
     """Parse replies and sets KeyVars. Also manage CmdVars and their replies.
+    
+    Subclasses must set _myUserID (unless the actor only allows a single user);
+    this is typically done using a callback from a suitable keyword variable such as yourUserID.
 
     Fields:
     - readUnixTime: unix time at which last message received from connection; 0 if no message ever received.
@@ -59,6 +62,7 @@ class ActorDispatcher(CmdKeyVarDispatcher):
         name,
         connection = None,
         logFunc = None,
+        yourUserIDKeyName = "yourUserID",
     ):
         """Create a new ActorDispatcher
     
@@ -71,12 +75,11 @@ class ActorDispatcher(CmdKeyVarDispatcher):
             where the first argument is positional and the others are by name
             and severity is an RO.Constants.sevX constant
             If None then nothing is logged.
-        
-        Useful attributes
+        - yourUserIDKeyName: name of keyword variable that provides your user ID
 
         Raises ValueError if name has no actor dictionary in actorkeys.
         """
-        self._myUserID = 0
+        self._myUserID = None
         CmdKeyVarDispatcher.__init__(self,
             name = name,
             connection = connection,
@@ -86,6 +89,10 @@ class ActorDispatcher(CmdKeyVarDispatcher):
         )
         
         self.model = SimpleModel(self)
+        
+        if yourUserIDKeyName:
+            yourUserIDKeyVar = getattr(self.model, yourUserIDKeyName)
+            yourUserIDKeyVar.addCallback(self._yourUserIDKeyVarCallback)
         
         if self.refreshCmdDict:
             raise RuntimeError("Internal error: refreshCmdDict should be empty but contains %s" % (self.refreshCmdDict,))
@@ -155,7 +162,7 @@ class ActorDispatcher(CmdKeyVarDispatcher):
         
         reply is a parsed Reply object (opscore.protocols.messages.Reply)
         """
-#         print "dispatchReply(reply=%s, doCallbacks=%s)" % (reply, doCallbacks)
+#         print "setKeyVarsFromReply(reply=%s, doCallbacks=%s)" % (reply, doCallbacks)
         for keyword in reply.keywords:
             keyVarList = self.getKeyVarList(self.name, keyword.name)
             for keyVar in keyVarList:
@@ -172,9 +179,6 @@ class ActorDispatcher(CmdKeyVarDispatcher):
                     traceback.print_exc(file=sys.stderr)
 
     
-    def setMyUserNum(self, myUserNum):
-        self._myUserNum = int(myUserNum)
-    
     def _formatCmdStr(self, cmdVar):
         """Format a command; one-actor version
         """
@@ -190,3 +194,9 @@ class ActorDispatcher(CmdKeyVarDispatcher):
         """Format a reply header; one-actor version
         """
         return "%d %d %s" % (cmdID, self._myUserID, msgCode)
+    
+    def _yourUserIDKeyVarCallback(self, keyVar):
+        """Set _myUserID based on the keyVar; called by the keyVar specified by yourUserIDKeyName
+        """
+        self._myUserID = keyVar[0]
+        print "_yourUserIDKeyVarCallback(keyVar=%s); self._myUserID=%s" % (keyVar, self._myUserID)
