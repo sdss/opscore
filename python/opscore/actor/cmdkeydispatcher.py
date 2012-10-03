@@ -393,8 +393,8 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         
         Useful for reporting internal errors.
         """
-#        print "%s.makeReply(cmdr=%s, cmdID=%s, actor=%s, msgCode=%s, dataStr=%r)" % \
-#            (self, cmdr, cmdID, actor, msgCode, dataStr)
+#         print "%s.makeReply(cmdr=%s, cmdID=%s, actor=%s, msgCode=%s, dataStr=%r)" % \
+#             (self, cmdr, cmdID, actor, msgCode, dataStr)
         try:
             headerStr = self._formatReplyHeader(cmdr=cmdr, cmdID=cmdID, actor=actor, msgCode=msgCode)
             msgStr = " ".join((headerStr, dataStr))

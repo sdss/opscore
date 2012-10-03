@@ -193,7 +193,8 @@ class ActorDispatcher(CmdKeyVarDispatcher):
     ):
         """Format a reply header; one-actor version
         """
-        return "%d %d %s" % (cmdID, self._myUserID, msgCode)
+        id = self._myUserID or 0
+        return "%d %d %s" % (cmdID, id, msgCode)
     
     def _yourUserIDKeyVarCallback(self, keyVar):
         """Set _myUserID based on the keyVar; called by the keyVar specified by yourUserIDKeyName
