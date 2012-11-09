@@ -200,4 +200,4 @@ class ActorDispatcher(CmdKeyVarDispatcher):
         """Set _myUserID based on the keyVar; called by the keyVar specified by yourUserIDKeyName
         """
         self._myUserID = keyVar[0]
-        print "_yourUserIDKeyVarCallback(keyVar=%s); self._myUserID=%s" % (keyVar, self._myUserID)
+        #print "_yourUserIDKeyVarCallback(keyVar=%s); self._myUserID=%s" % (keyVar, self._myUserID)
