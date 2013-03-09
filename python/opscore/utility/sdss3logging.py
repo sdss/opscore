@@ -11,7 +11,7 @@ before any other 'import logging's, as it defines the default logging formatter.
   import sdss3logging
   import logging
 
-  opsLogging.setRootLogger('/tmp/cpl/log1')
+  sdss3logging.setupRootLogger('/tmp/jkp/log1')
   
 After which any other module can :
 
