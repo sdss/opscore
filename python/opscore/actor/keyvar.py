@@ -18,6 +18,9 @@ History:
                     Removed unused import (thanks to pychecker).
 2010-11-18 ROwen    Changed set to raise TypeError instead of RuntimeError if the values are inappropriate.
 2010-11-19 ROwen    Bug fix: added CmdVar to __all__.
+2012-11-30 ROwen    CmdVar: convert actor, cmdStr and abortCmdStr to ASCII (fail if they contain non-ASCII chars).
+                    This works around a problem that Tcl/Tk 8.5 always returns unicode strings,
+                    but Twisted Actor refuses to write unicode strings even if they contain only ASCII chars.
 """
 import sys
 import time
@@ -328,8 +331,8 @@ class CmdVar(object):
           
         Also the time limit is a lower limit. The command is guaranteed to expire no sooner than this.
         """
-        self.cmdStr = cmdStr
-        self.actor = actor
+        self.cmdStr = str(cmdStr)
+        self.actor = str(actor)
         self.cmdID = None
         self.timeLim = timeLim
         self.description = description
@@ -340,7 +343,7 @@ class CmdVar(object):
         if self._timeLimKeyVar:
             # check that value exists and can be cast to a float
             RO.MathUtil.checkRange(self._timeLimKeyInd, 0, self._timeLimKeyVar.minVals, "timeLimKeyInd")
-        self.abortCmdStr = abortCmdStr
+        self.abortCmdStr = None if abortCmdStr is None else str(abortCmdStr)
         # a dictionary of keyVar values; keys is keyVar; value is a list of keyVar.valueList seen for that keyVar
         self.keyVars = keyVars or ()
         self.keyVarDataDict = dict()
