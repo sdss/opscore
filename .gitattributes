@@ -18,6 +18,7 @@ python/opscore/protocols/types.py -text
 python/opscore/protocols/validation.py -text
 python/opscore/utility/YPF.py -text
 python/opscore/utility/__init__.py -text
+python/opscore/utility/assembleImage.py -text
 python/opscore/utility/astrotime.py -text
 python/opscore/utility/config.py -text
 python/opscore/utility/html.py -text
