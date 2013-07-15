@@ -894,7 +894,7 @@ class _WaitBase(object):
         """
         # report failure; this causes the scriptRunner to call
         # all pending cancelWait functions, so don't do that here
-        self.scriptRunner._setState(self.Failed, reason)
+        self.scriptRunner._setState(self.scriptRunner.Failed, reason)
     
     def cleanup(self):
         """Called when ending for any reason
