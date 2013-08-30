@@ -113,6 +113,9 @@ History:
 2012-08-02 ROwen    Updated for RO 3.0.
 2012-09-21 ROwen    Added disconnect method.
                     Removed __main__ example code; use the unit test instead.
+2013-08-30 ROwen    Fix a bug that caused _sendNextRefreshCmd to fail if a refresh variable was removed
+                    while refreshing. Always calls refreshCmdDictChanged if refreshCmdDict changed
+                    and this restarts the refresh process if connected.
 """
 import sys
 import time
@@ -278,8 +281,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
                 keyVarSet.add(keyVar)
             else:
                 self.refreshCmdDict[refreshInfo] = set((keyVar,))
-            if self._isConnected:
-                self._refreshAllTimer.start(_ShortInterval, self.refreshAllVar, resetAll=False)
+            self.refreshCmdDictChanged()
 
     def checkCmdTimeouts(self):
         """Check all pending commands for timeouts"""
@@ -442,6 +444,15 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
                     keyVar.setNotCurrent()
     
         self._sendNextRefreshCmd()
+    
+    def refreshCmdDictChanged(self):
+        """Call if you change refrechCmdDict
+        """
+#         print "refreshCmdDictChanged()"
+        if self._isConnected:
+            self._refreshAllTimer.start(_ShortInterval, self.refreshAllVar, resetAll=False)
+        else:
+            self._refreshAllTimer.cancel()
 
     def removeKeyVar(self, keyVar):
         """Remove the specified keyword variable, returning the KeyVar if removed, else None
@@ -462,6 +473,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
             if not keyVarSet:
                 # that was the only keyVar using this refresh command
                 del(self.refreshCmdDict[keyVar.refreshInfo])
+            self.refreshCmdDictChanged()
         return keyVar
 
     def replyIsMine(self, reply):
