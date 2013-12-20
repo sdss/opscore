@@ -297,15 +297,17 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         self._checkRemCmdTimeouts(cmdVarIter)
         
     def disconnect(self):
-        """Close connection and cancel all timers
-        
-        This can be useful for shutting down cleanly.
+        """Deprecated (use self.connection.disconnect()
+        """
+        self.connection.disconnect()
+    
+    def _cancelTimers(self):
+        """Cancel all timers
         """
         self._checkCmdTimer.cancel()
         self._checkRemCmdTimer.cancel()
         self._refreshAllTimer.cancel()
         self._refreshNextTimer.cancel()
-        self.connection.disconnect()
     
     def dispatchReply(self, reply):
         """Log the reply, set KeyVars and CmdVars.
@@ -494,12 +496,14 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
     def updConnState(self, conn):
         """If connection state changes, update refresh variables.
         """
+#         print "updConnState; wasConnected=%s, isConnected=%s" % (wasConnected, self._isConnected)
         wasConnected = self._isConnected
         self._isConnected = conn.isConnected
-#         print "updConnState; wasConnected=%s, isConnected=%s" % (wasConnected, self._isConnected)
-
         if wasConnected != self._isConnected:
-            self._refreshAllTimer.start(_ShortInterval, self.refreshAllVar)
+            if self._isConnected:
+                self._refreshAllTimer.start(_ShortInterval, self.refreshAllVar)
+            else:
+                self._cancelTimers()
 
     def _checkRemCmdTimeouts(self, cmdVarIter):
         """Helper function for checkCmdTimeouts.
