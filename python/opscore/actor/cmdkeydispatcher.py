@@ -301,14 +301,6 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         """
         self.connection.disconnect()
     
-    def _cancelTimers(self):
-        """Cancel all timers
-        """
-        self._checkCmdTimer.cancel()
-        self._checkRemCmdTimer.cancel()
-        self._refreshAllTimer.cancel()
-        self._refreshNextTimer.cancel()
-    
     def dispatchReply(self, reply):
         """Log the reply, set KeyVars and CmdVars.
         
@@ -504,6 +496,14 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
                 self._refreshAllTimer.start(_ShortInterval, self.refreshAllVar)
             else:
                 self._cancelTimers()
+    
+    def _cancelTimers(self):
+        """Cancel all timers
+        """
+        self._checkCmdTimer.cancel()
+        self._checkRemCmdTimer.cancel()
+        self._refreshAllTimer.cancel()
+        self._refreshNextTimer.cancel()
 
     def _checkRemCmdTimeouts(self, cmdVarIter):
         """Helper function for checkCmdTimeouts.
