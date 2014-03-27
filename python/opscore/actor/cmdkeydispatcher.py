@@ -488,9 +488,9 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
     def updConnState(self, conn):
         """If connection state changes, update refresh variables.
         """
-#         print "updConnState; wasConnected=%s, isConnected=%s" % (wasConnected, self._isConnected)
         wasConnected = self._isConnected
         self._isConnected = conn.isConnected
+        #print "updConnState; wasConnected=%s, isConnected=%s, conn.state=%s" % (wasConnected, self._isConnected, conn.state)
         if wasConnected != self._isConnected:
             if self._isConnected:
                 self._refreshAllTimer.start(_ShortInterval, self.refreshAllVar)

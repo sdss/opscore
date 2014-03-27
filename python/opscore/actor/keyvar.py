@@ -21,6 +21,7 @@ History:
 2012-11-30 ROwen    CmdVar: convert actor, cmdStr and abortCmdStr to ASCII (fail if they contain non-ASCII chars).
                     This works around a problem that Tcl/Tk 8.5 always returns unicode strings,
                     but Twisted Actor refuses to write unicode strings even if they contain only ASCII chars.
+2014-03-25 ROwen    Bug fix: was referencing obsolete TypeDict instead of MsgCodeSeverity
 """
 import sys
 import time
@@ -32,7 +33,7 @@ import RO.MathUtil
 
 __all__ = ["KeyVar", "CmdVar", "AllCodes", "DoneCodes", "FailedCodes", "MsgCodeSeverity"]
 
-AllCodes = "IWE:F!>D"
+AllCodes = "DIWE:F!>"
 DoneCodes = ":F!"
 FailedCodes = "F!"
 
@@ -352,7 +353,7 @@ class CmdVar(object):
 
         self.dispatcher = None # set by dispatcher when it executes the command
         self.replyList = []
-        self.lastCode = "Information"
+        self.lastCode = "I"
         self.startTime = None
         self.maxEndTime = None
 
@@ -401,7 +402,7 @@ class CmdVar(object):
         """
         if not self.lastCode:
             return RO.Constants.sevNormal
-        return TypeDict[self.lastCode][1]
+        return MsgCodeSeverity[self.lastCode]
     
     def getKeyVarData(self, keyVar):
         """Return a list of data seen for the specified keyword variable, or [] if no data seen.

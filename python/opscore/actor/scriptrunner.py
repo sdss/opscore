@@ -79,6 +79,7 @@ History:
 2012-06-01 ROwen    Use best effort to remove callbacks during cleanup, instead of raising an exception on failure.
                     Modified _WaitCmdVars to not try to register callbacks on commands that are finished,
                     and to not try to remove callbacks from CmdVars that are done.
+2014-03-25 ROwen    Documentation fix: keyvar.TypeDict is now keyvar.MsgCodeSeverity.
 """
 import sys
 import threading
@@ -536,7 +537,7 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
         - callFunc: a function to call when the command changes state;
             see below for details.
         - callCodes: the message types for which to call the callback;
-            a string of one or more choices; see keyvar.TypeDict for the choices;
+            a string of one or more choices; see keyvar.MsgCodeSeverity for the choices;
             useful constants include DoneTypes (command finished or failed)
             and AllTypes (all message types, thus any reply).
             Not case sensitive (the string you supply will be lowercased).
