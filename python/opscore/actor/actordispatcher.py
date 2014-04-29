@@ -9,6 +9,7 @@ import sys
 import traceback
 
 import RO.Constants
+from RO.StringUtil import strFromException
 from opscore.protocols.parser import ActorReplyParser
 from opscore.protocols.keys import KeysDictionary
 from .keyvar import KeyVar, MsgCodeSeverity

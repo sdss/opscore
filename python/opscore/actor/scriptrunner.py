@@ -255,7 +255,7 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
             return
         try:
             print msgStr
-        except (TypeError, ValueError), e:
+        except (TypeError, ValueError):
             print repr(msgStr)
 
     @property
@@ -342,7 +342,7 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
 
         self._setState(self.Running)
         if not self._waiting:
-            self._continue(self._iterID)
+            self._continue(self._iterID, val=self.value)
 
     def resumeUser(self):
         """Resume execution from waitUser
