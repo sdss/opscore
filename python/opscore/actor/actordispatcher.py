@@ -1,4 +1,4 @@
-"""A single-actor version of CmdKeyDispatcher.
+"""A single-actor version of CmdKeyVarDispatcher.
 
 Send commands to a single actor and dispatches replies from that actor.
 

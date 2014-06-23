@@ -113,9 +113,11 @@ History:
 2012-08-02 ROwen    Updated for RO 3.0.
 2012-09-21 ROwen    Added disconnect method.
                     Removed __main__ example code; use the unit test instead.
-2013-08-30 ROwen    Fix a bug that caused _sendNextRefreshCmd to fail if a refresh variable was removed
+2013-08-30 ROwen    Fixed a bug that caused _sendNextRefreshCmd to fail if a refresh variable was removed
                     while refreshing. Always calls refreshCmdDictChanged if refreshCmdDict changed
                     and this restarts the refresh process if connected.
+2014-06-23 ROwen    Added callKeyVarsOnDisconnect constructor argument.
+                    This allows STUI to show pink fields on disconnect.
 """
 import sys
 import time
@@ -126,7 +128,6 @@ import RO.Constants
 from RO.StringUtil import quoteStr, strFromException
 
 from opscore.utility.timer import Timer
-import opscore.protocols.keys as protoKeys
 from keydispatcher import KeyVarDispatcher
 import keyvar
 
@@ -135,7 +136,6 @@ __all__ = ["CmdKeyVarDispatcher"]
 # intervals (in milliseconds) for various background tasks
 _RefreshInterval = 1.0 # time interval between variable refresh checks (sec)
 _TimeoutInterval = 1.3 # time interval between command timeout checks (sec)
-_ShortInterval =   0.01 # short time interval; used to schedule a callback right after pending events (sec)
 
 _CmdNumWrap = 1000 # value at which user command ID numbers wrap
 
@@ -153,6 +153,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         logFunc = None,
         includeName = True,
         delayCallbacks = False,
+        callKeyVarsOnDisconnect = False,
     ):
         """Create a new CmdKeyVarDispatcher
     
@@ -180,7 +181,9 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
             until all refresh commands have completed (at which point callbacks are made
             for each keyVar that has been set). Thus the set of keyVars will be maximally
             self-consistent, but it may take awhile after connecting before callbacks begin.
-        - parser: reply parser; if None then use opscore.protocols.parser.ReplyParser
+        - callKeyVarsOnDisconnect: if True then keyVars callbacks are called on disconnection
+            (STUI uses this to show pink fields on disconnection).
+            If False then keyVar callbacks are not called and all timers are cancelled.
 
         Raises ValueError if name cannot be used as an actor name
         """
@@ -188,8 +191,9 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         
         self.includeName = bool(includeName)
         self.delayCallbacks = bool(delayCallbacks)
+        self.callKeyVarsOnDisconnect = bool(callKeyVarsOnDisconnect)
         self.readUnixTime = 0
-        
+
         self._isConnected = False
 
         # cmdDict keys are command ID and values are KeyCommands
@@ -409,7 +413,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
                     raise
             return reply
 
-        except Exception, e:
+        except Exception:
             sys.stderr.write("%s.makeReply(cmdr=%r, cmdID=%r, actor=%r, msgCode=%r, dataStr=%r) could not make message string:\n" % \
                 (self, cmdr, cmdID, actor, msgCode, dataStr))
             traceback.print_exc(file=sys.stderr)
@@ -423,7 +427,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         Inputs:
         - resetAll: reset all keyword variables to notCurrent
         """
-#         print "%s.refreshAllVar(resetAll=%s); refeshCmdDict=%s" % (self, resetAll, self.refreshCmdDict)
+        # print "%s.refreshAllVar(resetAll=%s); refeshCmdDict=%s" % (self, resetAll, self.refreshCmdDict)
 
         # cancel pending update, if any
         self._refreshAllTimer.cancel()
@@ -444,7 +448,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         """
 #         print "refreshCmdDictChanged()"
         if self._isConnected:
-            self._refreshAllTimer.start(_ShortInterval, self.refreshAllVar, resetAll=False)
+            self._refreshAllTimer.start(0, self.refreshAllVar, resetAll=False)
         else:
             self._refreshAllTimer.cancel()
 
@@ -490,10 +494,10 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         """
         wasConnected = self._isConnected
         self._isConnected = conn.isConnected
-        #print "updConnState; wasConnected=%s, isConnected=%s, conn.state=%s" % (wasConnected, self._isConnected, conn.state)
+        # print "updConnState; wasConnected=%s, isConnected=%s, conn.state=%s" % (wasConnected, self._isConnected, conn.state)
         if wasConnected != self._isConnected:
-            if self._isConnected:
-                self._refreshAllTimer.start(_ShortInterval, self.refreshAllVar)
+            if self._isConnected or self.callKeyVarsOnDisconnect:
+                self._refreshAllTimer.start(0, self.refreshAllVar)
             else:
                 self._cancelTimers()
     
@@ -545,7 +549,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
                         # schedule myself to run again shortly
                         # (thereby giving other time to other events)
                         # continuing where I left off
-                        self._checkRemCmdTimer.start(_ShortInterval, self._checkRemCmdTimeouts, cmdVarIter)
+                        self._checkRemCmdTimer.start(0, self._checkRemCmdTimeouts, cmdVarIter)
                 except Exception:
                     sys.stderr.write("%s._checkRemCmdTimeouts failed to timeout command %s\n" % \
                         (self, cmdVar))
@@ -706,7 +710,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         except:
             sys.stderr.write("%s._sendNextRefreshCmd: refresh command %s failed:\n" % (self, cmdVar,))
             traceback.print_exc(file=sys.stderr)
-        self._refreshNextTimer.start(_ShortInterval, self._sendNextRefreshCmd, refreshCmdItemIter)
+        self._refreshNextTimer.start(0, self._sendNextRefreshCmd, refreshCmdItemIter)
     
     def __str__(self):
         return self.__class__.__name__
