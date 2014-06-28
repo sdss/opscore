@@ -9,6 +9,7 @@ examples/secret.py -text
 examples/tcc_sample.log -text
 python/opscore/__init__.py -text
 python/opscore/actor/actordispatcher.py -text
+python/opscore/actor/basescriptrunner.py -text
 python/opscore/protocols/__init__.py -text
 python/opscore/protocols/keys.py -text
 python/opscore/protocols/keysformat.py -text

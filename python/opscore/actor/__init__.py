@@ -6,4 +6,5 @@ from keyvar import *
 from keydispatcher import *
 from cmdkeydispatcher import *
 from actordispatcher import *
+from basescriptrunner import *
 from scriptrunner import *
