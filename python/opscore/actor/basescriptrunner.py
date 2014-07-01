@@ -31,6 +31,7 @@ Code comments:
 History:
 2014-06-27 ROwen    Extracted most of ScriptRunner into BaseScriptRunner,
                     to make it easier to generate that commands an actor (instead of the hub).
+2014-07-01 ROwen    Added waitSec method.
 """
 import sys
 import threading
@@ -52,6 +53,8 @@ _PollDelaySec = 0.1 # polling interval for threads (sec)
 # a list of possible keywords that hold reasons for a command failure
 # in the order in which they are checked
 _ErrKeys = ("text",)
+
+_MSPerSec = 1000
 
 class _Blank(object):
     def __init__(self):
@@ -411,6 +414,16 @@ class BaseScriptRunner(RO.AddCallback.BaseMixin):
         self.debugPrint("waitMS(msec=%s)" % (msec,))
 
         _WaitMS(self, msec)
+
+    def waitSec(self, sec):
+        """Wait for sec seconds
+
+        Inputs:
+        - sec  number of seconds to pause
+        """
+        self.debugPrint("waitSec(sec=%s)" % (sec,))
+
+        _WaitMS(self, sec * _MSPerSec)
     
     def waitThread(self, func, *args, **kargs):
         """Run func as a background thread, waits for completion
