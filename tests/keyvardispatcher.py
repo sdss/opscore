@@ -40,10 +40,6 @@ class ModelTests(unittest.TestCase):
         self.assertEquals(self.model.version[:], ("1.0",))
         self.assertEquals(self.model.httpRoot[:], ("hub25m.apo", "image/dir"))
     
-    def testGetKeyVar(self):
-        self.assertTrue(self.model.actors is self.dispatcher.getKeyVar("hub", "actors"))
-        self.assertRaises(Exception, self.dispatcher.getKeyVar, "nonexistentKeyVar")
-        
     def testGetKeyVarList(self):
         for keyName in ("actors", "commanders", "user", "users", "version", "httpRoot"):
             keyVarList = self.dispatcher.getKeyVarList("hub", keyName)
@@ -53,11 +49,13 @@ class ModelTests(unittest.TestCase):
         self.assertEquals(self.dispatcher.getKeyVarList("hub", "badkeyvarname"), [])
     
     def testGetKeyVar(self):
+        self.assertTrue(self.model.actors is self.dispatcher.getKeyVar("hub", "actors"))
         for keyName in ("actors", "commanders", "user", "users", "version", "httpRoot"):
             keyVar = self.dispatcher.getKeyVar("hub", keyName)
             self.assertEqual(keyVar, getattr(self.model, keyName))
         self.assertRaises(Exception, self.dispatcher.getKeyVar, "badactorname", "users")
         self.assertRaises(Exception, self.dispatcher.getKeyVar, "hub", "badkeyvarname")
+        self.assertRaises(Exception, self.dispatcher.getKeyVar, "nonexistentKeyVar")
     
     def makeReplyStr(self, dataStr, cmdr="me.me", cmdID=0, actor="hub"):
         return "%s %d %s : %s" % (cmdr, cmdID, actor, dataStr)

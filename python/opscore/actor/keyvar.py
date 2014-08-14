@@ -335,7 +335,7 @@ class CmdVar(object):
         self.cmdStr = str(cmdStr)
         self.actor = str(actor)
         self.cmdID = None
-        self.timeLim = timeLim
+        self.timeLim = float(timeLim)
         self.description = description
         self.isRefresh = bool(isRefresh)
         self.forUserCmd = forUserCmd
