@@ -502,7 +502,7 @@ class CmdVar(object):
     def _timeLimKeyVarCallback(self, keyVar):
         """Handle callback from the time limit keyVar.
         
-        Update self.maxEndTime (adding self.timeLim as a margin if timeLim was specified).
+        Update self.maxEndTime (adding self.timeLim as a margin if timeLim was specified, else 2 seconds).
 
         Raises ValueError if the keyword exists but the value is invalid.
         """
@@ -517,6 +517,8 @@ class CmdVar(object):
         self.maxEndTime = time.time() + newTimeLim
         if self.timeLim:
             self.maxEndTime += self.timeLim
+        else:
+            self.maxEndTime += 2
 
     def _cleanup(self):
         """Call when command is finished to remove callbacks.
