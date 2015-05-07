@@ -223,7 +223,7 @@ class ScriptRunner(BaseScriptRunner):
                 argList.append("checkFail=%r" % (checkFail,))
             self.debugPrint("startCmd(%s)" % ", ".join(argList))
 
-            self._showCmdMsg("%s started" % cmdStr)
+            self.showMsg("%s started" % cmdStr)
             
 
             # set up command completion callback
@@ -235,7 +235,7 @@ class ScriptRunner(BaseScriptRunner):
                     msgCode = ":",
                 )
                 cmdVar.handleReply(endReply)
-                self._showCmdMsg("%s finished" % cmdVar.cmdStr)
+                self.showMsg("%s finished" % cmdVar.cmdStr)
             Timer(1.0, endCmd)
 
         else:
