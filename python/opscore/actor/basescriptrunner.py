@@ -32,6 +32,7 @@ History:
 2014-06-27 ROwen    Extracted most of ScriptRunner into BaseScriptRunner,
                     to make it easier to generate that commands an actor (instead of the hub).
 2014-07-01 ROwen    Added waitSec method.
+2015-05-08 ROwen    Added waitPause method.
 """
 import sys
 import threading
@@ -424,6 +425,14 @@ class BaseScriptRunner(RO.AddCallback.BaseMixin):
         self.debugPrint("waitSec(sec=%s)" % (sec,))
 
         _WaitMS(self, sec * _MSPerSec)
+
+    def waitPause(self, msgStr="Paused", severity=RO.Constants.sevNormal):
+        """Pause execution and wait
+
+        A no-op if not running
+        """
+        Timer(0, self.showMsg, msgStr, severity=severity)
+        self.pause()
     
     def waitThread(self, func, *args, **kargs):
         """Run func as a background thread, waits for completion
