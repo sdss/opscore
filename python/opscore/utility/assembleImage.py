@@ -259,26 +259,10 @@ class AssembleImage(object):
         
         Note: the contents of the images and masks are not interpreted by this routine;
         the data is simply rearranged into a new output image and mask.
-        
-        Written for image format: SDSSFmt = gproc 1 0, but will try to deal with higher versions.
-        
+                
         Raise class NoPlateInfo if the image has no plate information
         Raise PlateInfoWrongVersion if the image has an unparseable version of plate info
         """
-        # check version info
-        try:
-            sdssFmtStr = guideImage[0].header["SDSSFMT"]
-        except Exception:
-            raise NoPlateInfo("Could not find SDSSFMT header entry")
-        try:
-            formatName, versMajStr, versMinStr = sdssFmtStr.split()
-            formatMajorVers = int(versMajStr)
-            formatMinorVers = int(versMinStr)
-        except Exception:
-            raise NoPlateInfo("Could not parse SDSSFMT = %s" % (sdssFmtStr,))
-        if formatName.lower() != "gproc":
-            raise NoPlateInfo("SDSSFMT %s != gproc" % (formatName.lower(),))
-        # test SDSSFMT version here, if necessary
         
         try:
             plateScale = float(guideImage[0].header["PLATSCAL"]) # plate scale in mm/deg
