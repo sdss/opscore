@@ -282,8 +282,12 @@ class AssembleImage(object):
             raise PlateInfoWrongVersion("Can only process SDSSFMT version 1: found {}".format(formatMajorVers))
 
         # IMAGETYP 'object' has all the necessary HDUs, while 'flat' and 'dark' do not.
-        if guideImage[0].header["IMAGETYP"].lower() != 'object':
-            return None
+        try:
+            imagetyp = guideImage[0].header["IMAGETYP"].lower()
+        except Exception as e:
+            raise NoPlateInfo('Could not find IMAGETYP header entry: {}'.format(e))
+        if imagetyp != 'object':
+            raise NoPlateInfo('SDSS guider {} files do not have a plate view.'.format(imagetyp))
 
         try:
             plateScale = float(guideImage[0].header["PLATSCAL"]) # plate scale in mm/deg
