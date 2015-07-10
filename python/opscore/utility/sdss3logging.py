@@ -255,6 +255,8 @@ def setConsoleLevel(level):
 def setupRootLogger(basedir, level=logging.INFO, hackRollover=False):
     """ (re-)configure the root logger to save all output to a APO-style rotating file Handler, plus a console Handler. """
 
+    # TBD: Is this global stuff really necessary?
+    # I'd bet it isn't.
     global rootHandler
     global consoleHandler
 
