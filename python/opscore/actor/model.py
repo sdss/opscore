@@ -8,10 +8,6 @@ History:
 2010-06-28 ROwen    Removed many unused imports (thanks to pychecker).
 2012-07-24 ROwen    Improved the documentation
 """
-import RO.Comm.HubConnection
-import RO.Constants
-import RO.StringUtil
-
 from opscore.protocols.keys import KeysDictionary
 from .keyvar import KeyVar
 
@@ -56,7 +52,7 @@ class Model(object):
         
         for ind in range(0, len(cachedKeyVars), NumKeysToGetAtOnce):
             keyVars = cachedKeyVars[ind:ind+NumKeysToGetAtOnce]
-            keyNames = [(keyVar.name) for keyVar in keyVars]
+            keyNames = [(kv.name) for kv in keyVars]
             refreshCmdStr = "getFor=%s %s" % (self.actor, " ".join(keyNames))
             for keyVar in keyVars:
                 keyVar.refreshActor = "keys"

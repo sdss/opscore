@@ -87,7 +87,7 @@ class ValueType(type,Descriptive):
                 return self.reprFmt % self
             else:
                 return cls.baseType.__str__(self)
-                
+
         # check for any invalid metadata keys
         for key in kwargs.iterkeys():
             if key not in ValueType._metaKeys and (
@@ -124,8 +124,23 @@ class ValueType(type,Descriptive):
             'help': get('help'),
             'name': get('name'),
             '__repr__': doRepr,
-            '__str__': doStr
+            '__str__': doStr,
         }
+        if cls == Bits:
+            # leave special bit handling alone, since some code may rely on it
+            pass
+        elif cls == Bool:
+            # cls.baseType is int, not bool, because one cannot subclass bool
+            def getNative(self):
+                return bool(self)
+            dct["native"] = property(getNative)
+        elif hasattr(cls, "baseType"):
+            def getNative(self):
+                return cls.baseType(self)
+            dct["native"] = property(getNative)
+        else:
+            print "WARNING: no baseType"
+                
         if hasattr(cls,'new'):
             dct['__new__'] = cls.new
         if hasattr(cls,'init'):
@@ -257,6 +272,7 @@ class Invalid(object):
     Represents an invalid value
     """
     units = ''
+    native = None
     def __repr__(self):
         return '(invalid)'
     def __eq__(self,other):
@@ -266,7 +282,7 @@ class Invalid(object):
         return isinstance(other,Invalid) or other is None
     def __ne__(self,other):
         return not self.__eq__(other)
-    
+
 # a constant object representing an invalid value
 InvalidValue = Invalid()
 
@@ -407,7 +423,7 @@ class Bool(ValueType):
     
     baseType = int # bool cannot be subclassed
     storage = 'int2'
-    
+
     @classmethod
     def init(cls,dct,*args,**kwargs):
         if not args or not len(args) == 2:
@@ -468,6 +484,8 @@ class Bits(UInt):
             (name,width) = parsed.groups()
             width = int(width or 1)
             if name:
+                if name == "native":
+                    raise ValueTypeError("'native' is not an allowed bitfield name")
                 specs.append((name,width))
                 fields[name] = (offset,long((1<<width)-1))
             offset += width

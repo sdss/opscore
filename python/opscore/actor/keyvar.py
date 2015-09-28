@@ -22,6 +22,7 @@ History:
                     This works around a problem that Tcl/Tk 8.5 always returns unicode strings,
                     but Twisted Actor refuses to write unicode strings even if they contain only ASCII chars.
 2014-03-25 ROwen    Bug fix: was referencing obsolete TypeDict instead of MsgCodeSeverity
+2015-09-25 ROwen    KeyVar.set modified to extract native types from wrapper classes, when available.
 """
 import sys
 import time
@@ -248,6 +249,8 @@ class KeyVar(RO.AddCallback.BaseMixin):
         valueList = list(valueList)
         if not self._typedValues.consume(valueList):
             raise TypeError("%s invalid valueList=%s" % (self, valueList))
+        # extract native types from wrapper classes, if available
+        valueList = tuple(val.native if hasattr(val, "native") else val for val in valueList)
 
         # print to stderr, if requested
         if self.doPrint:
