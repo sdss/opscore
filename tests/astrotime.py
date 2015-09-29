@@ -6,7 +6,7 @@
 
 import unittest
 
-from datetime import tzinfo,timedelta,datetime
+from datetime import timedelta,datetime
 
 import opscore.utility.astrotime as astrotime
 
