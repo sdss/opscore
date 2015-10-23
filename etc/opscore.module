@@ -43,12 +43,12 @@ module-whatis "Sets up $product/$version in your environment."
 # command.  An optional dependency is not followed by a prereq statement.
 #
 module load external
-module prereq external
+prereq external
 module load actorkeys
-module prereq actorkeys
+prereq actorkeys
 
 module load RO
-module prereq RO
+prereq RO
 #
 # ENVIRONMENT SECTION
 #
