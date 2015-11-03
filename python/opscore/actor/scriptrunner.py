@@ -63,6 +63,7 @@ History:
                     and to not try to remove callbacks from CmdVars that are done.
 2014-03-25 ROwen    Documentation fix: keyvar.TypeDict is now keyvar.MsgCodeSeverity.
 2014-06-27 ROwen    Moved the core to BaseScriptRunner.
+2015-11-03 ROwen    Replace "!= None" with "is not None" to modernize the code.
 """
 import RO.Constants
 from opscore.utility.timer import Timer
@@ -211,13 +212,13 @@ class ScriptRunner(BaseScriptRunner):
             argList = ["actor=%r, cmdStr=%r" % (actor, cmdStr)]
             if timeLim != 0:
                 argList.append("timeLim=%s" % (timeLim,))
-            if callFunc != None:
+            if callFunc is not None:
                 argList.append("callFunc=%r" % (callFunc,))
             if callCodes != keyvar.DoneCodes:
                 argList.append("callCodes=%r" % (callCodes,))
-            if timeLimKeyVar != None:
+            if timeLimKeyVar is not None:
                 argList.append("timeLimKeyVar=%r" % (timeLimKeyVar,))
-            if abortCmdStr != None:
+            if abortCmdStr is not None:
                 argList.append("abortCmdStr=%r" % (abortCmdStr,))
             if checkFail != True:
                 argList.append("checkFail=%r" % (checkFail,))

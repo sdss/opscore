@@ -4,6 +4,7 @@ Requires a running twisted reactor.
 
 History:
 2010-07-21 ROwen    Timer(...) sec and callFunc arguments may now be specified by name.
+2015-11-03 ROwen    Replace "!= None" with "is not None" to modernize the code.
 """
 import twisted.internet.reactor
 
@@ -21,7 +22,7 @@ class Timer(object):
         *args: arguments for callFunc
         **keyArgs: keyword arguments for callFunc; must not include "sec" or "callFunc"
         """
-        if sec != None:
+        if sec is not None:
             self._timer = _reactor.callLater(sec, callFunc, *args, **keyArgs)
         else:
             self._timer = None

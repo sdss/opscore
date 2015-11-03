@@ -7,6 +7,7 @@ History:
 2009-07-18 ROwen    Added keyVarDict property.
 2010-06-28 ROwen    Removed many unused imports (thanks to pychecker).
 2012-07-24 ROwen    Improved the documentation
+2015-11-03 ROwen    Replace "== None" with "is None" to modernize the code.
 """
 from opscore.protocols.keys import KeysDictionary
 from .keyvar import KeyVar
@@ -37,7 +38,7 @@ class Model(object):
             raise RuntimeError("%s model already instantiated" % (actor,))
         
         self.actor = actor
-        if self.dispatcher == None:
+        if self.dispatcher is None:
             raise RuntimeError("Dispatcher not set")
 
         cachedKeyVars = []

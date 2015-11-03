@@ -19,6 +19,7 @@ History:
 2011-06-13 ROwen    API change: added cmdID to the logging function argument list.
 2012-07-24 ROwen    Added _ParserClass class attribute.
 2012-09-21 ROwen    Removed __main__ example code; use the unit test instead.
+2015-11-03 ROwen    Replace "== None" with "is None" to modernize the code.
 """
 import sys
 import traceback
@@ -157,9 +158,9 @@ class KeyVarDispatcher(object):
             warning: this is not KeyVars from the model; it is lower-level data
         - fallbackToStdOut: if True and there is no logFunc then prints the message to stdout.
         """
-        if actor == None:
+        if actor is None:
             actor = self.name
-        if keywords == None:
+        if keywords is None:
             keywords = opscore.protocols.messages.Keywords()
 
         if not self.logFunc:

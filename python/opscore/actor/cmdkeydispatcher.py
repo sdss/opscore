@@ -118,6 +118,7 @@ History:
                     and this restarts the refresh process if connected.
 2014-06-23 ROwen    Added callKeyVarsOnDisconnect constructor argument.
                     This allows STUI to show pink fields on disconnect.
+2015-11-03 ROwen    Replace "== None" with "is None" and "!= None" with "is not None" to modernize the code.
 """
 import sys
 import time
@@ -241,10 +242,10 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         Issue the command specified by cmdVar.abortCmdStr, if present.
         Report the command as failed.
         
-        Has no effect if the command was never dispatched (cmdID == None)
+        Has no effect if the command was never dispatched (cmdID is None)
         or has already finished.
         """
-        if cmdID == None:
+        if cmdID is None:
             return
 
         cmdVar = self.cmdDict.get(cmdID)
@@ -317,7 +318,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         if self.replyIsMine(reply):
             # get the command for this command id, if any
             cmdVar = self.cmdDict.get(reply.header.commandId, None)
-            if cmdVar != None:
+            if cmdVar is not None:
                 # send reply but don't log (that's already been done)
                 self._replyToCmdVar(cmdVar, reply, doLog=False)
                 
@@ -586,14 +587,14 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
     ):
         """Generate header for Reply object
         """
-        if cmdr == None:
+        if cmdr is None:
             if self.includeName:
                 cmdr = "%s.%s" % (self.connection.cmdr, self.connection.cmdr)
             else:
                 cmdr = self.connection.cmdr or "me.me"
-        if actor == None:
+        if actor is None:
             actor = self.name
-        if cmdID == None:
+        if cmdID is None:
             cmdID = 0
 
         return "%s %d %s %s" % (cmdr, cmdID, actor, msgCode)        
@@ -667,7 +668,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         if doLog:
             self.logReply(reply)
         cmdVar.handleReply(reply)
-        if cmdVar.isDone and cmdVar.cmdID != None:
+        if cmdVar.isDone and cmdVar.cmdID is not None:
             try:
                 del (self.cmdDict[cmdVar.cmdID])
             except KeyError:
@@ -688,7 +689,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         if not self._isConnected:
             return
 
-        if refreshCmdItemIter == None:
+        if refreshCmdItemIter is None:
             refreshCmdItemIter = self.refreshCmdDict.iteritems()
 
         try:

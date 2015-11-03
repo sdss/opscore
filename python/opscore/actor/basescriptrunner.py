@@ -33,6 +33,7 @@ History:
                     to make it easier to generate that commands an actor (instead of the hub).
 2014-07-01 ROwen    Added waitSec method.
 2015-05-08 ROwen    Added waitPause method.
+2015-11-03 ROwen    Replace "== None" with "is None" and "!= None" with "is not None" to modernize the code.
 """
 import sys
 import threading
@@ -141,7 +142,7 @@ class BaseScriptRunner(RO.AddCallback.BaseMixin):
                 raise ValueError("Cannot specify runFunc, initFunc or endFunc with scriptClass")
             if not hasattr(scriptClass, "run"):
                 raise ValueError("scriptClass=%r has no run method" % scriptClass)
-        elif runFunc == None:
+        elif runFunc is None:
             raise ValueError("Must specify runFunc or scriptClass")
         elif not callable(runFunc):
             raise ValueError("runFunc=%r not callable" % (runFunc,))
@@ -291,7 +292,7 @@ class BaseScriptRunner(RO.AddCallback.BaseMixin):
     def resumeUser(self):
         """Resume execution from waitUser
         """
-        if self._userWaitID == None:
+        if self._userWaitID is None:
             raise RuntimeError("Not in user wait mode")
             
         iterID = self._userWaitID
@@ -346,7 +347,7 @@ class BaseScriptRunner(RO.AddCallback.BaseMixin):
                 defVal = None
 
         if keyVar.isCurrent:
-            if ind != None:
+            if ind is not None:
                 retVal = keyVar[ind]
             else:
                 retVal = keyVar.valueList
@@ -457,7 +458,7 @@ class BaseScriptRunner(RO.AddCallback.BaseMixin):
         """
         self._waitCheck(setWait=True)
 
-        if self._userWaitID != None:
+        if self._userWaitID is not None:
             raise RuntimeError("Already in user wait mode")
             
         self._userWaitID = self._getNextID()
@@ -626,7 +627,7 @@ class BaseScriptRunner(RO.AddCallback.BaseMixin):
             self._end()
             
         self._state = newState
-        if reason != None:
+        if reason is not None:
             self._reason = reason
         self._doCallbacks()
     
@@ -692,7 +693,7 @@ class _WaitBase(object):
             self.scriptRunner._cancelFuncs.remove(self.cancelWait)
         except ValueError:
             raise RuntimeError("Cancel function missing; did you forgot the 'yield' when calling a BaseScriptRunner method?")
-        if self.scriptRunner.debug and val != None:
+        if self.scriptRunner.debug and val is not None:
             print "wait returns %r" % (val,)
         self.scriptRunner._continue(self._iterID, val)
 
@@ -863,7 +864,7 @@ class _WaitKeyVar(_WaitBase):
     def getVal(self):
         """Return current value[ind] or the list of values if ind=None.
         """
-        if self.ind != None:
+        if self.ind is not None:
             return self.keyVar[self.ind]
         else:
             return self.keyVar.valueList

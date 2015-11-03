@@ -300,15 +300,13 @@ class AssembleImage(object):
         dataTable = guideImage[6].data
 
         try:
-            background = guideImage[0].header["IMGBACK"]
+            background = float(guideImage[0].header["IMGBACK"])
         except Exception:
             sys.stderr.write("AssembleImage: IMGBACK header missing; estimating background locally\n")
-            background = numpy.median(guideImage[0].data)
+            background = numpy.median(guideImage[0].data, type=float)
 
-        smallStampImage = guideImage[2].data
-        smallStampImage -= background
-        largeStampImage = guideImage[4].data
-        largeStampImage -= background
+        smallStampImage = guideImage[2].data - background
+        largeStampImage = guideImage[4].data - background
         
         smallStampImageList = decimateStrip(smallStampImage)
         smallStampMaskList = decimateStrip(guideImage[3].data)
@@ -331,7 +329,7 @@ class AssembleImage(object):
         else:
             # no small postage stamps; use the usual value
             smallStampShape = (19, 19)
-        bgPixPerMM = numpy.mean((imageShape - smallStampShape - (2 * self.margin)) / PlateDiameterMM)
+        bgPixPerMM = numpy.mean((imageShape - smallStampShape - (2 * self.margin))) / PlateDiameterMM
         minPosXYMM = -imageShape[::-1] / (2.0 * bgPixPerMM)
 #         print "bgPixPerMM=%s, minPosXYMM=%s" % (bgPixPerMM, minPosXYMM)
 
