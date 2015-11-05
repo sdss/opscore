@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+from __future__ import division, absolute_import, print_function
 """Code to run scripts that can wait for various things without messing up the main event loop
 (and thus starving the rest of your program).
 
@@ -64,11 +64,13 @@ History:
 2014-03-25 ROwen    Documentation fix: keyvar.TypeDict is now keyvar.MsgCodeSeverity.
 2014-06-27 ROwen    Moved the core to BaseScriptRunner.
 2015-11-03 ROwen    Replace "!= None" with "is not None" to modernize the code.
+2015-11-05 ROwen    Added from __future__ import and removed commented-out print statements.
+                    Removed initial #! line.
 """
 import RO.Constants
 from opscore.utility.timer import Timer
-import keyvar
-from basescriptrunner import BaseScriptRunner, ScriptError
+from . import keyvar
+from .basescriptrunner import BaseScriptRunner, ScriptError
 
 __all__ = ["ScriptError", "ScriptRunner"]
 
@@ -169,7 +171,7 @@ class ScriptRunner(BaseScriptRunner):
             self._statusBar.setMsg(msg, severity)
             self.debugPrint(msg)
         else:
-            print msg
+            print(msg)
 
     def startCmd(self,
         actor="",
@@ -315,69 +317,3 @@ class ScriptRunner(BaseScriptRunner):
         
         self.waitCmdVars(cmdVar, checkFail=checkFail, retVal=cmdVar)
 
-
-if __name__ == "__main__":
-    import cmdkeydispatcher
-    import time
-    from twisted.internet import reactor
-    
-    dispatcher = cmdkeydispatcher.CmdKeyVarDispatcher()
-    
-    scriptList = []
-
-    def initFunc(sr):
-        global scriptList
-        print "%s init function called" % (sr,)
-        scriptList.append(sr)
-
-    def endFunc(sr):
-        print "%s end function called" % (sr,)
-    
-    def script(sr):
-        def threadFunc(nSec):
-            time.sleep(nSec)
-        nSec = 1.0
-        print("%s waiting in a thread for %s sec" % (sr, nSec))
-        yield sr.waitThread(threadFunc, 1.0)
-        
-        for val in range(5):
-            print("%s value = %s" % (sr, val))
-            yield sr.waitMS(1000)
-    
-    def stateFunc(sr):
-        state, reason = sr.fullState
-        if reason:
-            msgStr = "%s state=%s: %s" % (sr, state, reason)
-        else:
-            msgStr = "%s state=%s" % (sr, state)
-        print(msgStr)
-        for sr in scriptList:
-            if not sr.isDone:
-                return
-        reactor.stop()
-
-    sr1 = ScriptRunner(
-        runFunc = script,
-        name = "Script 1",
-        dispatcher = dispatcher,
-        initFunc = initFunc,
-        endFunc = endFunc,
-        stateFunc = stateFunc,
-    )
-    
-    sr2 = ScriptRunner(
-        runFunc = script,
-        name = "Script 2",
-        dispatcher = dispatcher,
-        initFunc = initFunc,
-        endFunc = endFunc,
-        stateFunc = stateFunc,
-    )
-    
-    # start the scripts in a staggared fashion
-    sr1.start()
-    Timer(1.5, sr1.pause)
-    Timer(3.0, sr1.resume)
-    Timer(2.5, sr2.start)
-    
-    reactor.run()

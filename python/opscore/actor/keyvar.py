@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+from __future__ import division, absolute_import, print_function
 """KeyVar and CmdVar
 
 History:
@@ -23,6 +23,8 @@ History:
                     but Twisted Actor refuses to write unicode strings even if they contain only ASCII chars.
 2014-03-25 ROwen    Bug fix: was referencing obsolete TypeDict instead of MsgCodeSeverity
 2015-09-25 ROwen    KeyVar.set modified to extract native types from wrapper classes, when available.
+2015-11-05 ROwen    Added from __future__ import and removed commented-out print statements.
+                    Removed initial #! line.
 """
 import sys
 import time

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+from __future__ import division, absolute_import, print_function
 """Sets KeyVars based on replies from the hub.
 
 History:
@@ -20,12 +20,14 @@ History:
 2012-07-24 ROwen    Added _ParserClass class attribute.
 2012-09-21 ROwen    Removed __main__ example code; use the unit test instead.
 2015-11-03 ROwen    Replace "== None" with "is None" to modernize the code.
+2015-11-05 ROwen    Added from __future__ import and removed commented-out print statements.
+                    Removed initial #! line.
 """
 import sys
 import traceback
 from opscore.protocols.parser import ReplyParser
 import opscore.protocols.messages
-import keyvar
+from .keyvar import MsgCodeSeverity
 
 import RO.Constants
 from RO.StringUtil import strFromException
@@ -34,7 +36,7 @@ __all__ = ["logToStdOut", "KeyVarDispatcher"]
 
 
 def logToStdOut(msgStr, *dumArgs, **dumKeyArgs):
-    print msgStr
+    print(msgStr)
 
 
 class KeyVarDispatcher(object):
@@ -96,7 +98,6 @@ class KeyVarDispatcher(object):
         If parsing fails then log an error message.
         If dispatching fails then log an error message and print a traceback to stderr.
         """
-#        print "%s.dispatchReplyStr(%r)" % (self.__class__.__name__, replyStr)
         # parse message; if that fails, log it as an error
         try:
             reply = self.parser.parse(replyStr)
@@ -198,7 +199,7 @@ class KeyVarDispatcher(object):
         """
         try:
             msgCode = reply.header.code
-            severity = keyvar.MsgCodeSeverity[msgCode]
+            severity = MsgCodeSeverity[msgCode]
             self.logMsg(
                 msgStr = reply.string,
                 severity = severity,
@@ -256,7 +257,7 @@ class KeyVarDispatcher(object):
                         fallbackToStdOut = True,
                     )
                 except Exception:
-                    print "Failed to set %s to %s:" % (keyVar, keyword.values)
+                    print("Failed to set %s to %s:" % (keyVar, keyword.values))
                     traceback.print_exc(file=sys.stderr)
 
     def setLogFunc(self, logFunc=None):

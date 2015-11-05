@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+from __future__ import division, absolute_import, print_function
 """A Model is a container for keyVars for an actor
 
 History:
@@ -8,6 +8,8 @@ History:
 2010-06-28 ROwen    Removed many unused imports (thanks to pychecker).
 2012-07-24 ROwen    Improved the documentation
 2015-11-03 ROwen    Replace "== None" with "is None" to modernize the code.
+2015-11-05 ROwen    Added from __future__ import and removed commented-out print statements.
+                    Removed initial #! line.
 """
 from opscore.protocols.keys import KeysDictionary
 from .keyvar import KeyVar
@@ -32,7 +34,6 @@ class Model(object):
     _registeredActors = set()
     dispatcher = None
     def __init__(self, actor):
-        #print "%s.__init__(actor=%s)" % (self.__class__.__name__, actor)
         self._keyNameVarDict = dict()
         if actor in self._registeredActors:
             raise RuntimeError("%s model already instantiated" % (actor,))
@@ -81,7 +82,6 @@ class Model(object):
         
         Warning: must be called exactly once, before instantiating the first Model.
         """
-        #print "%s.setDispatcher(dispatcher=%s)" % (cls.__name__, dispatcher)
         if cls.dispatcher:
             raise RuntimeError("Dispatcher cannot be modified once set")
         cls.dispatcher = dispatcher

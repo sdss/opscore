@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-"""Sends commands (of type opscore.actor.keyvar.CmdVar) and dispatches replies
+from __future__ import division, absolute_import, print_function
+"""Sends commands (of type opscore.actor.CmdVar) and dispatches replies
 to key variables (opscore.actor.keyvar.KeyVar and subclasses).
 
 History:
@@ -119,6 +119,8 @@ History:
 2014-06-23 ROwen    Added callKeyVarsOnDisconnect constructor argument.
                     This allows STUI to show pink fields on disconnect.
 2015-11-03 ROwen    Replace "== None" with "is None" and "!= None" with "is not None" to modernize the code.
+2015-11-05 ROwen    Added from __future__ import and removed commented-out print statements.
+                    Removed initial #! line.
 """
 import sys
 import time
@@ -129,8 +131,8 @@ import RO.Constants
 from RO.StringUtil import quoteStr, strFromException
 
 from opscore.utility.timer import Timer
-from keydispatcher import KeyVarDispatcher
-import keyvar
+from .keydispatcher import KeyVarDispatcher
+from .keyvar import CmdVar
 
 __all__ = ["CmdKeyVarDispatcher"]
 
@@ -258,7 +260,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         
         # if relevant, issue abort command, with no callbacks
         if cmdVar.abortCmdStr and self._isConnected:
-            abortCmd = keyvar.CmdVar(
+            abortCmd = CmdVar(
                 cmdStr = cmdVar.abortCmdStr,
                 actor = cmdVar.actor,
             )
@@ -277,7 +279,6 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         Inputs:
         - keyVar: the keyword variable (opscore.actor.keyvar.KeyVar)
         """
-#        print "%s.addKeyVar(%s); hasRefreshCmd=%s; refreshInfo=%s" % (self, keyVar, keyVar.hasRefreshCmd, keyVar.refreshInfo)
         KeyVarDispatcher.addKeyVar(self, keyVar)
         if keyVar.hasRefreshCmd:
             refreshInfo = keyVar.refreshInfo
@@ -290,7 +291,6 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
 
     def checkCmdTimeouts(self):
         """Check all pending commands for timeouts"""
-#         print "opscore.actor.CmdKeyVarDispatcher.checkCmdTimeouts()"
         
         # cancel pending update, if any
         self._checkCmdTimer.cancel()
@@ -323,7 +323,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
                 self._replyToCmdVar(cmdVar, reply, doLog=False)
                 
     def executeCmd(self, cmdVar):
-        """Execute a command (of type opscore.actor.keyvar.CmdVar).
+        """Execute a command (of type opscore.actor.CmdVar).
         
         Performs the following tasks:
         - Sets the command ID number
@@ -332,7 +332,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         - Sends the command to the server
 
         Inputs:
-        - cmdVar: the command, of class opscore.actor.keyvar.CmdVar
+        - cmdVar: the command, of class opscore.actor.CmdVar
             
         Note:
         - Always increments cmdID because every command must have a unique command ID
@@ -360,12 +360,6 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         try:
             fullCmdStr = self._formatCmdStr(cmdVar)
             self.connection.writeLine(fullCmdStr)
-#             self.logMsg (
-#                 msgStr = fullCmdStr,
-#                 actor = cmdVar.actor,
-#                 cmdID = cmdVar.cmdID,
-#             )
-#             print >> sys.stderr, "executing:", fullCmdStr
         except Exception as e:
             errReply = self.makeReply(
                 cmdID = cmdVar.cmdID,
@@ -394,8 +388,6 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         
         Useful for reporting internal errors.
         """
-#         print "%s.makeReply(cmdr=%s, cmdID=%s, actor=%s, msgCode=%s, dataStr=%r)" % \
-#             (self, cmdr, cmdID, actor, msgCode, dataStr)
         try:
             headerStr = self._formatReplyHeader(cmdr=cmdr, cmdID=cmdID, actor=actor, msgCode=msgCode)
             msgStr = " ".join((headerStr, dataStr))
@@ -428,8 +420,6 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         Inputs:
         - resetAll: reset all keyword variables to notCurrent
         """
-        # print "%s.refreshAllVar(resetAll=%s); refeshCmdDict=%s" % (self, resetAll, self.refreshCmdDict)
-
         # cancel pending update, if any
         self._refreshAllTimer.cancel()
         self._refreshNextTimer.cancel()
@@ -447,7 +437,6 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
     def refreshCmdDictChanged(self):
         """Call if you change refrechCmdDict
         """
-#         print "refreshCmdDictChanged()"
         if self._isConnected:
             self._refreshAllTimer.start(0, self.refreshAllVar, resetAll=False)
         else:
@@ -495,7 +484,6 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         """
         wasConnected = self._isConnected
         self._isConnected = conn.isConnected
-        # print "updConnState; wasConnected=%s, isConnected=%s, conn.state=%s" % (wasConnected, self._isConnected, conn.state)
         if wasConnected != self._isConnected:
             if self._isConnected or self.callKeyVarsOnDisconnect:
                 self._refreshAllTimer.start(0, self.refreshAllVar)
@@ -521,7 +509,6 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         my parent function checkCmdTimeouts to run
         at the usual interval later.
         """
-#         print "opscore.actor.CmdKeyVarDispatcher._checkRemCmdTimeouts(%s)" % cmdVarIter
         try:
             for cmdVar in cmdVarIter:
                 errReply = None
@@ -615,7 +602,6 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         Timer(0.001, self._nextKeyVarCallback, keyVarListIter, includeNotCurrent)
 
     def _readCallback(self, sock, data):
-#         print "%s._readCallback(sock=%r, data=%r)" % (self, sock, data)
         self.readUnixTime = time.time()
         self.dispatchReplyStr(data)
 
@@ -650,7 +636,6 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         # handle delayCallbacks:
         if not self.delayCallbacks or not self._allRefreshCmdsSent or self._runningRefreshCmdSet:
             return
-#         print "using delayCallbacks and the last refresh command has finished; refresh all variables"
         self._enableCallbacks = True
         self.sendAllKeyVarCallbacks(includeNotCurrent=False)
     
@@ -662,7 +647,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         update the refresh command dict accordingly.
         
         Inputs:
-        - cmdVar    command variable (opscore.actor.keyvar.CmdVar)
+        - cmdVar    command variable (opscore.actor.CmdVar)
         - reply     Reply object (opscore.protocols.messages.Reply) to send
         """
         if doLog:
@@ -685,7 +670,6 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         - refreshCmdItemIter: iterator over items in refreshCmdDict;
           if None then set to self.refreshCmdDict.iteritems()
         """
-#         print "%s._sendNextRefreshCmd(%s)" % (self, refreshCmdItemIter)
         if not self._isConnected:
             return
 
@@ -699,7 +683,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
             return
         actor, cmdStr = refreshCmdInfo
         try:
-            cmdVar = keyvar.CmdVar (
+            cmdVar = CmdVar (
                 actor = actor,
                 cmdStr = cmdStr,
                 timeLim = _RefreshTimeLim,

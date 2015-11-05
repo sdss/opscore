@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+from __future__ import division, absolute_import, print_function
 """Code to run scripts that can wait for various things without messing up the main event loop
 (and thus starving the rest of your program).
 
@@ -34,6 +34,8 @@ History:
 2014-07-01 ROwen    Added waitSec method.
 2015-05-08 ROwen    Added waitPause method.
 2015-11-03 ROwen    Replace "== None" with "is None" and "!= None" with "is not None" to modernize the code.
+2015-11-05 ROwen    Added from __future__ import and removed commented-out print statements.
+                    Removed initial #! line.
 """
 import sys
 import threading
@@ -199,9 +201,9 @@ class BaseScriptRunner(RO.AddCallback.BaseMixin):
         if not self.debug:
             return
         try:
-            print msgStr
+            print(msgStr)
         except (TypeError, ValueError):
-            print repr(msgStr)
+            print(repr(msgStr))
 
     @property
     def fullState(self):
@@ -466,7 +468,6 @@ class BaseScriptRunner(RO.AddCallback.BaseMixin):
     def _cmdFailCallback(self, cmdVar):
         """Use as a callback for when an asynchronous command fails.
         """
-#       print "BaseScriptRunner._cmdFailCallback(%r)" % (cmdVar,)
         if not cmdVar.didFail:
             errMsg = "Bug! RO.BaseScriptRunner._cmdFail(%r) called for non-failed command" % (cmdVar,)
             raise RuntimeError(errMsg)
@@ -500,7 +501,6 @@ class BaseScriptRunner(RO.AddCallback.BaseMixin):
         
         try:
             if iterID != self._iterID:
-                #print "Warning: _continue called with iterID=%s; expected %s" % (iterID, self._iterID)
                 raise RuntimeError("%s: bug! _continue called with bad id; got %r, expected %r" % (self, iterID, self._iterID))
     
             self.value = val
@@ -508,7 +508,6 @@ class BaseScriptRunner(RO.AddCallback.BaseMixin):
             self._waiting = False
             
             if self.isPaused:
-                #print "_continue: still paused"
                 return
         
             if not self._iterStack:
@@ -528,7 +527,6 @@ class BaseScriptRunner(RO.AddCallback.BaseMixin):
             if hasattr(possIter, "next"):
                 self._iterStack.append(possIter)
                 self._iterID = self._getNextID(addLevel = True)
-#               print "Iteration yielded an iterator"
                 self._continue(self._iterID)
             else:
                 self._iterID = self._getNextID()
@@ -536,7 +534,6 @@ class BaseScriptRunner(RO.AddCallback.BaseMixin):
             self._printState("_continue: after iteration")
 
         except StopIteration:
-#           print "StopIteration seen in _continue"
             self._iterStack.pop(-1)
             if not self._iterStack:
                 self._setState(self.Done)
@@ -558,8 +555,8 @@ class BaseScriptRunner(RO.AddCallback.BaseMixin):
         Ignored unless _DebugState or self.debug true.
         """
         if _DebugState:
-            print "Script %s: %s: state=%s, iterID=%s, waiting=%s, iterStack depth=%s" % \
-                (self.name, prefix, self._state, self._iterID, self._waiting, len(self._iterStack))
+            print("Script %s: %s: state=%s, iterID=%s, waiting=%s, iterStack depth=%s" %
+                (self.name, prefix, self._state, self._iterID, self._waiting, len(self._iterStack)))
 
     def __del__(self):
         """Called just before the object is deleted.
@@ -621,7 +618,6 @@ class BaseScriptRunner(RO.AddCallback.BaseMixin):
             # if aborting and a cancel function exists, call it
             if newState in self._FailedStates:
                 for func in self._cancelFuncs:
-#                   print "%s _setState calling cancel function %r" % (self, func)
                     func()
             self._cancelFuncs = []
             self._end()
@@ -694,7 +690,7 @@ class _WaitBase(object):
         except ValueError:
             raise RuntimeError("Cancel function missing; did you forgot the 'yield' when calling a BaseScriptRunner method?")
         if self.scriptRunner.debug and val is not None:
-            print "wait returns %r" % (val,)
+            print("wait returns %r" % (val,))
         self.scriptRunner._continue(self._iterID, val)
 
 
@@ -728,7 +724,6 @@ class _WaitCmdVars(_WaitBase):
         if self.state[0] != 0:
             # no need to wait; commands are already done or one has failed
             # schedule a callback for asap
-#            print "_WaitCmdVars: no need to wait"
             Timer(0.001, self.varCallback)
         else:
             # need to wait; add self as callback to each cmdVar
@@ -768,7 +763,6 @@ class _WaitCmdVars(_WaitBase):
     def cancelWait(self):
         """Call when aborting early.
         """
-#       print "_WaitCmdVars.cancelWait"
         self.cleanup()
         for cmdVar in self.cmdVars:
             cmdVar.abort()
@@ -776,7 +770,6 @@ class _WaitCmdVars(_WaitBase):
     def cleanup(self):
         """Called when ending for any reason.
         """
-#       print "_WaitCmdVars.cleanup"
         if self.addedCallback:
             for cmdVar in self.cmdVars:
                 if not cmdVar.isDone:
@@ -787,7 +780,6 @@ class _WaitCmdVars(_WaitBase):
     def fail(self, cmdVar):
         """A command var failed.
         """
-#       print "_WaitCmdVars.fail(%s)" % (cmdVar,)
         self.scriptRunner._cmdFailCallback(cmdVar)
 
 
@@ -829,7 +821,7 @@ class _WaitKeyVar(_WaitBase):
                 argList.append("defVal=%r" % (defVal,))
             if waitNext:
                 argList.append("waitNext=%r" % (waitNext,))
-            print "waitKeyVar(%s)" % ", ".join(argList)
+            print("waitKeyVar(%s)" % ", ".join(argList))
 
             # prevent the call from failing by using None instead of Exception
             if self.defVal == Exception:
@@ -838,7 +830,6 @@ class _WaitKeyVar(_WaitBase):
             Timer(0.001, self.varCallback)
         else:
             # need to wait; set self as a callback
-#           print "_WaitKeyVar adding callback"
             self.keyVar.addCallback(self.varCallback, callNow=False)
             self.addedCallback = True
     
@@ -846,7 +837,6 @@ class _WaitKeyVar(_WaitBase):
         """Set scriptRunner.value to value. If value is invalid,
         use defVal (if specified) else cancel the wait and fail.
         """
-#       print "_WaitKeyVar.varCallback(keyVar=%r) % (keyVar,)"
         if self.keyVar.isCurrent:
             self._continue(self.getVal())
         elif self.defVal != Exception:
@@ -857,7 +847,6 @@ class _WaitKeyVar(_WaitBase):
     def cleanup(self):
         """Called when ending for any reason.
         """
-#       print "_WaitKeyVar.cleanup"
         if self.addedCallback:
             self.keyVar.removeCallback(self.varCallback, doRaise=False)
         
@@ -872,7 +861,6 @@ class _WaitKeyVar(_WaitBase):
 
 class _WaitThread(_WaitBase):
     def __init__(self, scriptRunner, func, *args, **kargs):
-#       print "_WaitThread.__init__(%r, *%r, **%r)" % (func, args, kargs)
         self._pollTimer = Timer()
         _WaitBase.__init__(self, scriptRunner)
         
@@ -886,90 +874,19 @@ class _WaitThread(_WaitBase):
         self.threadObj.setDaemon(True)
         self.threadObj.start()
         self._pollTimer.start(_PollDelaySec, self.checkEnd)
-#       print "_WaitThread__init__(%r) done" % self.func
     
     def checkEnd(self):
         if self.threadObj.isAlive():
             self._pollTimer.start(_PollDelaySec, self.checkEnd)
             return
-#       print "_WaitThread(%r).checkEnd: thread done" % self.func
         
         retVal = self.queue.get()
-#       print "_WaitThread(%r).checkEnd; retVal=%r" % (self.func, retVal)
         self._continue(val=retVal)
         
     def cleanup(self):
-#       print "_WaitThread(%r).cleanup" % self.func
         self._pollTimer.cancel()
         self.threadObj = None
 
     def threadFunc(self, *args, **kargs):
         retVal = self.func(*args, **kargs)
         self.queue.put(retVal)
-
-
-if __name__ == "__main__":
-    import cmdkeydispatcher
-    import time
-    from twisted.internet import reactor
-    
-    dispatcher = cmdkeydispatcher.CmdKeyVarDispatcher()
-    
-    scriptList = []
-
-    def initFunc(sr):
-        global scriptList
-        print "%s init function called" % (sr,)
-        scriptList.append(sr)
-
-    def endFunc(sr):
-        print "%s end function called" % (sr,)
-    
-    def script(sr):
-        def threadFunc(nSec):
-            time.sleep(nSec)
-        nSec = 1.0
-        print("%s waiting in a thread for %s sec" % (sr, nSec))
-        yield sr.waitThread(threadFunc, 1.0)
-        
-        for val in range(5):
-            print("%s value = %s" % (sr, val))
-            yield sr.waitMS(1000)
-    
-    def stateFunc(sr):
-        state, reason = sr.fullState
-        if reason:
-            msgStr = "%s state=%s: %s" % (sr, state, reason)
-        else:
-            msgStr = "%s state=%s" % (sr, state)
-        print(msgStr)
-        for sr in scriptList:
-            if not sr.isDone:
-                return
-        reactor.stop()
-
-    sr1 = BaseScriptRunner(
-        runFunc = script,
-        name = "Script 1",
-        dispatcher = dispatcher,
-        initFunc = initFunc,
-        endFunc = endFunc,
-        stateFunc = stateFunc,
-    )
-    
-    sr2 = BaseScriptRunner(
-        runFunc = script,
-        name = "Script 2",
-        dispatcher = dispatcher,
-        initFunc = initFunc,
-        endFunc = endFunc,
-        stateFunc = stateFunc,
-    )
-    
-    # start the scripts in a staggared fashion
-    sr1.start()
-    Timer(1.5, sr1.pause)
-    Timer(3.0, sr1.resume)
-    Timer(2.5, sr2.start)
-    
-    reactor.run()
