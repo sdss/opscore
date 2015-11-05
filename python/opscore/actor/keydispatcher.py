@@ -100,7 +100,7 @@ class KeyVarDispatcher(object):
         # parse message; if that fails, log it as an error
         try:
             reply = self.parser.parse(replyStr)
-        except Exception, e:
+        except Exception as e:
             self.logMsg(
                 msgStr = "CouldNotParse; Reply=%r; Text=%r" % (replyStr, strFromException(e)),
                 severity = RO.Constants.sevError,
@@ -110,7 +110,7 @@ class KeyVarDispatcher(object):
         # dispatch message
         try:
             self.dispatchReply(reply)
-        except Exception, e:
+        except Exception as e:
             sys.stderr.write("Could not dispatch replyStr=%r\n    which was parsed as reply=%r\n" % \
                 (replyStr, reply))
             traceback.print_exc(file=sys.stderr)
@@ -184,7 +184,7 @@ class KeyVarDispatcher(object):
                 cmdID = cmdID,
                 keywords = keywords,
             )
-        except Exception, e:
+        except Exception as e:
             sys.stderr.write("Could not log msgStr=%r; severity=%r; actor=%r; cmdr=%r; keywords=%r\n    error: %s\n" % \
                 (msgStr, severity, actor, cmdr, keywords, strFromException(e)))
             traceback.print_exc(file=sys.stderr)
@@ -208,7 +208,7 @@ class KeyVarDispatcher(object):
                 cmdID = reply.header.commandId,
                 fallbackToStdOut = fallbackToStdOut,
             )
-        except Exception, e:
+        except Exception as e:
             sys.stderr.write("Could not log reply=%r\n    error=%s\n" % (reply, strFromException(e)))
             traceback.print_exc(file=sys.stderr)
 
@@ -255,7 +255,7 @@ class KeyVarDispatcher(object):
                         severity = RO.Constants.sevError,
                         fallbackToStdOut = True,
                     )
-                except:
+                except Exception:
                     print "Failed to set %s to %s:" % (keyVar, keyword.values)
                     traceback.print_exc(file=sys.stderr)
 

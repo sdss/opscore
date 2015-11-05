@@ -15,7 +15,8 @@ except ImportError:
     pass
 from opscore.actor import Model, ActorDispatcher, CmdVar
 
-HubDispatcher = ActorDispatcher("hub")
+HubDispatcher = ActorDispatcher("hub", yourUserIDKeyName=None)
+HubDispatcher._myUserID = 0
 
 class ModelTests(unittest.TestCase):
     model = HubDispatcher.model

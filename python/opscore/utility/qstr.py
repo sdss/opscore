@@ -66,7 +66,7 @@ if __name__ == "__main__":
         qt = qstr(t)
         try:
             e = eval(qt)
-        except Exception, e:
+        except Exception as e:
             print "===== NE: %r" % (t)
             print "        : %r" % (qt)
             print "                 error: %s" % (e)
@@ -83,7 +83,7 @@ if __name__ == "__main__":
         qt = qstr(t, tquote="'")
         try:
             e = eval(qt)
-        except Exception, e:
+        except Exception as e:
             print "===== NE: %r" % (t)
             print "        : %r" % (qt)
             print "                 error: %s" % (e)

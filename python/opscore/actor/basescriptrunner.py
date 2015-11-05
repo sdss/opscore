@@ -547,9 +547,9 @@ class BaseScriptRunner(RO.AddCallback.BaseMixin):
         except SystemExit:
             self.__del__()
             sys.exit(0)
-        except ScriptError, e:
+        except ScriptError as e:
             self._setState(self.Failed, RO.StringUtil.strFromException(e))
-        except Exception, e:
+        except Exception as e:
             traceback.print_exc(file=sys.stderr)
             self._setState(self.Failed, RO.StringUtil.strFromException(e))
     
@@ -585,7 +585,7 @@ class BaseScriptRunner(RO.AddCallback.BaseMixin):
                 self._reason = "keyboard interrupt"
             except SystemExit:
                 raise
-            except Exception, e:
+            except Exception as e:
                 self._state = self.Failed
                 self._reason = "endFunc failed: %s" % (RO.StringUtil.strFromException(e),)
                 traceback.print_exc(file=sys.stderr)

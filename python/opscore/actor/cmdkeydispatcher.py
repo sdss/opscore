@@ -228,7 +228,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         
         try:
             self.makeReply(dataStr="TestName")
-        except Exception, e:
+        except Exception as e:
             raise ValueError("Invalid name=%s cannot be parsed as an actor name; error: %s" % \
                 (name, strFromException(e)))
         
@@ -366,7 +366,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
 #                 cmdID = cmdVar.cmdID,
 #             )
 #             print >> sys.stderr, "executing:", fullCmdStr
-        except Exception, e:
+        except Exception as e:
             errReply = self.makeReply(
                 cmdID = cmdVar.cmdID,
                 dataStr = "WriteFailed; Actor=%r; Cmd=%r; Text=%r" % (
@@ -708,7 +708,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
             )
             self._runningRefreshCmdSet.add(cmdVar)
             self.executeCmd(cmdVar)
-        except:
+        except Exception:
             sys.stderr.write("%s._sendNextRefreshCmd: refresh command %s failed:\n" % (self, cmdVar,))
             traceback.print_exc(file=sys.stderr)
         self._refreshNextTimer.start(0, self._sendNextRefreshCmd, refreshCmdItemIter)

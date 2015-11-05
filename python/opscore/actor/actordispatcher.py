@@ -52,9 +52,6 @@ class SimpleModel(object):
 class ActorDispatcher(CmdKeyVarDispatcher):
     """Parse replies and sets KeyVars. Also manage CmdVars and their replies.
     
-    Subclasses must set _myUserID (unless the actor only allows a single user);
-    this is typically done using a callback from a suitable keyword variable such as yourUserID.
-
     Fields:
     - readUnixTime: unix time at which last message received from connection; 0 if no message ever received.
     """
@@ -76,7 +73,9 @@ class ActorDispatcher(CmdKeyVarDispatcher):
             where the first argument is positional and the others are by name
             and severity is an RO.Constants.sevX constant
             If None then nothing is logged.
-        - yourUserIDKeyName: name of keyword variable that provides your user ID
+        - yourUserIDKeyName: name of keyword variable that provides your user ID;
+            if the actor provides no such kewyord then specify None, and if the actor
+            supports multiple users then set self._myUserID manually to the correct value.
 
         Raises ValueError if name has no actor dictionary in actorkeys.
         """
@@ -94,6 +93,9 @@ class ActorDispatcher(CmdKeyVarDispatcher):
         if yourUserIDKeyName:
             yourUserIDKeyVar = getattr(self.model, yourUserIDKeyName)
             yourUserIDKeyVar.addCallback(self._yourUserIDKeyVarCallback)
+        else:
+            # assume actor only supports one user
+            self._myUserID = 0
         
         if self.refreshCmdDict:
             raise RuntimeError("Internal error: refreshCmdDict should be empty but contains %s" % (self.refreshCmdDict,))
@@ -138,13 +140,14 @@ class ActorDispatcher(CmdKeyVarDispatcher):
                 cmdID = reply.header.commandId,
                 fallbackToStdOut = fallbackToStdOut,
             )
-        except Exception, e:
+        except Exception as e:
             sys.stderr.write("Could not log reply=%r\n    error=%s\n" % (reply, strFromException(e)))
             traceback.print_exc(file=sys.stderr)
     
     def replyIsMine(self, reply):
         """Return True if I am the commander for this message.
         """
+        print "reply.header.userId=%r; self._myUserID=%r" % (reply.header.userId, self._myUserID)
         return reply.header.userId == self._myUserID
 
     def refreshAllVar(self, resetAll=True):
@@ -175,7 +178,7 @@ class ActorDispatcher(CmdKeyVarDispatcher):
                         severity = RO.Constants.sevError,
                         fallbackToStdOut = True,
                     )
-                except:
+                except Exception:
                     print "Failed to set %s to %s:" % (keyVar, keyword.values)
                     traceback.print_exc(file=sys.stderr)
 

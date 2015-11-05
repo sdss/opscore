@@ -6,13 +6,11 @@ Refer to https://trac.sdss3.org/wiki/Ops/Validation for details.
 
 # Created 7-Nov-2008 by David Kirkby (dkirkby@uci.edu)
 
-import sys
 import textwrap
 
 import opscore.protocols.messages as protoMess
-import opscore.protocols.keys as protoKeys
 
-from opscore.protocols.keys import Consumer,TypedValues,Key,CmdKey,KeysManager
+from opscore.protocols.keys import Consumer, TypedValues, CmdKey, KeysManager
 from opscore.protocols.keysformat import KeysFormatParser
 
 class ValidationError(Exception):
@@ -227,7 +225,7 @@ class CommandHandler(HandlerBase):
                 raise KeyError('no consumers found for %s' % (name))
             try:
                 self.consumers[name].remove(consumer)
-            except ValueError, e:
+            except ValueError:
                 raise ValueError('no %s consumer found for %s' % (name, consumer))
             if self.consumers[name] == []:
                 del self.consumers[name]
