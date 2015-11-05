@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+from __future__ import division, absolute_import, print_function
 """Assemble a set of postage stamps images of guide fiber bundles into one image
 
 The postage stamp images are displayed at full scale and in roughly
@@ -185,15 +185,10 @@ class PostageStamp(object):
         rightMargin = maxEndPos - self.decImEndPos
         adjustment = numpy.where(leftMargin < 0, -leftMargin,
             numpy.where(rightMargin < 0, rightMargin, (0, 0)))
-#        print "ctrPos=%s, adjustment=%s" % (ctrPos, adjustment)
         if numpy.any(adjustment != (0, 0)):
             self.decImStartPos += adjustment
             self.decImEndPos += adjustment
             self.decImCtrPos += adjustment
-#             print "ctrPos=%s; self.image.shape=%s; mainImageShape=%s" % \
-#                 (ctrPos, self.image.shape, mainImageShape)
-#             print "self.decImCtrPos=%s; self.decImStartPos=%s; self.decImEndPos=%s" % \
-#                 (self.decImCtrPos, self.decImStartPos, self.decImEndPos)
 
     def getDecimatedImageRegion(self):
         """Return region of this stamp on the decimated image.
@@ -331,7 +326,6 @@ class AssembleImage(object):
             smallStampShape = (19, 19)
         bgPixPerMM = numpy.mean((imageShape - smallStampShape - (2 * self.margin))) / PlateDiameterMM
         minPosXYMM = -imageShape[::-1] / (2.0 * bgPixPerMM)
-#         print "bgPixPerMM=%s, minPosXYMM=%s" % (bgPixPerMM, minPosXYMM)
 
         stampList = []
         for ind, dataEntry in enumerate(dataTable):
@@ -417,13 +411,11 @@ class AssembleImage(object):
         corrArr = numpy.zeros(actPosArr.shape, dtype=float)
         corrFrac = self.InitialCorrFrac
         nIter = 0
-#        print "corrFrac=%s" % (corrFrac,)
         while quality >= self.MinQuality:
             corrArr[:,:] = 0.0
             edgeQuality = self.computeEdgeCorr(corrArr, actPosArr, radArr, corrFrac, imageShape)
             conflictQuality = self.computeConflictCorr(corrArr, actPosArr, radArr, corrFrac)
             quality = edgeQuality + conflictQuality
-#            print "quality=%s; edgeQuality=%s; conflictQuality=%s" % (quality, edgeQuality, conflictQuality)
 
             # limit correction to max corr
             corrRadius = numpy.sqrt(corrArr[:, 0]**2 + corrArr[:, 1]**2)
@@ -455,16 +447,11 @@ class AssembleImage(object):
         """
         quality = 0
         xyImageSize = numpy.array(imageShape[::-1])
-#        print "corrArr=%r\nposArr=%r\nradArr=%r\ncorrFrac=%s, imageShape=%r" % (corrArr, posArr, radArr, corrFrac, imageShape)
         maxXYPosArr = xyImageSize - radArr[:,numpy.newaxis]
-#        print "maxXYPosArr=%r" % (maxXYPosArr)
         corrArr = numpy.where(posArr < radArr[:,numpy.newaxis], radArr[:,numpy.newaxis] - posArr, 0)
-#        print "corrArr after min=%r" % (corrArr,)
         corrArr += numpy.where(posArr > maxXYPosArr, maxXYPosArr - posArr, 0)
-#        print "corrArr after max=%r" % (corrArr,)
         quality = numpy.sum(corrArr[:,0]**2 + corrArr[:,1]**2)
         corrArr *= corrFrac
-#        print "quality=%s\ncorrArr final=%r" % (quality, corrArr)
         return quality
 
     def computeConflictCorr(self, corrArr, posArr, radArr, corrFrac):
@@ -494,13 +481,3 @@ class AssembleImage(object):
             quality += (corr[0]**2 + corr[1]**2)
             corrArr[ind] += corr * corrFrac
         return quality
-
-
-if __name__ == "__main__":
-    import os.path
-    import pyfits
-    testImagePath = os.path.join(os.path.dirname(__file__), "proc-gimg-1310.fits")
-    imAssembler = AssembleImage()
-    im = pyfits.open(testImagePath)
-    results = imAssembler(im)
-    print results
