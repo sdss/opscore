@@ -5,8 +5,10 @@ bin/messageTrace.py -text
 etc/config.ini -text
 etc/opscore.module -text
 examples/__init__.py -text
+examples/basescriptrunner.py -text
 examples/logparse.py -text
 examples/migration.py -text
+examples/scriptrunner.py -text
 examples/secret.py -text
 examples/tcc_sample.log -text
 python/opscore/__init__.py -text

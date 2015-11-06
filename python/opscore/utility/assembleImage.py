@@ -222,7 +222,7 @@ def decimateStrip(imArr):
     stampSize = imArr.shape[1]
     if stampSize == 0:
         return []
-    numIm = stampShape[0] / stampSize
+    numIm = stampShape[0] // stampSize
     if stampSize * numIm != stampShape[0]:
         raise ValueError("image shape %s is not a column of an even number of squares" % (stampShape,))
     stampImageList = [imArr[(ind * stampSize):((ind + 1) * stampSize), :] for ind in range(numIm)]
