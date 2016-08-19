@@ -52,7 +52,7 @@ class NoPlateInfo(AIException):
     """Exception thrown by AssembleImage if the image has no plate information.
     """
     pass
-    
+
 class PlateInfoWrongVersion(AIException):
     """Exception thrown by AssembleImage if the image has an unparseable version of plate info.
     """
@@ -62,7 +62,7 @@ class PlateInfoInvalid(AIException):
     """Plate information is invalid and cannot be parsed
     """
     pass
-    
+
 def asArr(seq, shape=(2,), dtype=float):
     """Convert a sequence of floats to a numpy array
     """
@@ -81,11 +81,11 @@ class PlateInfo(object):
 
 class PostageStamp(object):
     """Information about a postage stamp
-    
+
     For now allow much of the info to be None, but once the names are nailed down
     for the FITS file then require all of these that my code uses
     (and perhaps ditch the rest).
-    
+
     Useful attributes:
     - All those specified in the constructor plus:
     - decImStartPos: start position of postage stamp on image (i,j int pixels); None until set by setDecimatedImagePos
@@ -152,15 +152,15 @@ class PostageStamp(object):
         self.decImStartPos = None
         self.decImCtrPos = None
         self.decImEndPos = None
-    
+
     def setDecimatedImagePos(self, ctrPos, mainImageShape):
         """Set position of stamp on decimated image.
-        
+
         Sets the following fields:
         - decImStartPos
         - decImCtrPos
         - decImEndPos
-        
+
         Inputs:
         - ctrPos: desired position of center of postage stamp on decimated image (float x,y pixels)
         - mainImageShape: shape of main image (i, j pixels)
@@ -192,13 +192,13 @@ class PostageStamp(object):
 
     def getDecimatedImageRegion(self):
         """Return region of this stamp on the decimated image.
-        
+
         Returns a tuple:
         - startSlice: slice(i,j int pixels) for start of region
         - endSlice: slice(i, j int pixels) of end of region
         """
         return tuple(slice(self.decImStartPos[i], self.decImEndPos[i]) for i in (1, 0))
-    
+
     def getRadius(self):
         """Return radius of this region (float pixels)
         """
@@ -207,15 +207,15 @@ class PostageStamp(object):
 
 def decimateStrip(imArr):
     """Break an image consisting of a row of square postage stamps into individual postage stamp images.
-    
+
     Inputs:
     - imArr: an image array of shape [imageShape * numIm, imageShape], where numIm is an integer
-    
+
     Returns:
     - stampImageList: a list of numIm image arrays, each imageShape x imageShape
-    
+
     Note: the axes of imArr are (y, x) relative to ds9 display of the image.
-    
+
     Raise ValueError if imArr shape is not [imageShape * numIm, imageShape], where numIm is an integer
     """
     stampShape = imArr.shape
@@ -236,7 +236,7 @@ class AssembleImage(object):
     MaxIters = 100
     def __init__(self, relSize=1.0, margin=20):
         """Create a new AssembleImage
-        
+
         Inputs:
         - relSize: shape of assembled image (along i or j) / shape of original image
         - margin: number of pixels of margin around each edge
@@ -246,17 +246,17 @@ class AssembleImage(object):
 
     def __call__(self, guideImage):
         """Assemble an image array by arranging postage stamps from a guider FITS image
-        
+
         Inputs:
         - guideImage: a guider image (pyfits image):
-        
+
         Returns a PlateInfo object
-        
+
         Note: the contents of the images and masks are not interpreted by this routine;
         the data is simply rearranged into a new output image and mask.
-        
+
         Written for image format: SDSSFmt = gproc 1 0, but will try to deal with higher versions.
-        
+
         Raise class NoPlateInfo if the image has no plate information
         Raise PlateInfoWrongVersion if the image has an unparseable version of plate info
         """
@@ -289,7 +289,7 @@ class AssembleImage(object):
             plateArcSecPerMM = 3600.0 / plateScale # plate scale in arcsec/mm
         except Exception:
             raise PlateInfoInvalid("Could not find or parse PLATSCAL header entry")
-        
+
         inImageShape = numpy.array(guideImage[0].data.shape, dtype=int)
         imageShape = numpy.array(inImageShape * self.relSize, dtype=int)
         dataTable = guideImage[6].data
@@ -298,11 +298,11 @@ class AssembleImage(object):
             background = float(guideImage[0].header["IMGBACK"])
         except Exception:
             sys.stderr.write("AssembleImage: IMGBACK header missing; estimating background locally\n")
-            background = numpy.median(guideImage[0].data, type=float)
+            background = numpy.median(guideImage[0].data.astype(numpy.float))
 
         smallStampImage = guideImage[2].data - background
         largeStampImage = guideImage[4].data - background
-        
+
         smallStampImageList = decimateStrip(smallStampImage)
         smallStampMaskList = decimateStrip(guideImage[3].data)
         if len(smallStampImageList) != len(smallStampMaskList):
@@ -315,10 +315,10 @@ class AssembleImage(object):
             raise PlateInfoInvalid("%s large image stamps != %s large image masks" % (len(largeStampImageList), len(largeStampMaskList)))
         numLargeStamps = len(largeStampImageList)
         numStamps = numSmallStamps + numLargeStamps
-        
+
         if numStamps == 0:
             raise NoPlateInfo("No postage stamps")
-        
+
         if smallStampImageList:
             smallStampShape = smallStampImageList[0].shape
         else:
@@ -350,7 +350,7 @@ class AssembleImage(object):
             if not dataEntry["exists"]:
                 # do not show postage stamp images for nonexistent (e.g. broken) probes
                 continue
-            
+
             # older image files don't contain gprobebits
             # and pyfits tables don't support "get", so...
             try:
@@ -394,12 +394,12 @@ class AssembleImage(object):
 
     def removeOverlap(self, desPosArr, radArr, imageShape):
         """Remove overlap from an array of bundle positions.
-        
+
         Inputs:
         - desPosArr: an array of the desired position of the center of each postage stamp (x,y pixels)
         - radArr: an array of the radius of each postage stamp
         - imageShape: shape of image (i,j pixels)
-        
+
         Returns:
         - actPosArr: an array of positions of the center of each postage stamp (x,y pixels)
         - quality: quality of solution; smaller is better
@@ -407,7 +407,7 @@ class AssembleImage(object):
         """
         actPosArr = desPosArr.copy()
         maxCorr = radArr.min()
-        quality = numpy.inf 
+        quality = numpy.inf
         corrArr = numpy.zeros(actPosArr.shape, dtype=float)
         corrFrac = self.InitialCorrFrac
         nIter = 0
@@ -432,16 +432,16 @@ class AssembleImage(object):
 
     def computeEdgeCorr(self, corrArr, posArr, radArr, corrFrac, imageShape):
         """Compute corrections to keep fiber bundles on the display
-        
+
         In/Out:
         - corrArr: updated
-        
+
         In:
         - posArr: position of each fiber bundle (x,y pixels)
         - radArr: radius of each bundle (pixels)
         - corrFrac: fraction of computed correction to apply
         - imageShape: shape of image (i,j pixels)
-        
+
         Returns:
         - quality: quality of solution due to edge overlap
         """
@@ -461,7 +461,7 @@ class AssembleImage(object):
         - posArr: position of each fiber bundle (x,y pixels)
         - radArr: radius of each bundle (pixels)
         - corrFrac: fraction of computed correction to apply
-        
+
         Returns:
         - quality: quality of solution due to overlap with other bundles
         """
