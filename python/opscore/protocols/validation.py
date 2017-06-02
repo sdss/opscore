@@ -15,7 +15,7 @@ from opscore.protocols.keysformat import KeysFormatParser
 
 class ValidationError(Exception):
     pass
-    
+
 class KeywordsIterator(object):
     """
     Iterates through a Keywords instance
@@ -23,7 +23,7 @@ class KeywordsIterator(object):
     def __init__(self,keywords,begin=0):
         self.keys = keywords
         self.index = begin
-    
+
     def keyword(self):
         try:
             return self.keys[self.index]
@@ -32,14 +32,14 @@ class KeywordsIterator(object):
 
     def advance(self,amount=1):
             self.index += amount
-            
+
     def __repr__(self):
         return '[%s]' % ','.join([repr(key) for key in self.keys[self.index:]])
-        
+
     def clone(self):
         # this could be optimized to only clone keys[index:]
         return KeywordsIterator(self.keys.clone(),self.index)
-    
+
     def copy(self,other):
         self.keys.copy(other.keys)
         self.index = other.index
@@ -53,14 +53,14 @@ class DispatchMixin(object):
             self.callbacks = [ ]
         self.callbacks.append(callback)
         return self
-    
+
     def invokeCallbacks(self,message):
         if hasattr(self,'callbacks'):
             for callback in self.callbacks:
                 callback(message)
 
 class Cmd(Consumer,DispatchMixin):
-    
+
     parser = None
 
     def __init__(self,verb,*args,**metadata):
@@ -78,12 +78,13 @@ class Cmd(Consumer,DispatchMixin):
         if self.format:
             self.consumer = self.parser.parse(self.format)
         self.help = metadata.get('help',None)
-        
+
     def __repr__(self):
         return 'Cmd(%r,%r,%r)' % (self.verb,self.typedValues,self.format)
-        
+
     def consume(self,message):
         self.trace(message)
+
         if not isinstance(message,protoMess.Command):
             return self.failed('message is not a command')
         if not message.name == self.verb:
@@ -107,9 +108,11 @@ class Cmd(Consumer,DispatchMixin):
         # if we get here, the message has been fully validated
         self.invokeCallbacks(message)
         return self.passed(message)
-        
-    def match(self,message):
+
+    def match(self, message, extra_keywords=[]):
+
         self.trace(message)
+
         if not isinstance(message,protoMess.Command):
             return self.failed('message is not a command')
         if not message.name == self.verb:
@@ -122,18 +125,26 @@ class Cmd(Consumer,DispatchMixin):
         self.checkpoint = message.clone()
         # try to match all of this command's keywords against our format string
         iterator = KeywordsIterator(message.keywords)
+
         if self.consumer and not self.consumer.consume(iterator):
             # restore the original message
             message.copy(self.checkpoint)
             return self.failed('keywords do not match format string')
-        if iterator.keyword():
-            # restore the original message
-            message.copy(self.checkpoint)
-            return self.failed('command has unmatched keywords: %r' % iterator)
-        # if we get here, the message has been fully validated
 
+        if iterator.keyword():
+            # If iterator still has more keywords it means that there are
+            # extra keywords not matched with the consumer keyword list.
+            # We removed them from the message.keyword list but store them
+            # apart so that we can inform about them later.
+            extra_keywords.append(iterator.keyword())
+            message.keywords.remove(iterator.keyword())
+            return self.match(message, extra_keywords=extra_keywords)
+
+        message.extra_keywords = extra_keywords
+
+        # if we get here, the message has been fully validated
         return message, self.callbacks
-        
+
     def create(self,*kspecs,**kwargs):
         values = kwargs.get('values',None)
         if len(kspecs) == 1 and isinstance(kspecs[0],list):
@@ -154,7 +165,7 @@ class Cmd(Consumer,DispatchMixin):
         if not self.consume(command):
             raise ValidationError('Keywords or values do match Cmd template')
         return command
-    
+
     def describe(self):
         text = '%12s: %s\n' % ('Command',self.verb)
         if self.help:
@@ -164,7 +175,7 @@ class Cmd(Consumer,DispatchMixin):
         text += self.typedValues.describe()[:-1] + '\n'
         text += '%12s: %s\n' % ('Keywords',self.format)
         return text
-    
+
     def describeAsHTML(self):
         pass
 
@@ -173,7 +184,7 @@ import opscore.protocols.parser as parser
 class HandlerBase(object):
     """
     Base class for Command and Reply handlers
-    
+
     Subclass must define parser attribute and consumeLine method
     """
     def consume(self,string):
@@ -214,7 +225,7 @@ class CommandHandler(HandlerBase):
             if name not in self.consumers:
                 self.consumers[name] = [ ]
             self.consumers[name].append(consumer)
-                
+
     def removeConsumers(self,*consumers):
         """ Remove a list of consumer Cmds. """
         for consumer in consumers:
@@ -229,7 +240,7 @@ class CommandHandler(HandlerBase):
                 raise ValueError('no %s consumer found for %s' % (name, consumer))
             if self.consumers[name] == []:
                 del self.consumers[name]
-        
+
     def consumeLine(self,parsed):
         if not parsed.name in self.consumers:
             raise ValidationError("No handler for cmd: %s" % parsed.name)
@@ -242,7 +253,7 @@ class CommandHandler(HandlerBase):
         if not parsed.name in self.consumers:
             raise ValidationError("No handler for cmd: %s" % parsed.name)
         for consumer in self.consumers[parsed.name]:
-            retval = consumer.match(parsed)
+            retval = consumer.match(parsed, extra_keywords=[])
             if retval:
                 return retval
         raise ValidationError("Invalid cmd: %s" % parsed.canonical())
@@ -291,14 +302,14 @@ class ReplyHandler(HandlerBase):
                 pass
             iterator.advance()
             next = iterator.keyword()
-    
+
 class Trace(object):
     """
     A callable object for tracing the execution of a message handler
     """
     def __init__(self,label=None):
         self.label = label
-    
+
     def __call__(self,message):
         if self.label:
             print '%s: %s' % (self.label,message.canonical())
