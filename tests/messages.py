@@ -30,7 +30,7 @@ class MessageTests(unittest.TestCase):
         for key in self.keywords:
             names.append(key.name)
         self.assertEqual(names,['key3','key2','key1'])
-        
+
     def test01(self):
         "Keyword dictionary operations"
         self.assertEqual(self.keywords['key1'].values[0],"-999")
@@ -46,7 +46,7 @@ class MessageTests(unittest.TestCase):
         self.assertEqual(type(self.keywords),type(self.keywords[1:]))
         self.assertEqual(type(self.keywords),type(self.keywords[1:2]))
         self.assertEqual(len(self.keywords[0:2]),2)
-        
+
     def test03(self):
         "Containment tests"
         self.assertEqual('key1' in self.keywords,True)
@@ -58,7 +58,7 @@ class MessageTests(unittest.TestCase):
         self.assertRaises(TypeError,lambda: 123 in self.keywords)
         self.assertEqual('key1' in self.keywords[1:],True)
         self.assertEqual('key1' in self.keywords[:-1],False)
-    
+
     def test04(self):
         "Reply headers"
         hdr = msg.ReplyHeader('prog','user','',123,'actor',':')
@@ -67,6 +67,32 @@ class MessageTests(unittest.TestCase):
             lambda: msg.ReplyHeader('prog','user','','abc','actor','!'))
         self.assertRaises(msg.MessageError,
             lambda: msg.ReplyHeader('prog','user','',123,'actor','?'))
-            
+
+    def test05(self):
+        """Tests getitem in Keyword."""
+
+        self.assertIsNotNone(self.keywords[1][1])
+
+    def test06(self):
+        """Tests len in Keyword."""
+
+        self.assertTrue(len(self.keywords[1]) == 2)
+
+    def test07(self):
+        """Tests iterator in Keyword."""
+
+        for value in self.keywords[1]:
+            print(value)
+            self.assertIsNotNone(value)
+
+    def test08(self):
+        """Tests the get method in keywords."""
+
+        self.assertEqual(self.keywords.get('key2'), self.keywords['key2'])
+        self.assertEqual(self.keywords.get('aaa', default='default'),
+                         'default')
+        self.assertIsNone(self.keywords.get('aaa'),)
+
+
 if __name__ == "__main__":
     unittest.main()

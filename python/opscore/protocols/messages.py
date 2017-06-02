@@ -15,7 +15,7 @@ class MessageError(Exception):
 class Canonized(object):
     """
     Represents an object with a standard string representations
-    
+
     The canonical string representation is used to define semantic
     equality via the __eq__ and __ne__ operators. The tokenized string
     representation defines grammatical equality.
@@ -40,7 +40,7 @@ class Values(list,Canonized):
     def canonical(self):
         """
         Returns the canonical string representation of a list of values
-        
+
         Should not be used for the value associated with the "raw"
         keyword. A canonical value is quoted if it begins with a single
         or double quote or contains a comma, equals sign, or any inline
@@ -60,14 +60,14 @@ class Values(list,Canonized):
                 # a lone value must be quoted so it is not confused with a keyword name
                 result += value
             else:
-                # only double quotes need to be escaped             
+                # only double quotes need to be escaped
                 result += '"%s"' % value.decode('string_escape').replace('"','\\"')
         return result
-        
+
     def tokenized(self):
         """
         Returns the parse token representation of a list of values
-        
+
         Should not be used for the value associated with the "raw"
         keyword. Does not distinguish between quoted and unquoted
         values. A tokenized string is invariant under parsing.
@@ -86,7 +86,7 @@ class Keyword(Canonized):
     def __init__(self,name,values=None):
         """
         Creates a new keyword instance
-        
+
         The "raw" keyword name (case insensitive) is reserved and must
         not be used. No checks are performed on the characters used in
         the name (the parser has normally already done this).
@@ -96,11 +96,11 @@ class Keyword(Canonized):
         self.name = name
         self.values = Values(values or [])
         self.matched = False
-        
+
     def canonical(self):
         """
         Returns the canonical string representation of this keyword
-        
+
         Two keywords with identical canonical strings are equivalent.
         The canonical form of a keyword name is all lower case. A
         canonical string is, by definition, invariant under parsing.
@@ -108,12 +108,12 @@ class Keyword(Canonized):
         result = self.name.lower()
         if self.values and len(self.values) > 0:
             result += '=%s' % self.values.canonical()
-        return result               
+        return result
 
     def tokenized(self):
         """
         Returns the parse token representation of a keyword
-        
+
         Two keywords with identical tokenized strings have the same
         basic grammar. A tokenized string is invariant under parsing.
         """
@@ -121,7 +121,7 @@ class Keyword(Canonized):
         if self.values and len(self.values) > 0:
             result += '=%s' % self.values.tokenized()
         return result
-        
+
     def clone(self):
         """
         Returns a clone of this object
@@ -129,7 +129,7 @@ class Keyword(Canonized):
         new = Keyword(self.name,self.values)
         new.matched = self.matched
         return new
-        
+
     def copy(self,other):
         """
         Copies the attributes of another Keyword instance
@@ -143,6 +143,17 @@ class Keyword(Canonized):
         if self.matched:
             result = '{' + result + '}'
         return result
+
+    def __getitem__(self, ii):
+        """Returns the i-th value from the keyword."""
+
+        return self.values[ii]
+
+    def __len__(self):
+        """Returns the length of the values."""
+
+        return len(self.values)
+
 
 class RawKeyword(Keyword):
     """
@@ -171,7 +182,7 @@ class RawKeyword(Keyword):
         Returns the parse token representation of a raw keyword
         """
         return 'RAW=LINE'
-        
+
     def clone(self):
         """
         Returns a clone of this object
@@ -192,11 +203,11 @@ class Keywords(list,Canonized):
     """
     Represents an ordered set of keywords
     """
-    
+
     def canonical(self,delimiter):
         """
         Returns the canonical string representation of a set of keywords
-        
+
         Two sets of keywords with identical canonical strings are
         equivalent. Keyword ordering is considered to be significant. A
         canonical string is, by definition, invariant under parsing.
@@ -211,7 +222,7 @@ class Keywords(list,Canonized):
     def tokenized(self,delimiter):
         """
         Returns the parse token representation of a set of keywords
-        
+
         Two sets of keywords with identical tokenized strings have the
         same basic grammar. Keyword ordering is considered to be
         significant. A tokenized string is invariant under parsing.
@@ -222,7 +233,7 @@ class Keywords(list,Canonized):
                 result += delimiter
             result += keyword.tokenized()
         return result
-        
+
     def clone(self):
         """
         Returns a clone of this object
@@ -242,7 +253,7 @@ class Keywords(list,Canonized):
     def __getitem__(self,index):
         """
         Returns the keyword at the specified integer or string index
-        
+
         An integer index returns a keyword by position starting from
         zero. A string index returns a keyword by name.
         """
@@ -256,13 +267,22 @@ class Keywords(list,Canonized):
                         return k
                 raise KeyError(index)
             raise TypeError('Keywords index must be integer or string')
-            
+
+    def get(self, name, default=None):
+        """Returns the keyword matching name or default if not found."""
+
+        for key in self:
+            if key.name == name:
+                return key
+
+        return default
+
     def __getslice__(self,begin,end):
         """
         Returns a slice of ordered keywords via the usual list syntax
         """
         return Keywords(list.__getslice__(self,begin,end))
-        
+
     def __contains__(self,name):
         """
         Tests if a keyword with the specified name is present
@@ -283,7 +303,7 @@ class ReplyHeader(Canonized):
     MsgCode = types.Enum('>','D','I','W','E',':','F','!',
         labelHelp=['Queued','Debug','Information','Warning','Error','Finished','Error','Fatal'],
         name='code',help='Reply header status code')
-    
+
     def __init__(self,program,user,actorStack,commandId,actor,code):
         self.program = program
         self.user = user
@@ -300,20 +320,20 @@ class ReplyHeader(Canonized):
 
     def canonical(self):
         return "%s %d %s %s" % (self.cmdrName,self.commandId,self.actor,self.code)
-        
+
     def tokenized(self):
         return 'prog.user 123 actor %s' % self.code
-    
+
     def clone(self):
         return ReplyHeader(self.program,self.user,self.commandId,self.actor,self.code)
-    
+
     def copy(self,other):
         self.program = other.program
         self.user = other.user
         self.commandId = other.commandId
         self.actor = other.actor
         self.code = other.code
-        
+
     def __repr__(self):
         return 'HDR(%s,%s,%d,%s,%s)' % (self.program,self.user,self.commandId,self.actor,self.code)
 
@@ -325,7 +345,7 @@ class ActorReplyHeader(Canonized):
     MsgCode = types.Enum('>','D','I','W','E',':','F','!',
         labelHelp=['Queued','Debug','Information','Warning','Error','Finished','Error','Fatal'],
         name='code',help='Reply header status code')
-    
+
     def __init__(self,commandId,userId,code):
         self.commandId = int(commandId)
         self.userId = int(userId)
@@ -336,18 +356,18 @@ class ActorReplyHeader(Canonized):
 
     def canonical(self):
         return "%d %d %s" % (self.commandId,self.userId,self.code)
-        
+
     def tokenized(self):
         return '123 1 %s' % self.code
-    
+
     def clone(self):
         return ReplyHeader(self.commandId,self.userId,self.code)
-    
+
     def copy(self,other):
         self.commandId = other.commandId
         self.userId = other.userId
         self.code = other.code
-        
+
     def __repr__(self):
         return 'ACTHDR(%d,%d,%s)' % (self.commandId,self.userId,self.code)
 
@@ -355,7 +375,7 @@ class ActorReplyHeader(Canonized):
 class Reply(Canonized):
     """
     Represents a reply
-    
+
     A reply consists of one or more keywords separated by semicolons.
     Keywords are ordered and duplicates do not generate a runtime
     exception.
@@ -371,16 +391,16 @@ class Reply(Canonized):
     def canonical(self):
         """
         Returns the canonical string representation of this reply
-        
+
         Two replies with identical canonical strings are equivalent. A
         canonical string is, by definition, invariant under parsing.
         """
         return '%s %s' % (self.header.canonical(),self.keywords.canonical(delimiter=';'))
-        
+
     def tokenized(self):
         """
         Returns the parse token representation of a reply
-        
+
         Two replies with identical tokenized strings have the same
         basic grammar. A tokenized string is invariant under parsing.
         """
@@ -405,7 +425,7 @@ class Reply(Canonized):
     def __repr__(self):
         result = 'REPLY(%r,%r)' % (self.header,self.keywords)
         return result
-        
+
 class CommandHeader(Canonized):
     """
     Represents the headers of a command
@@ -419,28 +439,28 @@ class CommandHeader(Canonized):
     def program(self):
         """ Return program part of cmdrname. """
         return self.cmdrName.split('.',1)[0]
-    
+
     def canonical(self):
         return "%s %d %s" % (self.cmdrName,self.mid,self.actor)
-        
+
     def tokenized(self):
         return 'prog.user 123 actor %s' % code
-    
+
     def clone(self):
         return CommandHeader(self.cmdrName,self.mid,self.actor)
-    
+
     def copy(self,other):
         self.cmdrName = other.cmdrName
         self.mid = other.mid
         self.actor = other.actor
-        
+
     def __repr__(self):
         return 'CommandHeader(%s,%d,%s)' % (self.cmdrName,self.mid,self.actor)
 
 class Command(Canonized):
     """
     Represents a command
-    
+
     A command consists of a name (verb) with optional values followed by
     zero or more keywords. Keywords are ordered and duplicates do not
     generate a runtime exception.
@@ -448,7 +468,7 @@ class Command(Canonized):
     def __init__(self,name,values=None,keywords=None,string=None):
         """
         Creates a new command instance
-        
+
         The name must not contain the dot (.) character and must not
         equal "raw" (case insensitive), but no other checks are
         performed on the characters used in the name (the parser has
@@ -466,7 +486,7 @@ class Command(Canonized):
     def canonical(self):
         """
         Returns the canonical string representation of this command
-        
+
         Two commands with identical canonical strings are equivalent.
         The canonical form of a verb name is all lower case. A canonical
         string is, by definition, invariant under parsing.
@@ -478,11 +498,11 @@ class Command(Canonized):
             result += ' '
             result += self.keywords.canonical(delimiter=' ')
         return result
-    
+
     def tokenized(self):
         """
         Returns the parse token representation of a command
-        
+
         Two commands with identical tokenized strings have the same
         basic grammar. A tokenized string is invariant under parsing.
         """
