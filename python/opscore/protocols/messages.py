@@ -149,10 +149,10 @@ class Keyword(Canonized):
 
         return self.values[ii]
 
-    def __len__(self):
-        """Returns the length of the values."""
-
-        return len(self.values)
+    # def __len__(self):
+    #     """Returns the length of the values."""
+    #
+    #     return len(self.values)
 
 
 class RawKeyword(Keyword):

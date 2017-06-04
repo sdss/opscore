@@ -73,10 +73,10 @@ class MessageTests(unittest.TestCase):
 
         self.assertIsNotNone(self.keywords[1][1])
 
-    def test06(self):
-        """Tests len in Keyword."""
-
-        self.assertTrue(len(self.keywords[1]) == 2)
+    # def test06(self):
+    #     """Tests len in Keyword."""
+    #
+    #     self.assertTrue(len(self.keywords[1]) == 2)
 
     def test07(self):
         """Tests iterator in Keyword."""
