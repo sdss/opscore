@@ -7,7 +7,7 @@ Change Log
 This document records the main changes to the opscore code.
 
 .. _changelog-v2_5:
-v2_5 (unreleased)
+v2_5 (2017-06-11)
 -----------------
 
 Added
