@@ -88,7 +88,7 @@ class Text(str):
     """
     blockLevel = False
     def __new__(cls,obj,escapeMe=True):
-        code = unicode(obj).encode('utf-8')
+        code = str(obj).encode('utf-8')
         if escapeMe:
             # HTML does not require escaping single quotes but we do this so that
             # the string representation of a document (or document fragment) can

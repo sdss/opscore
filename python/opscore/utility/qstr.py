@@ -67,32 +67,32 @@ if __name__ == "__main__":
         try:
             e = eval(qt)
         except Exception as e:
-            print "===== NE: %r" % (t)
-            print "        : %r" % (qt)
-            print "                 error: %s" % (e)
+            print("===== NE: %r" % (t))
+            print("        : %r" % (qt))
+            print("                 error: %s" % (e))
             continue
         if t == e:
-            print "===== OK: %s" % (qt)
+            print("===== OK: %s" % (qt))
         else:
-            print "===== NG: %r:" % (t)
-            print "        : %r:" % (qt)
-    print
-    print
+            print("===== NG: %r:" % (t))
+            print("        : %r:" % (qt))
+    print()
+    print()
 
     for t in tests:
         qt = qstr(t, tquote="'")
         try:
             e = eval(qt)
         except Exception as e:
-            print "===== NE: %r" % (t)
-            print "        : %r" % (qt)
-            print "                 error: %s" % (e)
+            print("===== NE: %r" % (t))
+            print("        : %r" % (qt))
+            print("                 error: %s" % (e))
             continue
         if t == e:
-            print "===== OK: %s" % (qt)
+            print("===== OK: %s" % (qt))
         else:
-            print "===== NG: %s:" % (t)
-            print "        : %s:" % (qt)
+            print("===== NG: %s:" % (t))
+            print("        : %s:" % (qt))
 
-    print
-    print
+    print()
+    print()

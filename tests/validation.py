@@ -47,23 +47,23 @@ class ValidationTest(unittest.TestCase):
 
     def test00(self):
         "Cmd validation passes"
-        self.failUnless(self.cmd1.consume(self.c123))
-        self.failUnless(self.cmd1.consume(self.c321))
-        self.failUnless(self.cmd2.consume(self.c123))
-        self.failUnless(self.cmd3.consume(self.c12v))
-        self.failUnless(self.k2.values[0] == -1.2)
-        self.failUnless(self.k3.values[0] == 0xdead)
-        self.failUnless(self.k3.values[1] == 0xbeef)
-        self.failUnless(self.c12v.values[0] == 1.23)
-        self.failUnless(self.c12v.values[1] == 0xbeef)
+        self.assertTrue(self.cmd1.consume(self.c123))
+        self.assertTrue(self.cmd1.consume(self.c321))
+        self.assertTrue(self.cmd2.consume(self.c123))
+        self.assertTrue(self.cmd3.consume(self.c12v))
+        self.assertTrue(self.k2.values[0] == -1.2)
+        self.assertTrue(self.k3.values[0] == 0xdead)
+        self.assertTrue(self.k3.values[1] == 0xbeef)
+        self.assertTrue(self.c12v.values[0] == 1.23)
+        self.assertTrue(self.c12v.values[1] == 0xbeef)
 
     def test01(self):
         "Cmd validation fails"
-        self.failIf(self.cmd1.consume(self.c12v))
-        self.failIf(self.cmd2.consume(self.c321))
-        self.failIf(self.cmd2.consume(self.c12v))
-        self.failIf(self.cmd3.consume(self.c123))
-        self.failIf(self.cmd3.consume(self.c321))
+        self.assertFalse(self.cmd1.consume(self.c12v))
+        self.assertFalse(self.cmd2.consume(self.c321))
+        self.assertFalse(self.cmd2.consume(self.c12v))
+        self.assertFalse(self.cmd3.consume(self.c123))
+        self.assertFalse(self.cmd3.consume(self.c321))
 
     def test02(self):
         "Cmd creation with valid args"
@@ -99,20 +99,20 @@ class ValidationTest(unittest.TestCase):
 
     def test05(self):
         "Validate Cmd that takes no keywords"
-        self.failUnless(self.cmd0a.consume(self.c0))
-        self.failUnless(self.cmd0b.consume(self.c0))
+        self.assertTrue(self.cmd0a.consume(self.c0))
+        self.assertTrue(self.cmd0b.consume(self.c0))
 
     def test06(self):
         "Raw keyword validation"
-        self.failUnless(self.rawcmd.consume(self.raw1))
-        self.failUnless(self.rawkey.values[0] == 'raw;text=goes"here')
-        self.failUnless(self.rawcmd.consume(self.raw2))
-        self.failUnless(self.rawcmd.consume(self.raw3))
-        self.failUnless(self.rawcmd.consume(self.raw4))
+        self.assertTrue(self.rawcmd.consume(self.raw1))
+        self.assertTrue(self.rawkey.values[0] == 'raw;text=goes"here')
+        self.assertTrue(self.rawcmd.consume(self.raw2))
+        self.assertTrue(self.rawcmd.consume(self.raw3))
+        self.assertTrue(self.rawcmd.consume(self.raw4))
 
     def test07(self):
         "Test Cmd validation with extra keywords"
-        self.failUnless(self.cmd4.match(self.c123))
+        self.assertTrue(self.cmd4.match(self.c123))
 
         message, __ = self.cmd4.match(self.c123)
         self.assertTrue(len(message.extra_keywords) > 0)

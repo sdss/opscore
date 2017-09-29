@@ -1,4 +1,4 @@
-from __future__ import division, absolute_import, print_function
+
 """Sets KeyVars based on replies from the hub.
 
 History:

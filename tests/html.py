@@ -5,7 +5,7 @@
 # Created 28-Jun-2008 by David Kirkby (dkirkby@uci.edu)
 import unittest
 
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 import opscore.utility.html as utilHtml
 
 class HTMLTests(unittest.TestCase):

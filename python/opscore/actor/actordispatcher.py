@@ -1,4 +1,4 @@
-from __future__ import division, absolute_import, print_function
+
 """A single-actor version of CmdKeyVarDispatcher.
 
 Send commands to a single actor and dispatches replies from that actor.
@@ -37,7 +37,7 @@ class SimpleModel(object):
         self.actor = dispatcher.name
 
         keysDict = KeysDictionary.load(self.actor)
-        for key in keysDict.keys.itervalues():
+        for key in keysDict.keys.values():
             keyVar = KeyVar(self.actor, key)
             self.dispatcher.addKeyVar(keyVar)
             setattr(self, keyVar.name, keyVar)
@@ -47,7 +47,7 @@ class SimpleModel(object):
         """Return a dictionary of keyVar name:keyVar
         """
         retDict = dict()
-        for name, item in self.__dict__.iteritems():
+        for name, item in self.__dict__.items():
             if isinstance(item, KeyVar):
                 retDict[name] = item
         return retDict
@@ -159,7 +159,7 @@ class ActorDispatcher(CmdKeyVarDispatcher):
         - resetAll: reset all keyword variables to notCurrent
         """
         if resetAll:
-            for keyVarList in self.keyVarListDict.values():
+            for keyVarList in list(self.keyVarListDict.values()):
                 for keyVar in keyVarList:
                     keyVar.setNotCurrent()
 

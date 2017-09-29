@@ -25,29 +25,29 @@ class ModelTests(unittest.TestCase):
         # keywords are initialized to empty tuples or tuples of None
         for keyName in ("axisConnState", "userNum", "version", "ut1"):
             keyVar = getattr(self.model, keyName)
-            self.assertEquals(keyVar[:], (None,)*len(keyVar))
+            self.assertEqual(keyVar[:], (None,)*len(keyVar))
 
         replyStr = self.makeReplyStr(actor="badactor", dataStr="userNum=5; version=1.0")
         self.dispatcher.dispatchReplyStr(replyStr)
         for keyName in ("userNum", "version"):
             keyVar = getattr(self.model, keyName)
-            self.assertEquals(keyVar[:], (None,)*len(keyVar))
+            self.assertEqual(keyVar[:], (None,)*len(keyVar))
         
         replyStr = self.makeReplyStr(actor="tcc",
             dataStr="tccPos=123.4, 45.6, -23.4; userNum=5; version=1.0; convAng=1.1, 0.22, 1234.5")
         self.dispatcher.dispatchReplyStr(replyStr)
         for i in range(3):
-            self.assertAlmostEquals(self.model.tccPos[i], (123.4, 45.6, -23.4)[i])
-            self.assertEquals(type(self.model.tccPos[i]), float)
-        self.assertEquals(self.model.userNum[0], 5)
-        self.assertEquals(type(self.model.userNum[0]), long)
-        self.assertEquals(self.model.version[0], "1.0")
-        self.assertEquals(type(self.model.version[0]), str)
+            self.assertAlmostEqual(self.model.tccPos[i], (123.4, 45.6, -23.4)[i])
+            self.assertEqual(type(self.model.tccPos[i]), float)
+        self.assertEqual(self.model.userNum[0], 5)
+        self.assertEqual(type(self.model.userNum[0]), int)
+        self.assertEqual(self.model.version[0], "1.0")
+        self.assertEqual(type(self.model.version[0]), str)
         convAng = self.model.convAng[0]
-        self.assertAlmostEquals(convAng.pos, 1.1)
-        self.assertAlmostEquals(convAng.vel, 0.22)
-        self.assertAlmostEquals(convAng.t,   1234.5)
-        self.assertEquals(type(convAng), PVT)
+        self.assertAlmostEqual(convAng.pos, 1.1)
+        self.assertAlmostEqual(convAng.vel, 0.22)
+        self.assertAlmostEqual(convAng.t,   1234.5)
+        self.assertEqual(type(convAng), PVT)
 
     def testInvalidValues(self):
         """Test that invalid values map to None (but invalid PVTs map to invalid PVTs)
@@ -63,8 +63,8 @@ class ModelTests(unittest.TestCase):
             keyVarList = self.dispatcher.getKeyVarList("tcc", keyName)
             self.assertEqual(len(keyVarList), 1)
             self.assertEqual(keyVarList[0], getattr(self.model, keyName))
-        self.assertEquals(self.dispatcher.getKeyVarList("badactorname", "users"), [])
-        self.assertEquals(self.dispatcher.getKeyVarList("tcc", "badkeyvarname"), [])
+        self.assertEqual(self.dispatcher.getKeyVarList("badactorname", "users"), [])
+        self.assertEqual(self.dispatcher.getKeyVarList("tcc", "badkeyvarname"), [])
     
     def testGetKeyVar(self):
         for keyName in ("convAng", "userNum", "version"):

@@ -31,19 +31,19 @@ class Consumer(object):
 
     def trace(self,what):
         if self.debug:
-            print '%s%r << %r' % (' '*Consumer.indent,self,what)
+            print('%s%r << %r' % (' '*Consumer.indent,self,what))
             Consumer.indent += 1
 
     def passed(self,what):
         if self.debug:
             Consumer.indent -= 1
-            print '%sPASS >> %r' % (' '*Consumer.indent,what)
+            print('%sPASS >> %r' % (' '*Consumer.indent,what))
         return True
 
     def failed(self,reason):
         if self.debug:
             Consumer.indent -= 1
-            print '%sFAIL: %s' % (' '*Consumer.indent,reason)
+            print('%sFAIL: %s' % (' '*Consumer.indent,reason))
         return False
 
     def consume(self,what):
@@ -264,7 +264,7 @@ class KeysManager(object):
 
     @classmethod
     def getKey(cls,name):
-        for kdict in cls.keys.values():
+        for kdict in list(cls.keys.values()):
             if name in kdict:
                 return kdict[name]
         raise KeysError('No such registered keyword <%s>' % name)
@@ -326,7 +326,7 @@ class KeysDictionary(object):
         """
         self.name = name
         try:
-            (major,minor) = map(int,version)
+            (major,minor) = list(map(int,version))
         except (ValueError,TypeError):
             raise KeysDictionaryError(
             'Invalid version: expected (major,minor) tuple of integers, got %r' % version)
@@ -439,7 +439,7 @@ class KeysDictionary(object):
                 'KeysDictionary': KeysDictionary,
                 'ByName': protoTypes.ByName,
             }
-            for (name,value) in protoTypes.__dict__.iteritems():
+            for (name,value) in protoTypes.__dict__.items():
                 if isinstance(value,type) and issubclass(value,
                     (protoTypes.ValueType,protoTypes.CompoundValueType)):
                     symbols[name] = value

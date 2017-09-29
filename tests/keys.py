@@ -23,24 +23,24 @@ class KeysTest(unittest.TestCase):
 
     def test00(self):
         "Key validation passes"
-        self.failUnless(self.key1.consume(self.k1))
-        self.failUnless(self.key2.consume(self.k2))
-        self.failUnless(self.key3.consume(self.k3))
-        self.failUnless(self.key4.consume(self.k4))
-        self.failUnless(len(self.k1.values) == 0)
-        self.failUnless(self.k2.values[0] == -1.2)
-        self.failUnless(self.k3.values[0] == 0xdead)
-        self.failUnless(self.k3.values[1] == 0xbeef)
-        self.failUnless(self.k4.values[0] == None)
+        self.assertTrue(self.key1.consume(self.k1))
+        self.assertTrue(self.key2.consume(self.k2))
+        self.assertTrue(self.key3.consume(self.k3))
+        self.assertTrue(self.key4.consume(self.k4))
+        self.assertTrue(len(self.k1.values) == 0)
+        self.assertTrue(self.k2.values[0] == -1.2)
+        self.assertTrue(self.k3.values[0] == 0xdead)
+        self.assertTrue(self.k3.values[1] == 0xbeef)
+        self.assertTrue(self.k4.values[0] == None)
 
     def test01(self):
         "Key validation fails"
-        self.failIf(self.key1.consume(self.k2))
-        self.failIf(self.key1.consume(self.k3))
-        self.failIf(self.key2.consume(self.k1))
-        self.failIf(self.key2.consume(self.k3))
-        self.failIf(self.key3.consume(self.k1))
-        self.failIf(self.key3.consume(self.k2))
+        self.assertFalse(self.key1.consume(self.k2))
+        self.assertFalse(self.key1.consume(self.k3))
+        self.assertFalse(self.key2.consume(self.k1))
+        self.assertFalse(self.key2.consume(self.k3))
+        self.assertFalse(self.key3.consume(self.k1))
+        self.assertFalse(self.key3.consume(self.k2))
 
     def test02(self):
         "Keyword creation with a list of valid string values"
@@ -87,10 +87,10 @@ class KeysTest(unittest.TestCase):
             protoTypes.String(name='text')
         ))
         msg = protoMess.Keyword('msg',['INFO','Hello, world'])
-        self.failUnless(msgKey.consume(msg))
+        self.assertTrue(msgKey.consume(msg))
         self.assertEqual(len(msg.values),1)
-        self.failUnless(isinstance(msg.values[0],tuple))
-        self.failUnless(msg.values[0] == ('INFO','Hello, world'))
+        self.assertTrue(isinstance(msg.values[0],tuple))
+        self.assertTrue(msg.values[0] == ('INFO','Hello, world'))
     
     def test09(self):
         "Generic compound value type with explicit wrapper"
@@ -103,9 +103,9 @@ class KeysTest(unittest.TestCase):
             wrapper = Wrapped
         ))
         msg = protoMess.Keyword('msg',['INFO','Hello, world'])
-        self.failUnless(msgKey.consume(msg))
+        self.assertTrue(msgKey.consume(msg))
         self.assertEqual(len(msg.values),1)
-        self.failUnless(isinstance(msg.values[0],Wrapped))
+        self.assertTrue(isinstance(msg.values[0],Wrapped))
 
     def test10(self):
         "Generic compound value type with wrapping disabled"
@@ -115,20 +115,20 @@ class KeysTest(unittest.TestCase):
         ))
         msg = protoMess.Keyword('msg',['INFO','Hello, world'])
         protoTypes.CompoundValueType.WrapEnable = False
-        self.failUnless(msgKey.consume(msg))
+        self.assertTrue(msgKey.consume(msg))
         protoTypes.CompoundValueType.WrapEnable = True
         self.assertEqual(len(msg.values),2)
-        self.failUnless(msg.values[0] == 'INFO')
-        self.failUnless(msg.values[1] == 'Hello, world')
+        self.assertTrue(msg.values[0] == 'INFO')
+        self.assertTrue(msg.values[1] == 'Hello, world')
         
     def test11(self):
         "PVT test"
         pvtKey = protoKeys.Key('pvtMsg',protoTypes.PVT(),protoTypes.Float())
         msg = protoMess.Keyword('pvtMsg',[1,2,3,4])
-        self.failUnless(pvtKey.consume(msg))
+        self.assertTrue(pvtKey.consume(msg))
         self.assertEqual(len(msg.values),2)
         import RO.PVT
-        self.failUnless(isinstance(msg.values[0],RO.PVT.PVT))
+        self.assertTrue(isinstance(msg.values[0],RO.PVT.PVT))
         self.assertEqual(repr(msg.values[0]),repr(RO.PVT.PVT(1,2,3)))
         self.assertEqual(msg.values[1],4)
     

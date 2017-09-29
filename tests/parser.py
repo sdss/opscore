@@ -82,11 +82,11 @@ class ParserTests(unittest.TestCase):
         cmd = cParser.parse(msg)
         self.assertEqual(cmd.string,msg)
         rawcmd = validation.Cmd('cmd','@[key1] raw [key2]')
-        self.failUnless(rawcmd.consume(cmd))
+        self.assertTrue(rawcmd.consume(cmd))
         self.assertEqual(cmd.keywords[0].name,'key1')
         self.assertEqual(cmd.keywords[1].name,'raw')
         self.assertEqual(len(cmd.keywords),2)
-        self.failUnless(isinstance(cmd.keywords[1],messages.RawKeyword))
+        self.assertTrue(isinstance(cmd.keywords[1],messages.RawKeyword))
         self.assertEqual(len(cmd.keywords[1].values),1)
         self.assertEqual(cmd.keywords[1].values[0],'raw;text=goes"here key2')
 

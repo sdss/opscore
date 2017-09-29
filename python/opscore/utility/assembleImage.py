@@ -1,4 +1,4 @@
-from __future__ import division, absolute_import, print_function
+
 """Assemble a set of postage stamps images of guide fiber bundles into one image
 
 The postage stamp images are displayed at full scale and in roughly
@@ -385,7 +385,7 @@ class AssembleImage(object):
 
         plateImageArr = numpy.zeros(imageShape, dtype=numpy.float32)
         plateMaskArr  = numpy.zeros(imageShape, dtype=numpy.uint8)
-        for stamp, actPos in itertools.izip(stampList, actPosArr):
+        for stamp, actPos in zip(stampList, actPosArr):
             stamp.setDecimatedImagePos(actPos, plateImageArr.shape)
             mainRegion = stamp.getDecimatedImageRegion()
             plateImageArr[mainRegion] = stamp.image

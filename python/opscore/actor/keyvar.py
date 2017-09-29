@@ -1,4 +1,4 @@
-from __future__ import division, absolute_import, print_function
+
 """KeyVar and CmdVar
 
 History:
@@ -586,7 +586,7 @@ class _SetWdgSet(object):
     """
     def __init__(self, wdgSet):
         self.wdgSet = wdgSet
-        self.wdgInd = range(len(wdgSet))
+        self.wdgInd = list(range(len(wdgSet)))
     def __call__(self, keyVar):
         isCurrent = keyVar.isCurrent
         for wdg, val in zip(self.wdgSet, keyVar.valueList):
@@ -597,7 +597,7 @@ class _SetDefaultWdgSet(object):
     """
     def __init__(self, wdgSet):
         self.wdgSet = wdgSet
-        self.wdgInd = range(len(wdgSet))
+        self.wdgInd = list(range(len(wdgSet)))
     def __call__(self, keyVar):
         isCurrent = keyVar.isCurrent
         for wdg, val in zip(self.wdgSet, keyVar.valueList):

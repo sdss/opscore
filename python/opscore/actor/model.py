@@ -1,4 +1,4 @@
-from __future__ import division, absolute_import, print_function
+
 """A Model is a container for keyVars for an actor
 
 History:
@@ -44,7 +44,7 @@ class Model(object):
 
         cachedKeyVars = []
         keysDict = KeysDictionary.load(actor)
-        for key in keysDict.keys.itervalues():
+        for key in keysDict.keys.values():
             keyVar = KeyVar(actor, key)
             if key.doCache and not keyVar.hasRefreshCmd:
                 cachedKeyVars.append(keyVar)
@@ -68,7 +68,7 @@ class Model(object):
         """Return a dictionary of keyVar name:keyVar
         """
         retDict = dict()
-        for name, item in self.__dict__.iteritems():
+        for name, item in self.__dict__.items():
             if isinstance(item, KeyVar):
                 retDict[name] = item
         return retDict

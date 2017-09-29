@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 """
 Core software for SDSS-3 Operations
 """

@@ -1,4 +1,4 @@
-from __future__ import division, absolute_import, print_function
+
 """Twisted one-shot timer
 
 Requires a running twisted reactor.

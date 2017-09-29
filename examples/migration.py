@@ -114,7 +114,7 @@ class KeyDispatcherBase(object):
         """
         try:
             parsed = self.parser.parse(msgStr)
-        except parser.ParseError, e:
+        except parser.ParseError as e:
             sys.stderr.write("CouldNotParse; Msg=%r; Text=%r\n" % (msgStr,str(e)))
             return
         self.dispatch(parsed)
@@ -131,9 +131,9 @@ if __name__ == '__main__':
         pos,vel,tai = valueList
         # convert the TAI timestamp to UTC and print as an ISO date string
         timestamp = astrotime.AstroTime.fromMJD(tai/86400.,tz=astrotime.TAI).astimezone(astrotime.UTC)
-        print 'spiderHandler: got update at',timestamp.isoformat()
+        print('spiderHandler: got update at',timestamp.isoformat())
         # print the full parsed reply that this keyword was found in
-        print keyVar._msgDict
+        print(keyVar._msgDict)
 
     spider.addCallback(spiderHandler,callNow=False)
 

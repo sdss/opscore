@@ -17,7 +17,7 @@ class TypesTest(unittest.TestCase):
         self.assertEqual(types.Int()('-123'), -123)
         self.assertEqual(types.String()('hello, world'), 'hello, world')
         self.assertEqual(types.UInt()('+123'), 123)
-        self.assertEqual(types.Long()('-123456789000'), -123456789000L)
+        self.assertEqual(types.Long()('-123456789000'), -123456789000)
 
     def testNativeStrVal(self):
         """Test the native method of types created with valid string values
@@ -29,9 +29,9 @@ class TypesTest(unittest.TestCase):
         self.assertEqual(types.String()('hello, world').native, 'hello, world')
         self.assertEqual(type(types.String()('hello, world').native), str)
         self.assertEqual(types.UInt()('+123').native, 123)
-        self.assertTrue(type(types.UInt()('+123').native), long)
-        self.assertEqual(types.Long()('-123456789000').native, -123456789000L)
-        self.assertEqual(type(types.Long()('-123456789000').native), long)
+        self.assertTrue(type(types.UInt()('+123').native), int)
+        self.assertEqual(types.Long()('-123456789000').native, -123456789000)
+        self.assertEqual(type(types.Long()('-123456789000').native), int)
 
     def test01(self):
         "Types created with valid non-string values"
@@ -50,9 +50,9 @@ class TypesTest(unittest.TestCase):
         self.assertEqual(types.Int()(-123).native, -123)
         self.assertEqual(type(types.Int()(-123).native), int)
         self.assertEqual(types.UInt()(+123).native, 123)
-        self.assertTrue(type(types.UInt()(+123).native), long)
-        self.assertEqual(types.Long()(-123456789000L).native, -123456789000L)
-        self.assertEqual(type(types.Long()(-123456789000L).native), long)
+        self.assertTrue(type(types.UInt()(+123).native), int)
+        self.assertEqual(types.Long()(-123456789000).native, -123456789000)
+        self.assertEqual(type(types.Long()(-123456789000).native), int)
 
     def test02(self):
         "Types created with invalid string values"
@@ -62,7 +62,7 @@ class TypesTest(unittest.TestCase):
 
     def test03(self):
         "Types created with invalid non-string values"
-        self.assertRaises(ValueError, lambda: types.String()(u'\u1234'))
+        self.assertRaises(ValueError, lambda: types.String()('\u1234'))
         
     def test04(self):
         "Enumeration created with valid values"
@@ -156,13 +156,13 @@ class TypesTest(unittest.TestCase):
         "Sign bit and overflow handling for 4-byte integers"
         self.assertEqual(types.Hex()('ff00ff00'), 0xff00ff00)
         self.assertEqual(types.Hex()('ff00ff00').native, 0xff00ff00)
-        self.assertEqual(type(types.Hex()('ff00ff00').native), long)
+        self.assertEqual(type(types.Hex()('ff00ff00').native), int)
         self.assertEqual(types.UInt()('4278255360'), 4278255360)
         self.assertEqual(types.UInt()('4278255360').native, 4278255360)
-        self.assertEqual(type(types.UInt()('4278255360').native), long)
+        self.assertEqual(type(types.UInt()('4278255360').native), int)
         self.assertEqual(types.Long()(0x100000000), 0x100000000)
         self.assertEqual(types.Long()(0x100000000).native, 0x100000000)
-        self.assertEqual(type(types.Long()(0x100000000).native), long)
+        self.assertEqual(type(types.Long()(0x100000000).native), int)
         self.assertRaises(OverflowError, lambda: types.Int()(0xff00ff00))
         self.assertRaises(OverflowError, lambda: types.UInt()(0x100000000))
         self.assertRaises(OverflowError, lambda: types.UInt()(-0x100000000))
@@ -213,8 +213,8 @@ class TypesTest(unittest.TestCase):
     def test17(self):
         "Enumerated value containment tests"
         COLOR = types.Enum('Red', 'Green', 'Blue')
-        self.failUnless(COLOR('Red') in ['Red', 'Green'])
-        self.failUnless(COLOR('Red') in ['RED', 'GREEN'])
+        self.assertTrue(COLOR('Red') in ['Red', 'Green'])
+        self.assertTrue(COLOR('Red') in ['RED', 'GREEN'])
         
     def test18(self):
         "Compound value type"
@@ -234,7 +234,7 @@ class TypesTest(unittest.TestCase):
         pvtType = types.PVT()
         pvt1 = pvtType.wrapper(1, 2, 3)
         import RO.PVT
-        self.failUnless(isinstance(pvt1, RO.PVT.PVT))
+        self.assertTrue(isinstance(pvt1, RO.PVT.PVT))
         pvt2 = RO.PVT.PVT(1, 2, 3)
         self.assertEqual(repr(pvt1), repr(pvt2))
         

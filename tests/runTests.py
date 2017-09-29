@@ -31,7 +31,7 @@ def runTests(testList):
     for test in testList:
         if test.endswith(__file__):
             continue
-        print "\n*** Running %s ***\n" % (test,)
+        print("\n*** Running %s ***\n" % (test,))
         subprocess.call(["python", test], env=os.environ)
 
 if __name__ == "__main__":

@@ -106,8 +106,8 @@ class OpsRotatingFileHandler(logging.StreamHandler):
         if now >= self.rolloverAt:
             self.rolloverAt += 24*3600
 
-        print >> sys.stderr, "new rollover = %0.2f s from now, at %s\n" % (self.rolloverAt - time.time(),
-                                                                           time.localtime(self.rolloverAt))
+        print("new rollover = %0.2f s from now, at %s\n" % (self.rolloverAt - time.time(),
+                                                                           time.localtime(self.rolloverAt)), file=sys.stderr)
         assert(now < self.rolloverAt)
 
     def emit(self, record):
@@ -171,8 +171,8 @@ class OpsRotatingFileHandler(logging.StreamHandler):
         filename = self.basename + timeString + ".log"
 
         try:
-            os.makedirs(self.dirname, 0755)
-        except OSError, e:
+            os.makedirs(self.dirname, 0o755)
+        except OSError as e:
             pass
             
         path = os.path.join(self.dirname, filename)
@@ -184,7 +184,7 @@ class OpsRotatingFileHandler(logging.StreamHandler):
         oldStream = self.stream
         try:
             self.stream = open(path, 'a+')
-        except Exception, e:
+        except Exception as e:
             sys.stderr.write("Failed to rollover to new logfile %s: %s\n" % (path, e))
             return
             
@@ -202,8 +202,8 @@ class OpsRotatingFileHandler(logging.StreamHandler):
             pass
         try:
             os.symlink(filename, linkname)
-        except Exception, e:
-            print "Failed to create current.log symlink to %s" % (filename)
+        except Exception as e:
+            print("Failed to create current.log symlink to %s" % (filename))
 
            
 def makeOpsFileHandler(dirname, basename='', rolloverTime=None):

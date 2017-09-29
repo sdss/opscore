@@ -52,31 +52,31 @@ class ConfigTest(unittest.TestCase):
         "Hex log option"
         self.cli.add_option('--hexIntOpt',type='long')
         (options,args) = self.cli.parse_args([])
-        self.assertEqual(options.hexIntOpt,long(0x123))
+        self.assertEqual(options.hexIntOpt,int(0x123))
 
     def test05(self):
         "Boolean option"
         self.cli.add_option('--boolOpt1',action='store_true')
         (options,args) = self.cli.parse_args([])
-        self.failUnless(options.boolOpt1)
+        self.assertTrue(options.boolOpt1)
 
     def test06(self):
         "Boolean option"
         self.cli.add_option('--boolOpt2',action='store_false')
         (options,args) = self.cli.parse_args([])
-        self.failUnless(options.boolOpt2)
+        self.assertTrue(options.boolOpt2)
 
     def test07(self):
         "Boolean option"
         self.cli.add_option('--boolOpt3',action='store_true')
         (options,args) = self.cli.parse_args([])
-        self.failUnless(options.boolOpt3)
+        self.assertTrue(options.boolOpt3)
 
     def test08(self):
         "Boolean option"
         self.cli.add_option('--boolOpt4',action='store_false')
         (options,args) = self.cli.parse_args([])
-        self.failUnless(options.boolOpt4)
+        self.assertTrue(options.boolOpt4)
 
     def test09(self):
         "Invalid bool option"

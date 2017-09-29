@@ -12,21 +12,21 @@ scriptList = []
 
 def initFunc(sr):
     global scriptList
-    print("%s init function called" % (sr,))
+    print(("%s init function called" % (sr,)))
     scriptList.append(sr)
 
 def endFunc(sr):
-    print("%s end function called" % (sr,))
+    print(("%s end function called" % (sr,)))
 
 def script(sr):
     def threadFunc(nSec):
         time.sleep(nSec)
     nSec = 1.0
-    print("%s waiting in a thread for %s sec" % (sr, nSec))
+    print(("%s waiting in a thread for %s sec" % (sr, nSec)))
     yield sr.waitThread(threadFunc, 1.0)
     
     for val in range(5):
-        print("%s value = %s" % (sr, val))
+        print(("%s value = %s" % (sr, val)))
         yield sr.waitMS(1000)
 
 def stateFunc(sr):

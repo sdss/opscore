@@ -1,4 +1,4 @@
-from __future__ import division, absolute_import, print_function
+
 """Sends commands (of type opscore.actor.CmdVar) and dispatches replies
 to key variables (opscore.actor.keyvar.KeyVar and subclasses).
 
@@ -298,7 +298,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         
         # iterate over a copy of the values
         # so we can modify the dictionary while checking command timeouts
-        cmdVarIter = iter(self.cmdDict.values())
+        cmdVarIter = iter(list(self.cmdDict.values()))
         self._checkRemCmdTimeouts(cmdVarIter)
         
     def disconnect(self):
@@ -349,10 +349,10 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         
         while True:
             if cmdVar.isRefresh:
-                cmdID = self.refreshCmdIDGen.next()
+                cmdID = next(self.refreshCmdIDGen)
             else:
-                cmdID = self.userCmdIDGen.next()
-            if not self.cmdDict.has_key(cmdID):
+                cmdID = next(self.userCmdIDGen)
+            if cmdID not in self.cmdDict:
                 break
         self.cmdDict[cmdID] = cmdVar
         cmdVar._setStartInfo(self, cmdID)
@@ -428,7 +428,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         self._allRefreshCmdsSent = False
         
         if resetAll:
-            for keyVarList in self.keyVarListDict.values():
+            for keyVarList in list(self.keyVarListDict.values()):
                 for keyVar in keyVarList:
                     keyVar.setNotCurrent()
     
@@ -476,7 +476,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         Inputs:
         - includeNotCurrent: issue callbacks for keyVars that are not current?
         """
-        keyVarListIter = self.keyVarListDict.itervalues()
+        keyVarListIter = iter(self.keyVarListDict.values())
         self._nextKeyVarCallback(keyVarListIter, includeNotCurrent=includeNotCurrent)
 
     def updConnState(self, conn):
@@ -593,7 +593,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         - keyVarListIter: iterator over values in self.keyVarListDict
         """
         try:
-            keyVarList = keyVarListIter.next()
+            keyVarList = next(keyVarListIter)
         except StopIteration:
             return
         for keyVar in keyVarList:
@@ -622,7 +622,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
                 (refreshCmd.actor, refreshCmd.cmdStr, keyVarNamesStr)
             self.logMsg(errMsg, severity=RO.Constants.sevWarning)
         elif keyVarSet:
-            aKeyVar = iter(keyVarSet).next()
+            aKeyVar = next(iter(keyVarSet))
             actor = aKeyVar.actor
             missingKeyVarNamesStr = ", ".join(sorted([kv.name for kv in keyVarSet if not kv.isCurrent]))
             if missingKeyVarNamesStr:
@@ -674,10 +674,10 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
             return
 
         if refreshCmdItemIter is None:
-            refreshCmdItemIter = self.refreshCmdDict.iteritems()
+            refreshCmdItemIter = iter(self.refreshCmdDict.items())
 
         try:
-            refreshCmdInfo, keyVarSet = refreshCmdItemIter.next()
+            refreshCmdInfo, keyVarSet = next(refreshCmdItemIter)
         except StopIteration:
             self._allRefreshCmdsSent = True
             return

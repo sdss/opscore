@@ -63,7 +63,7 @@ class AstroTimeTests(unittest.TestCase):
         """astrotime.AstroTime static methods"""
         dt1 = astrotime.AstroTime.now(astrotime.UTC)
         dt2 = astrotime.AstroTime.now(astrotime.TAI)
-        self.assert_(dt2 - dt1 >= timedelta(seconds=+33))
+        self.assertTrue(dt2 - dt1 >= timedelta(seconds=+33))
         ts = 1234567890
         dt1 = astrotime.AstroTime.fromtimestamp(ts,astrotime.UTC)
         dt2 = astrotime.AstroTime.fromtimestamp(ts,astrotime.TAI)

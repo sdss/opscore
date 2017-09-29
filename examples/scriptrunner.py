@@ -1,5 +1,5 @@
 #!/usr/bin/env python2
-from __future__ import division, print_function
+
 import time
 
 from twisted.internet import reactor
