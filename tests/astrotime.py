@@ -86,6 +86,6 @@ class AstroTimeTests(unittest.TestCase):
         t1b= t1.astimezone(astrotime.UTC)
         t2b= t2.astimezone(astrotime.UTC)
         self.assertEqual((t2b-t1b).seconds,0) #UTC 23:59:59 == 00:00:00 on 31-Dec-2008
-        
+
 if __name__ == '__main__':
     unittest.main()

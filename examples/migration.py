@@ -15,11 +15,11 @@ import opscore.protocols.parser as protoParser
 import opscore.utility.astrotime as astrotime
 
 class KeyVarBase(RO.AddCallback.BaseMixin):
-    
+
     def __init__(self,keyName,actor,doPrint=False):
         """
         Processes data associated with a keyword.
-        
+
         Inputs are:
         - keyName: the name of the keyword associated with this variable (string)
         - actor: the name of the actor issuing this keyword (string)
@@ -35,7 +35,7 @@ class KeyVarBase(RO.AddCallback.BaseMixin):
         self._converterList = kdict[keyName].typedValues
         # initialize our callback mixin
         RO.AddCallback.BaseMixin.__init__(self, defCallNow = True)
-    
+
     def __repr__(self):
         return "%s(%r, %r, %s)" % \
             (self.__class__.__name__, self.actor, self.keyName, self._converterList)
@@ -59,11 +59,11 @@ class KeyVarBase(RO.AddCallback.BaseMixin):
         self._msgDict = msgDict
         self._valueList = valueList
         self._doCallbacks()
-        
+
     def _doCallbacks(self):
         """
         Specifies the callback parameters.
-        
+
         Subclasses can override this method to implement more complex isCurrent tracking.
         """
         self._basicDoCallbacks(self._valueList, isCurrent = True, keyVar = self)
@@ -74,7 +74,7 @@ class KeyDispatcherBase(object):
         self.keyVarListDict = { }
         # create a reply message parser
         self.parser = protoParser.ReplyParser()
-    
+
     def add(self,keyVar):
         """
         Adds a keyword variable to the list of those that this dispatcher handles.
@@ -83,18 +83,18 @@ class KeyDispatcherBase(object):
         dictKey = (keyVar.actor,keyName)
         keyList = self.keyVarListDict.setdefault(dictKey, [])
         keyList.append(keyVar)
-    
+
     def dispatch(self,msgDict):
         """
         Invokes keyword callbacks based on the supplied message data.
-        
+
         msgDict is a parsed Reply object (opscore.protocols.messages.Reply) whose fields include:
          - header.program: name of the program that triggered the message (string)
-         - header.commandId: command ID that triggered the message (int) 
+         - header.commandId: command ID that triggered the message (int)
          - header.actor: the actor that generated the message (string)
          - header.code: the message type code (opscore.protocols.types.Enum)
          - string: the original unparsed message (string)
-         - keywords: an ordered dictionary of message keywords (opscore.protocols.messages.Keywords)        
+         - keywords: an ordered dictionary of message keywords (opscore.protocols.messages.Keywords)
         Refer to https://trac.sdss3.org/wiki/Ops/Protocols for details.
         """
         keyActor = msgDict.header.actor
@@ -107,7 +107,7 @@ class KeyDispatcherBase(object):
                     keyVar.set(keyword.values,msgDict)
                 except:
                     traceback.print_exc(file=sys.stderr)
-    
+
     def doRead(self,msgStr):
         """
         Parses and dispatches a hub message.
@@ -121,7 +121,7 @@ class KeyDispatcherBase(object):
 
 ###################################################################
 ## Test drive the classes above with some sample message data
-###################################################################     
+###################################################################
 if __name__ == '__main__':
 
     rotpos = KeyVarBase('RotPos','tcc',doPrint=True)
@@ -156,12 +156,12 @@ tui.operator 33 tcc : Cmd="show object"
 tui.operator 34 tcc > Started; Cmd="offset object -0.0000118,-0.0000124"
 tui.operator 34 tcc I MoveItems="NNNYNNNNN"; Moved
 tui.operator 34 tcc I ObjOff = -0.000242, 0.000000, 4734909061.17000, 0.003625, 0.000000, 4734909061.17000
-tui.operator 34 tcc : 
+tui.operator 34 tcc :
 tui.operator 35 tcc > Started; Cmd="offset rotator -0.0002956"
 tui.operator 35 tcc I MoveItems="NNNNNNYNN"; Moved
 tui.operator 35 tcc I RotType="Obj"
 tui.operator 35 tcc I RotPos = -0.004643, 0.000000, 4734909061.59000
-tui.operator 35 tcc : 
+tui.operator 35 tcc :
 """
 
     for line in messages.split('\n'):

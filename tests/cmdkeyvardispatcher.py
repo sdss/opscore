@@ -34,7 +34,7 @@ class ModelTests(unittest.TestCase):
         for keyName in ("actors", "commanders", "user", "users", "version", "httpRoot"):
             keyVar = getattr(self.model, keyName)
             self.assertEqual(keyVar[:], (None,)*len(keyVar))
-        
+
         reply = self.dispatcher.makeReply(actor="hub", dataStr="actors=calvin,hobbes; commanders=tu01.mice,tu02.men; users=anon,you,me; version=1.0; httpRoot=hub25m.apo, image/dir")
         self.dispatcher.dispatchReply(reply)
         self.assertEqual(self.model.actors[:], ("calvin", "hobbes"))
@@ -42,7 +42,7 @@ class ModelTests(unittest.TestCase):
         self.assertEqual(self.model.users[:], ("anon", "you", "me"))
         self.assertEqual(self.model.version[:], ("1.0",))
         self.assertEqual(self.model.httpRoot[:], ("hub25m.apo", "image/dir"))
-    
+
     def testGetKeyVarList(self):
         """test getKeyVarList"""
         for keyName in ("actors", "commanders", "user", "users", "version", "httpRoot"):
@@ -51,7 +51,7 @@ class ModelTests(unittest.TestCase):
             self.assertEqual(keyVarList[0], getattr(self.model, keyName))
         self.assertEqual(self.dispatcher.getKeyVarList("badactorname", "users"), [])
         self.assertEqual(self.dispatcher.getKeyVarList("hub", "badkeyvarname"), [])
-    
+
     def testGetKeyVar(self):
         """test getKeyVar"""
         for keyName in ("actors", "commanders", "user", "users", "version", "httpRoot"):
@@ -59,10 +59,10 @@ class ModelTests(unittest.TestCase):
             self.assertEqual(keyVar, getattr(self.model, keyName))
         self.assertRaises(Exception, self.dispatcher.getKeyVar, "badactorname", "users")
         self.assertRaises(Exception, self.dispatcher.getKeyVar, "hub", "badkeyvarname")
-    
+
     def testExecuteCmd(self):
         """test executeCmd
-        
+
         More complete testing would require an event loop
         """
         cmdVar1 = CmdVar(actor="hub", cmdStr="command 1")
@@ -92,7 +92,7 @@ class ModelTests(unittest.TestCase):
         self.dispatcher.dispatchReply(reply)
         self.assertTrue(cmdVar2.isDone)
         self.assertTrue(cmdVar2.didFail)
-    
+
     def testAbortCmdByID(self):
         """test abortCmdByID"""
         cmdVar = CmdVar(actor="hub", cmdStr="a command")

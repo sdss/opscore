@@ -12,12 +12,12 @@ if __name__ == '__main__':
     import getpass
     from Crypto.Hash import MD5 as hasher
     from Crypto.Cipher import AES as cipher
-    
+
     passphrase = getpass.getpass('Enter a pass phrase: ')
     key = hasher.new(passphrase).digest()
     assert(len(key) in [16,24,32])
     engine = cipher.new(key,cipher.MODE_ECB)
-    
+
     while True:
         plaintext = input('Enter text to encrypt or RETURN to quit: ')
         if not plaintext:

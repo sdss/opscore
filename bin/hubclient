@@ -23,7 +23,7 @@ class TCPClient(Tkinter.Frame):
             maxLines = 1000,
         )
         self.logWdg.grid(row=0, column=0, sticky="nsew")
-        
+
         self.bottomWdg = Tkinter.Frame(self, background="")
         self.bottomWdg.grid(row=1, column=0, sticky="ew")
 
@@ -57,7 +57,7 @@ class TCPClient(Tkinter.Frame):
         self.cmdrName = cmdrName if cmdrName else \
                         "%s.%s" % ("client", pwd.getpwuid(os.getuid()).pw_name)
         self.cmdID = 1
-    
+
         self.conn = RO.Comm.TCPConnection.TCPConnection(
             host = addr,
             port = port,
@@ -66,17 +66,17 @@ class TCPClient(Tkinter.Frame):
             readCallback = self.connRead,
         )
         self.conn.connect()
-        
+
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
-    
+
     def connState(self, sock):
         stateVal, stateStr, reason = sock.getFullState()
         if reason:
             self.logMsg("*** Socket %s: %s" % (stateStr, reason))
         else:
             self.logMsg("*** Socket %s" % (stateStr,))
-    
+
     def connRead(self, sock, readStr):
         self.logMsg(readStr)
 
@@ -97,7 +97,7 @@ class TCPClient(Tkinter.Frame):
             self.noDisplayRegexp = r"^\S+\s+\d+\s+(%s)\s+(\S+)\s+" % "|".join(actorsToNotDisplay)
         else:
             self.noDisplayRegexp = None
-            
+
         self.setTitle(" ".join(actorsToDisplay), " ".join(actorsToNotDisplay))
 
     def doCmd(self, cmd):
@@ -158,10 +158,10 @@ if __name__ == "__main__":
     if len(sys.argv) not in (1,3):
         print "Usage: tcpclient.py addr [port]"
         sys.exit(1)
-    
+
     addr = sys.argv[1] if len(sys.argv) > 1 else "hub25m"
     port = sys.argv[2] if len(sys.argv) > 2 else 6093
-    
+
     root = Tkinter.Tk()
     root.geometry("1000x500")
     client = TCPClient(root, addr, port)

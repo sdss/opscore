@@ -10,7 +10,7 @@ import unittest
 from opscore.protocols import types
 
 class TypesTest(unittest.TestCase):
-    
+
     def test00(self):
         "Types created with valid string values"
         self.assertAlmostEqual(types.Float()('1.23'), 1.23)
@@ -63,7 +63,7 @@ class TypesTest(unittest.TestCase):
     def test03(self):
         "Types created with invalid non-string values"
         self.assertRaises(ValueError, lambda: types.String()('\u1234'))
-        
+
     def test04(self):
         "Enumeration created with valid values"
         COLOR = types.Enum('Red', 'Green', 'Blue')
@@ -72,7 +72,7 @@ class TypesTest(unittest.TestCase):
         self.assertEqual(COLOR(2), 'blue')
         self.assertEqual(str(COLOR('red')), 'Red')
         self.assertEqual(str(COLOR(2)), 'Blue')
-        
+
     def test05(self):
         "Enumeration created with invalid values"
         COLOR = types.Enum('Red', 'Green', 'Blue')
@@ -80,7 +80,7 @@ class TypesTest(unittest.TestCase):
         self.assertRaises(ValueError, lambda: COLOR('0'))
         self.assertRaises(ValueError, lambda: COLOR(3))
         self.assertRaises(ValueError, lambda: COLOR(-1))
-        
+
     def test06(self):
         "Bitfield created with valid values"
         REG = types.Bits('addr:8', ':1', 'strobe')
@@ -99,7 +99,7 @@ class TypesTest(unittest.TestCase):
         self.assertRaises(types.ValueTypeError, lambda: types.Bits('addr:-2'))
         self.assertRaises(types.ValueTypeError, lambda: types.Bits('addr:99'))
         self.assertRaises(types.ValueTypeError, lambda: types.Bits('native:8'))
-        
+
     def test08(self):
         "Bool created with valid values"
         B = types.Bool('Nay', 'Yay')
@@ -113,7 +113,7 @@ class TypesTest(unittest.TestCase):
         self.assertTrue(B(True).native is True)
         self.assertEqual(str(B(False)), 'Nay')
         self.assertEqual(str(B(True)), 'Yay')
-        
+
     def test09(self):
         "Repeated value types with valid ctor"
         vec1 = types.RepeatedValueType(types.Float(), 3, 3)
@@ -131,7 +131,7 @@ class TypesTest(unittest.TestCase):
         vec5 = types.Float()*(1,)
         self.assertEqual(vec5.minRepeat, 1)
         self.assertEqual(vec5.maxRepeat, None)
-        
+
     def test10(self):
         "Repeated value types with invalid ctor"
         self.assertRaises(types.ValueTypeError,
@@ -144,7 +144,7 @@ class TypesTest(unittest.TestCase):
             lambda: types.RepeatedValueType(types.Float(),-1, 1))
         self.assertRaises(types.ValueTypeError,
             lambda: types.RepeatedValueType(types.Float(), 1, 'abc'))
-        
+
     def test11(self):
         "Values initialized with an invalid string literal"
         self.assertRaises(types.InvalidValueError, lambda: types.Float(invalid='???')('???'))
@@ -183,14 +183,14 @@ class TypesTest(unittest.TestCase):
         self.assertEqual(COLOR(1).native, 'green')
         self.assertEqual(COLOR(2).storageValue(), '2')
         self.assertEqual(COLOR(2).native, 'blue')
-    
+
     def test14(self):
         "Invalid value tests"
         myInvalid = types.Invalid()
         self.assertEqual(types.InvalidValue, myInvalid)
         self.assertEqual(types.InvalidValue, None)
         self.assertTrue(types.InvalidValue.native is None)
-        
+
     def test15(self):
         "Float overflow tests"
         F = types.Float()
@@ -200,7 +200,7 @@ class TypesTest(unittest.TestCase):
         self.assertEqual(F(-maxFloat),-maxFloat)
         self.assertRaises(OverflowError, lambda: F(maxFloat+epsilon))
         self.assertRaises(OverflowError, lambda: F(-maxFloat-epsilon))
-    
+
     def test16(self):
         "Name metadata must be valid identifier"
         F = types.Float(name='aValue123')
@@ -209,13 +209,13 @@ class TypesTest(unittest.TestCase):
         self.assertRaises(types.ValueTypeError, lambda: types.Float(name='a Value'))
         self.assertRaises(types.ValueTypeError, lambda: types.Float(name='123Value'))
         self.assertRaises(types.ValueTypeError, lambda: types.Float(name='a-Value'))
-        
+
     def test17(self):
         "Enumerated value containment tests"
         COLOR = types.Enum('Red', 'Green', 'Blue')
         self.assertTrue(COLOR('Red') in ['Red', 'Green'])
         self.assertTrue(COLOR('Red') in ['RED', 'GREEN'])
-        
+
     def test18(self):
         "Compound value type"
         msgType = types.CompoundValueType(
@@ -237,30 +237,30 @@ class TypesTest(unittest.TestCase):
         self.assertTrue(isinstance(pvt1, RO.PVT.PVT))
         pvt2 = RO.PVT.PVT(1, 2, 3)
         self.assertEqual(repr(pvt1), repr(pvt2))
-        
+
     def test20(self):
         "Bitfield input conversions"
         # removed when Bits.inputBase attribute was dropped
         pass
-        
+
     def test21(self):
         "Hex literals for integer types"
         self.assertEqual(types.Int()('0x123'), 0x123)
-        self.assertEqual(types.UInt()('0x123'), 0x123)         
+        self.assertEqual(types.UInt()('0x123'), 0x123)
         self.assertEqual(types.Long()('0x123'), 0x123)
         self.assertRaises(ValueError, lambda: types.UInt()('ff'))
-        
+
     def test22(self):
         "Coercion of 32-bit signed to unsigned"
         self.assertEqual(types.UInt()(-0x7fffffff), 0xffffffff)
         self.assertEqual(types.UInt()(-1), 0x80000001)
-        
+
     def test23(self):
         "Invalid reprFmt or strFmt metadata"
         self.assertRaises(types.ValueTypeError, lambda: types.Int(reprFmt='=%s='))
         self.assertRaises(types.ValueTypeError, lambda: types.Int(reprFmt='=%r='))
         self.assertRaises(types.ValueTypeError, lambda: types.Int(strFmt='=%s='))
         self.assertRaises(types.ValueTypeError, lambda: types.Int(strFmt='=%r='))
-        
+
 if __name__ == '__main__':
     unittest.main()

@@ -94,7 +94,7 @@ class ScriptRunner(BaseScriptRunner):
         debug = False,
     ):
         """Create a ScriptRunner
-        
+
         Inputs:
         - name          script name; used to report status
         - runFunc       the main script function; executed whenever
@@ -119,14 +119,14 @@ class ScriptRunner(BaseScriptRunner):
                         and there is no waiting for commands or keyword variables. Thus:
                         - waitCmd and waitCmdVars return success immediately
                         - waitKeyVar returns defVal (or None if not specified) immediately
-    
+
         All functions (runFunc, initFunc, endFunc and stateFunc) receive one argument: sr,
         this ScriptRunner object. The functions can pass information using sr.globals,
         an initially empty object (to which you can add instance variables and set or read them).
-        
+
         Only runFunc is allowed to call sr methods that wait.
         The other functions may only run non-waiting code.
-    
+
         WARNING: when runFunc calls any of the ScriptRunner methods that wait,
         IT MUST YIELD THE RESULT, as in:
             def runFunc(sr):
@@ -134,11 +134,11 @@ class ScriptRunner(BaseScriptRunner):
                 yield sr.waitMS(500)
                 ...
         All such methods are marked "yield required".
-        
+
         If you forget to yield, your script will not wait. Your script will then halt
         with an error message when it calls the next ScriptRunner method that involves waiting
         (but by the time it gets that far it may have done some strange things).
-        
+
         If your script yields when it should not, it will simply halt.
         """
         self.master = master
@@ -162,7 +162,7 @@ class ScriptRunner(BaseScriptRunner):
         else sys.stdout.
 
         Do not use yield because it does not wait for anything.
-        
+
         Inputs:
         - msg: string to display, without a final \n
         - severity: one of RO.Constants.sevNormal (default), sevWarning or sevError
@@ -186,7 +186,7 @@ class ScriptRunner(BaseScriptRunner):
         checkFail = True,
     ):
         """Start a command using the same arguments as waitCmd.
-        
+
         Inputs: same as waitCmd, which see.
 
         Returns a command variable that you can wait for using waitCmdVars.
@@ -227,7 +227,7 @@ class ScriptRunner(BaseScriptRunner):
             self.debugPrint("startCmd(%s)" % ", ".join(argList))
 
             self.showMsg("%s started" % cmdStr)
-            
+
 
             # set up command completion callback
             def endCmd(self=self, cmdVar=cmdVar):
@@ -246,9 +246,9 @@ class ScriptRunner(BaseScriptRunner):
                 self._cmdStatusBar.doCmd(cmdVar)
             else:
                 self.dispatcher.executeCmd(cmdVar)
-                
+
         return cmdVar
-    
+
     def waitCmd(self,
         actor="",
         cmdStr = "",
@@ -265,7 +265,7 @@ class ScriptRunner(BaseScriptRunner):
         Returns the command variable (an opscore.actor.CmdVar) in sr.value.
 
         A yield is required.
-        
+
         Inputs:
         - actor: the name of the device to command
         - cmdStr: the command (without a terminating \n)
@@ -289,17 +289,17 @@ class ScriptRunner(BaseScriptRunner):
             if True (the default) command failure will halt your script
 
         The callback receives one argument: the command variable (an opscore.actor.CmdVar).
-        
+
         Note: timeLim and timeLimKeyVar work together as follows:
         - The initial time limit for the command is timeLim
         - If timeLimKeyVar is seen before timeLim seconds have passed
           then self.maxEndTime is updated with the new value
-          
+
         Also the time limit is a lower limit. The command is guaranteed to
         expire no sooner than this but it may take a second longer.
         """
         self._waitCheck(setWait = False)
-        
+
         self.debugPrint("waitCmd calling startCmd")
 
         cmdVar = self.startCmd (
@@ -314,6 +314,6 @@ class ScriptRunner(BaseScriptRunner):
             keyVars = keyVars,
             checkFail = False,
         )
-        
+
         self.waitCmdVars(cmdVar, checkFail=checkFail, retVal=cmdVar)
 

@@ -13,7 +13,7 @@ class HTMLTests(unittest.TestCase):
     def validate(doc):
         parser = HTMLParser()
         parser.feed(str(doc))
-        parser.close()      
+        parser.close()
     def test00_HTML(self):
         """Check that skeleton HTML document is correctly formed"""
         doc = utilHtml.HTMLDocument(

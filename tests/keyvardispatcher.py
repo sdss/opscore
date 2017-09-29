@@ -32,7 +32,7 @@ class ModelTests(unittest.TestCase):
         for keyName in ("userNum", "version"):
             keyVar = getattr(self.model, keyName)
             self.assertEqual(keyVar[:], (None,)*len(keyVar))
-        
+
         replyStr = self.makeReplyStr(actor="tcc",
             dataStr="tccPos=123.4, 45.6, -23.4; userNum=5; version=1.0; convAng=1.1, 0.22, 1234.5")
         self.dispatcher.dispatchReplyStr(replyStr)
@@ -65,7 +65,7 @@ class ModelTests(unittest.TestCase):
             self.assertEqual(keyVarList[0], getattr(self.model, keyName))
         self.assertEqual(self.dispatcher.getKeyVarList("badactorname", "users"), [])
         self.assertEqual(self.dispatcher.getKeyVarList("tcc", "badkeyvarname"), [])
-    
+
     def testGetKeyVar(self):
         for keyName in ("convAng", "userNum", "version"):
             keyVar = self.dispatcher.getKeyVar("tcc", keyName)
@@ -73,7 +73,7 @@ class ModelTests(unittest.TestCase):
         self.assertRaises(Exception, self.dispatcher.getKeyVar, "badactorname", "users")
         self.assertRaises(Exception, self.dispatcher.getKeyVar, "tcc", "badkeyvarname")
         self.assertRaises(Exception, self.dispatcher.getKeyVar, "nonexistentKeyVar")
-    
+
     def makeReplyStr(self, dataStr, cmdr="me.me", cmdID=0, actor="tcc"):
         return "%s %d %s : %s" % (cmdr, cmdID, actor, dataStr)
 

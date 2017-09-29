@@ -13,7 +13,7 @@ import opscore.utility.html as html
 
 class ValueTypeError(Exception):
     pass
-    
+
 class InvalidValueError(Exception):
     """
     Signals that an invalid value was detected during conversion from a string
@@ -23,14 +23,14 @@ class InvalidValueError(Exception):
 class Descriptive(object):
     """
     A self-describing type mixin
-    
+
     Types that use this mixin are responsible for filling an array cls.descriptors
     of tuples (label,value) in their constructor.
     """
     def describe(self):
         """
         Returns a plain-text multi-line description
-        
+
         The final newline character is omitted so that the return value
         can be printed. The description is indented with spaces assuming
         a fixed-width font.
@@ -46,7 +46,7 @@ class Descriptive(object):
     def describeAsHTML(self):
         """
         Returns a description packaged as an HTML fragment
-        
+
         Uses the following CSS elements: div.vtype, div.descriptor,
         span.label, span.value
         """
@@ -65,7 +65,7 @@ class ValueType(type,Descriptive):
     """
     _nameSpec = re.compile('[A-Za-z][A-Za-z0-9_]*')
     _metaKeys = ('reprFmt','strFmt','invalid','units','help','name')
-    
+
     def __new__(cls,*args,**kwargs):
         """
         Allocates memory for a new ValueType class
@@ -79,7 +79,7 @@ class ValueType(type,Descriptive):
                 return '%s(%s%s)' % (cls.__name__,self.reprFmt % self,units)
             else:
                 return '%s(%s%s)' % (cls.__name__,cls.baseType.__repr__(self),units)
-                
+
         def doStr(self):
             if self.strFmt:
                 return self.strFmt % self
@@ -97,13 +97,13 @@ class ValueType(type,Descriptive):
         # force the invalid string, if present, to be lowercase
         if 'invalid' in kwargs:
             kwargs['invalid'] = str(kwargs['invalid']).lower()
-            
+
         # check that the name string, if present, is a valid identifier
         if 'name' in kwargs:
             matched = ValueType._nameSpec.match(kwargs['name'])
             if not matched or not matched.end() == len(kwargs['name']):
                 raise ValueTypeError('invalid type name: %s' % kwargs['name'])
-                
+
         # check that any format strings provided are not circular
         if 'reprFmt' in kwargs:
             fmt = kwargs['reprFmt']
@@ -140,7 +140,7 @@ class ValueType(type,Descriptive):
             dct["native"] = property(getNative)
         else:
             print("WARNING: no baseType")
-                
+
         if hasattr(cls,'new'):
             dct['__new__'] = cls.new
         if hasattr(cls,'init'):
@@ -180,7 +180,7 @@ class ValueType(type,Descriptive):
         else:
             maxRepeat = None
         return RepeatedValueType(self,minRepeat,maxRepeat)
-    
+
     def __repr__(self):
         return self.__name__
 
@@ -213,7 +213,7 @@ class RepeatedValueType(Descriptive):
             repeatText = '%d-%d times' % (self.minRepeat,self.maxRepeat)
         self.descriptors = [('Repeated',repeatText)]
         self.descriptors.extend(self.vtype.descriptors)
-            
+
     def __repr__(self):
         if self.minRepeat == self.maxRepeat:
             return '%r*%d' % (self.vtype,self.minRepeat)
@@ -225,7 +225,7 @@ class RepeatedValueType(Descriptive):
 class CompoundValueType(Descriptive):
     """
     Represents a compound type consisting of a sequence of simple types
-    
+
     A compound value is normally represented by a single object. By default,
     the wrapping object is a tuple containing the individual values but a
     custom object can be used via the 'wrapper' keyword which should provide
@@ -247,10 +247,10 @@ class CompoundValueType(Descriptive):
             self.descriptors.append(('Subtype-%d'%index,'-'*40))
             self.descriptors.extend(vtype.descriptors)
         self.wrapper = kwargs.get('wrapper',None)
-    
+
     def __repr__(self):
         return '%s%r' % (self.__class__.__name__,self.vtypes)
-        
+
 class PVT(CompoundValueType):
     """
     Represents a position-velocity-time compound type
@@ -296,7 +296,7 @@ class Float(ValueType):
         if abs(fvalue) > 3.4028234663852886e+38 and abs(fvalue) != float('inf'):
             raise OverflowError('Invalid literal for Float: %r' % value)
         return float.__new__(cls,fvalue)
-    
+
 class Double(ValueType):
     baseType = float
     storage = 'flt8'
@@ -365,7 +365,7 @@ class Enum(ValueType):
     baseType = str
     storage = 'int2'
     customKeys = ('labelHelp')
-    
+
     @classmethod
     def init(cls,dct,*args,**kwargs):
         if not args:
@@ -396,7 +396,7 @@ class Enum(ValueType):
     def new(cls,value):
         """
         Initializes a new enumerated instance
-        
+
         Value can either be an integer index or else a recognized label.
         """
         cls.validate(value)
@@ -420,7 +420,7 @@ class Enum(ValueType):
 
 # Boolean value type
 class Bool(ValueType):
-    
+
     baseType = int # bool cannot be subclassed
     storage = 'int2'
 
@@ -440,11 +440,11 @@ class Bool(ValueType):
         dct['__str__'] = doStr
         if dct['strFmt']:
             print('Bool: ignoring strFmt metadata')
-    
+
     def new(cls,value):
         """
         Initializes a new boolean instance
-        
+
         Value must be one of the true/false labels or else a True/False literal
         """
         cls.validate(value)
@@ -463,9 +463,9 @@ class Bool(ValueType):
 
 # Bitfield value type
 class Bits(UInt):
-    
+
     fieldSpec = re.compile('([a-zA-Z0-9_]+)?(?::([0-9]+))?$')
-    
+
     @staticmethod
     def binary(value,width):
         return ''.join([str((value>>shift)&1) for shift in range(width-1,-1,-1)])
@@ -517,7 +517,7 @@ class Bits(UInt):
         #dct['__str__'] = doStr
         if dct['strFmt']:
             print('Bits: ignoring strFmt metadata')
-        
+
     def addDescriptors(cls):
         for index,(name,width) in enumerate(cls.fieldSpecs):
             offset,mask = cls.bitFields[name]

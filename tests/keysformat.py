@@ -29,7 +29,7 @@ class KeysFormatTest(unittest.TestCase):
         self.p.parse("<key1> <key2> [<key3>]")
         self.p.parse("<key1> (<key2> [<key3>])")
         self.p.parse("@<key1> <key2> <key3>")
-        self.p.parse("<key1> [@<key2> [<key3>]]")       
+        self.p.parse("<key1> [@<key2> [<key3>]]")
 
 if __name__ == '__main__':
     unittest.main()

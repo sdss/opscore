@@ -12,7 +12,7 @@ before any other 'import logging's, as it defines the default logging formatter.
   import logging
 
   sdss3logging.setupRootLogger('/tmp/jkp/log1')
-  
+
 After which any other module can :
 
   import logging
@@ -20,7 +20,7 @@ After which any other module can :
 
   mylogger.debug('something smells %s', 'here')
   myLogger.critical('fire in the %s', 'hold')
-  
+
 Todo:
    - Figure out how to _use_ these: whether to use the logging config file,
      whether to set up a root logger, whether to entirely wrap the logging.py
@@ -45,16 +45,16 @@ class OpsLogFormatter(logging.Formatter):
         Notes:
            We force "GMT"/UTC/Zulu time, but cannot tell if we are using UTC or TAI.
         """
-        
+
         dateFmt = "%Y-%m-%d %H:%M:%S"
         fmt = "%(asctime)s.%(msecs)03dZ %(name)-16s %(levelno)s %(filename)s:%(lineno)d %(message)s"
-        
+
         logging.Formatter.__init__(self, fmt, dateFmt)
         self.converter = time.gmtime
-        
+
 class OpsRotatingFileHandler(logging.StreamHandler):
     APOrolloverTime = 24 * 3600 * 0.3
-    
+
     def __init__(self, dirname='.', basename='', rolloverTime=None):
         """ create a logging.FileHandler which:
               - names logfiles by their opening date+time, to the second.
@@ -69,11 +69,11 @@ class OpsRotatingFileHandler(logging.StreamHandler):
 
         logging.StreamHandler.__init__(self)
         self.stream = None              # StreamHandler opens stderr, which we do not want to close.
-        
+
         self.dirname = os.path.expandvars(os.path.expanduser(dirname))
         self.basename = basename
         self.formatter = OpsLogFormatter()
-        
+
         if rolloverTime == None:
             self.rolloverTime = self.APOrolloverTime
         else:
@@ -83,10 +83,10 @@ class OpsRotatingFileHandler(logging.StreamHandler):
 
         # Force file creation now.
         self.doRollover()
-        
+
     def _setTimes(self, startTime=None):
         """ set .rolloverAt to the next one from now.
-        
+
         Bug: should all be done in UTC, including .rolloverTime.
         """
 
@@ -101,7 +101,7 @@ class OpsRotatingFileHandler(logging.StreamHandler):
         t = list(time.localtime(now))
         t[3] = t[4] = t[5] = 0
         self.rolloverAt = time.mktime(t) + self.rolloverTime
-        
+
         # Add a day if we are past today's rolloverTime.
         if now >= self.rolloverAt:
             self.rolloverAt += 24*3600
@@ -113,7 +113,7 @@ class OpsRotatingFileHandler(logging.StreamHandler):
     def emit(self, record):
         """
         Emit a record.
-        
+
         If a formatter is specified, it is used to format the record.
         The record is then written to the stream with a trailing newline
         [N.B. this may be removed depending on feedback]. If exception
@@ -125,7 +125,7 @@ class OpsRotatingFileHandler(logging.StreamHandler):
 
         #logging.StreamHandler.emit(self, record)
         #return
-    
+
         try:
             msg = self.format(record)
             fs = "%s\n"
@@ -174,9 +174,9 @@ class OpsRotatingFileHandler(logging.StreamHandler):
             os.makedirs(self.dirname, 0o755)
         except OSError as e:
             pass
-            
+
         path = os.path.join(self.dirname, filename)
-        
+
         if os.path.exists(path):
             # Append? Raise?
             raise RuntimeError("logfile %s already exists. Would append to it." % (path))
@@ -187,7 +187,7 @@ class OpsRotatingFileHandler(logging.StreamHandler):
         except Exception as e:
             sys.stderr.write("Failed to rollover to new logfile %s: %s\n" % (path, e))
             return
-            
+
         self.filename = path
 
         if oldStream:
@@ -205,7 +205,7 @@ class OpsRotatingFileHandler(logging.StreamHandler):
         except Exception as e:
             print("Failed to create current.log symlink to %s" % (filename))
 
-           
+
 def makeOpsFileHandler(dirname, basename='', rolloverTime=None):
     """ create a rotating file handler with APO-style filenames and timestamps..
 
@@ -214,7 +214,7 @@ def makeOpsFileHandler(dirname, basename='', rolloverTime=None):
         name       - name of the logging system.
         basename   ? If set, a prefix to the filenames. ['']
     """
-    
+
     handler = OpsRotatingFileHandler(dirname=dirname, basename=basename,
                                      rolloverTime=rolloverTime)
     handler.setFormatter(OpsLogFormatter())
@@ -228,9 +228,9 @@ def makeOpsFileLogger(dirname, name, basename='', propagate=True, rolloverTime=N
         dirname    - directory name for the logs. Must already exist.
         name       - name of the logging system.
         basename   ? If set, a prefix to the filenames.
-        propagate  ? If set, propagate log messages higher up the name tree. [True] 
+        propagate  ? If set, propagate log messages higher up the name tree. [True]
     """
-    
+
     tlog = logging.getLogger(name)
     tlog.propagate = propagate
 
@@ -249,9 +249,9 @@ def setConsoleLevel(level):
     if not consoleHandler:
         logging.critical('the root logger must be setup via sdss3logging.setupRootHandler() before the console level can be set.')
         return
-        
+
     consoleHandler.setLevel(level)
-        
+
 def setupRootLogger(basedir, level=logging.INFO, hackRollover=False):
     """ (re-)configure the root logger to save all output to a APO-style rotating file Handler, plus a console Handler. """
 
@@ -293,12 +293,12 @@ def setupRootLogger(basedir, level=logging.INFO, hackRollover=False):
             rootLogger.warn('leaving output on %s,%s alone' % (h, h.stream))
 
     return rootLogger
-    
+
 def main():
     consoleLogger = logging.getLogger()
 
     consoleLogger.setLevel(logging.INFO)
-    
+
     myLogger = makeOpsFileLogger('/tmp', 'tlog')
     myLogger.setLevel(logging.DEBUG)
 
@@ -308,7 +308,7 @@ def main():
     h2 = makeOpsFileHandler('/tmp', basename='c2-')
     h2.setLevel(logging.WARN)
     c2Logger.addHandler(h2)
-    
+
     consoleLogger.info('max s = %d', 20)
     c2Logger.critical('me too! max s = %d', 20)
     for s in range(150000):
@@ -318,4 +318,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-    
+

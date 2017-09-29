@@ -36,7 +36,7 @@ def parseTCCLog(stream):
         # Print our values: %s uses the value type's strFmt.
         print(('%s: Az = %s %s, Alt = %s %s, Rot = %s %s'
             % (timestamp,az,az.units,alt,alt.units,rot,rot.units)))
-    
+
     # Build a simple callback dispatch dictionary
     callbacks = {
         'tcc.TCCPos': tccPosHandler
@@ -63,7 +63,7 @@ def parseTCCLog(stream):
         except Exception:
             print('Conversion error on line:',line)
             raise
-        
+
         #################################################################################
         ## Step 2: Parse the reply message and lookup its actor's dictionary
         #################################################################################

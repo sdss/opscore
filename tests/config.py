@@ -13,7 +13,7 @@ import optparse
 from opscore.utility import config
 
 class ConfigTest(unittest.TestCase):
-    
+
     def setUp(self):
         testPath = os.path.split(__file__)[0]
         testConfig = os.path.join(testPath,'config-test.ini')
@@ -23,25 +23,25 @@ class ConfigTest(unittest.TestCase):
             raise Exception('Unable to find %s' % testConfig)
         self.short_message = 'hello, world'
         self.long_message = ''.join([chr(i%256) for i in range(1000)])
-        
+
     def test00(self):
         "String option"
         self.cli.add_option('--stringOpt')
         (options,args) = self.cli.parse_args([])
         self.assertEqual(options.stringOpt,'string')
-        
+
     def test01(self):
         "String option with spaces"
         self.cli.add_option('--spacesOpt')
         (options,args) = self.cli.parse_args([])
         self.assertEqual(options.spacesOpt,"'quoted string with spaces'")
-                
+
     def test02(self):
         "Float option"
         self.cli.add_option('--floatOpt',type='float')
         (options,args) = self.cli.parse_args([])
         self.assertEqual(options.floatOpt,3.141)
-        
+
     def test03(self):
         "Decimal int option"
         self.cli.add_option('--decIntOpt',type='int')
@@ -100,7 +100,7 @@ class ConfigTest(unittest.TestCase):
         self.cli.add_option('--badSecret1',type='secret',dest='secretOpt')
         self.assertRaises(config.ConfigError,lambda: self.cli.parse_args(args=[],
             passphrase='The quick brown fox jumps over the lazy dog'))
-            
+
     def test13(self):
         "Secret option"
         self.cli.add_option('--badSecret2',type='secret',dest='secretOpt')
@@ -116,13 +116,13 @@ class ConfigTest(unittest.TestCase):
         "bin2hex - hex2bin roundtrip for long message"
         hex = config.ConfigOptionParser.bin2hex(self.long_message)
         self.assertEqual(config.ConfigOptionParser.hex2bin(hex),self.long_message)
-        
+
     def test16(self):
         "DEFAULT section option"
         self.cli.add_option('--defaultSectionOpt')
         (options,args) = self.cli.parse_args([])
         self.assertEqual(options.defaultSectionOpt,'ok')
-    
+
     def test17(self):
         "ProductConfig test"
         testPath = os.path.split(__file__)[0]

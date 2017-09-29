@@ -72,14 +72,14 @@ class KeysTest(unittest.TestCase):
         self.assertRaises(protoKeys.KeysError,lambda: self.key2.create('abc'))
         self.assertRaises(protoKeys.KeysError,lambda: self.key3.create(0xdead,'abc'))
         self.assertRaises(protoKeys.KeysError,lambda: self.key3.create('abc','0xdead'))
-        
+
     def test07(self):
         "Read testing dictionary (disabled since testing actor has been deleted)"
         pass
         #kdict = protoKeys.KeysDictionary.load("testing")
         #self.failUnless('unsigned' in kdict)
         #self.failUnless('UnSigned' in kdict)
-        
+
     def test08(self):
         "Generic compound value type without explicit wrapper"
         msgKey = protoKeys.Key('msg',protoTypes.CompoundValueType(
@@ -91,7 +91,7 @@ class KeysTest(unittest.TestCase):
         self.assertEqual(len(msg.values),1)
         self.assertTrue(isinstance(msg.values[0],tuple))
         self.assertTrue(msg.values[0] == ('INFO','Hello, world'))
-    
+
     def test09(self):
         "Generic compound value type with explicit wrapper"
         class Wrapped(object):
@@ -120,7 +120,7 @@ class KeysTest(unittest.TestCase):
         self.assertEqual(len(msg.values),2)
         self.assertTrue(msg.values[0] == 'INFO')
         self.assertTrue(msg.values[1] == 'Hello, world')
-        
+
     def test11(self):
         "PVT test"
         pvtKey = protoKeys.Key('pvtMsg',protoTypes.PVT(),protoTypes.Float())
@@ -131,7 +131,7 @@ class KeysTest(unittest.TestCase):
         self.assertTrue(isinstance(msg.values[0],RO.PVT.PVT))
         self.assertEqual(repr(msg.values[0]),repr(RO.PVT.PVT(1,2,3)))
         self.assertEqual(msg.values[1],4)
-    
+
     def test12(self):
         "Invalid value"
         self.key4.consume(self.k4)
@@ -139,6 +139,6 @@ class KeysTest(unittest.TestCase):
         self.assertEqual(ival,None)
         self.assertEqual(ival,protoTypes.InvalidValue)
         self.assertEqual({None:'-None-',protoTypes.InvalidValue:'-Invalid-'}[ival],'-Invalid-')
-        
+
 if __name__ == '__main__':
     unittest.main()

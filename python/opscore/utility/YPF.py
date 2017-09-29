@@ -79,7 +79,7 @@ nptypes = { 'int':'i4',
 
 class YPFVar(object):
     """  A Yanny par file keyword/value pair.
-    
+
         A line may contain a keyword/value pair. The first token is the keyword. The remainder
         of the line, up to a comment-delimiting '#' sign, is the value of the keyword. In the
         following example, the value '51256' is assigned to the keyword 'MJD', and the
@@ -99,7 +99,7 @@ class YPFVar(object):
                         \s+
                         (?:%s|%s|([^#]*?))\s*(?:\#(.*))?
                         $''' % (floatRe_s, intRe_s), re.VERBOSE|re.IGNORECASE)
-    
+
     def __init__(self,
                  fromString=None,
                  debug=0):
@@ -107,10 +107,10 @@ class YPFVar(object):
         self.name = None
         self.value = None
         self.comment = None
-        
+
         if fromString:
             self.parse(fromString, debug=debug)
-            
+
     def __str__(self):
         return "YPFVar(name=%s, value=%s, comment=%s)" % (self.name, self.value, self.comment)
 
@@ -121,7 +121,7 @@ class YPFVar(object):
             comment = " # %s" % (self.comment)
         else:
             comment = ""
-            
+
         return "%s %s%s" % (self.name, self.value, comment)
 
     def parse(self, s, debug=0):
@@ -129,18 +129,18 @@ class YPFVar(object):
 
         Note:
             Tries to recognize ints and floats and convert them. This may be a mistake.
-            
+
         Returns:
         Raises:
             RuntimeError on parsing failure.
 
         """
-        
+
         m = self.re.match(s)
         if not m:
             logging.log(50, 'unparseable variable definition: %s' % (s))
             raise RuntimeError('parsing variable from: %s' %s)
-        
+
         # _Try_ to convert to float/int. For "arrays", you get a string.
         # Take this out -- CPL.
         #
@@ -155,19 +155,19 @@ class YPFVar(object):
 
         if debug > 5:
             print("Parsed YPFVar %s -> %s" % (s, self))
-        
+
 class YPFEnum(object):
-    """ A Yanny par file enumerated data type.  
+    """ A Yanny par file enumerated data type.
 
     These are similar to C-language enums, in that one lists a comma-separated
-    number of identifying tags in a multi-line typedef statement which 
-    are internally stored 
-    as ints, 0, 1, 2, 3, etc, but which are referenced by the tag for 
+    number of identifying tags in a multi-line typedef statement which
+    are internally stored
+    as ints, 0, 1, 2, 3, etc, but which are referenced by the tag for
     mnemonic convenience or
     documentation purposes.  The tags should start with a letter,
-    and be alphanumeric, like a variable-name in C. 
+    and be alphanumeric, like a variable-name in C.
     Underscores are permitted in the tag name, i.e.  START_RUN, END_RUN.
-    
+
     By convention enum values (i.e. START,END) are all-caps and
     newlines separate the comma-separated entries in the typedef definition
     of the enum.
@@ -194,14 +194,14 @@ class YPFEnum(object):
 
     def maxlen(self):
         """ Return the longest tag name. """
-        
+
         return reduce(max, list(map(len, self.tags)))
 
     def re(self):
         """ Return a regexp which would match us. """
 
         return '(%s)' % ('|'.join(self.tags))
-    
+
     def asString(self):
         """ Return ourselves formatted for storage in a .par file"""
 
@@ -211,7 +211,7 @@ class YPFEnum(object):
             edefs.append('    %s;' % (t))
         edefs.append("} %s;" % (self.name));
         edefs.append('')
-        
+
         return '\n'.join(edefs)
 
     @classmethod
@@ -222,7 +222,7 @@ class YPFEnum(object):
                      re.VERBOSE)
         if not m:
             raise RuntimeError('No prefix mathed in %s' % (firstLine))
-        
+
         l = m.groupdict()['rest']
         nlines = 0
         parts = []
@@ -248,10 +248,10 @@ class YPFEnum(object):
                 raise RuntimeError('unexpected end of enum: %s' % (l))
             g = m.groupdict()
             parts.append(g['tag'].upper())
-                
+
             # Process the rest of the line.
             l = g['rest']
-                         
+
 class YPFStruct(object):
 
     # Match a single structure tag.
@@ -271,7 +271,7 @@ class YPFStruct(object):
                  fromStream=None):
 
         self.name = name
-        
+
         self.ctypes = []
         self.dtypes = []
 
@@ -301,7 +301,7 @@ class YPFStruct(object):
                      re.VERBOSE)
         if not m:
             raise RuntimeError('No prefix mathed in %s' % (firstLine))
-        
+
         l = m.groupdict()['rest']
 
         nlines = 0
@@ -326,13 +326,13 @@ class YPFStruct(object):
             m = self.typedefRE.match(l)
             if not m:
                 raise RuntimeError('unmatched struct definition at %s' % (l))
-            
+
             g = m.groupdict()
             if g['arr1']:
                 arrSize = int(g['arr1'])
             else:
                 arrSize = 1
-                
+
             if g['arr2']:
                 arrSize = (int(g['arr2']), arrSize)
 
@@ -349,10 +349,10 @@ class YPFStruct(object):
         sdefs.append("typedef struct {")
         for f in self.ctypes:
             sdefs.append(self._fieldDefAsString(f))
-            
+
         sdefs.append("} %s;" % (self.name))
         sdefs.append('')
-        
+
         return '\n'.join(sdefs)
 
     def dataAsString(self):
@@ -365,7 +365,7 @@ class YPFStruct(object):
             s = "%s %s" % (self.name, self.rowAsString(l))
             slist.append(s)
         return '\n'.join(slist)
-            
+
     def _fieldDefAsString(self, fieldTuple):
         """ given a (name, type, len) tuple, return a Yanny struct field definition. """
 
@@ -382,8 +382,8 @@ class YPFStruct(object):
                 fname = '%s[%d]' % (fname, slen)
             else:
                 fname = '%s[]' % (fname)
-                
-        if flen > 1: 
+
+        if flen > 1:
             return "    %s %s[%d];" % (ftype, fname, flen)
         else:
             return "    %s %s;" % (ftype, fname)
@@ -397,7 +397,7 @@ class YPFStruct(object):
             return '"' + s.replace('\\', '\\\\').replace('"', '\\"') + '"'
         else:
             return s
-    
+
     def rowAsString(self, r):
         """ Return a single row of our data, formatted for a .par file. """
 
@@ -421,7 +421,7 @@ class YPFStruct(object):
             srec.append(s)
 
         return " ".join(srec)
-    
+
     def construct(self, name, fields, enums):
         """ generate python and numpy type descriptors for the given field.
 
@@ -437,15 +437,15 @@ class YPFStruct(object):
         Sets:
            .ctypes[]    - ftcl/C type. e.g. 'short', 'double'
            .dtypes[]    - numpy type. e.g. ('run', 'i4'), ('objtype', 'S10')
-           .reParts[]   - the regexps for each field. 
+           .reParts[]   - the regexps for each field.
            .reText      - the full, g.d-awful regexp.
            .re          - the compiled regexp
            .strings[]   - the indices of all string members.
            .strlens[]   - the max strlen for each column.
-           
+
         Returns:
            Nothing
-           
+
         """
 
         self.reParts = [name]
@@ -488,14 +488,14 @@ class YPFStruct(object):
 
             rawfields += flen
             i += 1
-            
+
         # Glom together the regexp for the full row.
         self.reText = "^" + "\s+".join(self.reParts) + "\s*"
         self.re = re.compile(self.reText, re.VERBOSE|re.IGNORECASE)
 
         # The string lengths will be undefined until we have seen the data.
         self.strlens = np.zeros(rawfields, dtype='i4')
-            
+
     def findParsingFailure(self, s):
         """ Figure out which field is not being parsed by consuming .reParts piece by piece. """
 
@@ -515,13 +515,13 @@ class YPFStruct(object):
             matches.append(matchedText)
             rest = newRest
         raise RuntimeError('Hunh? Failed to find parsing error in %s' % s)
-            
+
     def parseOne(self, s):
         """ Parse what is expected to be a instance of our structure, and
             append the matches to .records. Until we have all the data, we
             keep the records in a python array of tuples.
         """
-        
+
         m = self.re.match(s)
         if not m:
             self.findParsingFailure(s)
@@ -540,19 +540,19 @@ class YPFStruct(object):
                     else:
                         logging.log(50, 'missing end-quote in %s: %s' % (self.name, s,))
                         s = s[1:]
-                    s = s.replace(r'\\\\', r'\\').replace(r'\"', r'"') 
+                    s = s.replace(r'\\\\', r'\\').replace(r'\"', r'"')
                     mlist[si] = s
-                    
+
                 # Strange lesson mentioned in idlutils, and seen at least in idReport files.
-                if len(s) > 0 and s[0] == '{':         
+                if len(s) > 0 and s[0] == '{':
                     if re.search("^{ *{ *} *}\s*$", s):
                         mlist[si] = ""
             mtuple = tuple(mlist)
-            
+
         # It actually pays to know the length of the longest string, for .seal()
         strlens = list(map(len,mtuple))
-        self.strlens = np.array([self.strlens, strlens]).max(axis=0)        
-            
+        self.strlens = np.array([self.strlens, strlens]).max(axis=0)
+
         self.records.append(mtuple)
 
     def fixupS0s(self, a):
@@ -569,10 +569,10 @@ class YPFStruct(object):
             # For arrays of strings, make the lengths uniform
             maxlen = np.max(self.strlens[in_i:in_i+nelem])
             in_i += nelem
-            
+
             self.dtypes[i] = (fname, 'S%d' % (maxlen), nelem)
             logging.log(10, "assigned dtype: %s" % (self.dtypes[i],))
-            
+
     def sealArray(self):
         """ Take the parsed list of records and generate a typed and named numpy array.
 
@@ -593,7 +593,7 @@ class YPFStruct(object):
         dtype = ','.join(["S"+str(x) for x in self.strlens])
         logging.log(10, "na.dtype: %s" % (dtype))
         ta = np.array(self.records, dtype=dtype)
-        
+
         # Calculate the proper lengths for all string columns.
         self.fixupS0s(ta)
         logging.log(10, self.dtypes)
@@ -602,11 +602,11 @@ class YPFStruct(object):
         # Create our output array, with the proper final numpy types. We then
         # convert each column from the string array.
         #
-        # Any multi-element input arrays have been flattened together, and the 
+        # Any multi-element input arrays have been flattened together, and the
         # corresponding output arrays need to be reconstructed.
         #
         a = np.zeros(nrec, dtype=self.dtypes)
-        in_i = 0                        
+        in_i = 0
         for i in range(len(self.dtypes)):
             fname, dtype, nelem = self.dtypes[i]
             if nelem > 1:
@@ -640,7 +640,7 @@ class YPFStruct(object):
 
         if not arrayRows:
             arrayRows = self.asArray()
-        
+
         # So what name do you give what you want to be an anonymous class?
         if not hasattr(self, 'objClass'):
             self.objClass = type('YPFStruct_%s_%d' % (self.name, id(self)),
@@ -655,7 +655,7 @@ class YPFStruct(object):
             return obj
 
         return [makeFromRow(self.objClass, r) for r in arrayRows]
-        
+
 class YPF(object):
     """ YPFs can contain three kinds of thing:
           - structs,
@@ -672,7 +672,7 @@ class YPF(object):
              '
           - named variables
              "name blah blah blah"
-             
+
           yp = YPF(fromFile=filename [, template=True])
           yp.write
 
@@ -686,7 +686,7 @@ class YPF(object):
 
     lineContRE = re.compile('\\[ \t]*$')
     structOrEnumRE = re.compile('typedef\s+(struct|enum)\s+{')
-    
+
     def __init__(self,
                  fromFile=None,
                  fromString=None,
@@ -704,7 +704,7 @@ class YPF(object):
         """
 
         self.EOL = '\n'
-        
+
         self.vars = {}
         self.enums = {}
         self.structs = {}
@@ -718,7 +718,7 @@ class YPF(object):
             self.parseFile(fromFile)
         if fromString:
             self.parseString(fromString)
-            
+
         if template:
             for v in self.vars:
                 v.clear()
@@ -731,7 +731,7 @@ class YPF(object):
         """ Generator for returning merged lines. Assume that s is small enough
         that we can simply reda the whole thing.
         """
-        
+
         lines = s.split(self.EOL)           # figure out EOL first?
         lidx = 0
         l = ""
@@ -739,7 +739,7 @@ class YPF(object):
             # I don't allow for comments after line continuations
             l += lines[lidx].strip()
             lidx += 1
-            
+
             if len(l) >= 1 and l[-1] == '\\':
                 l = l[:-1].strip() + " "
                 if lidx == len(lines):
@@ -759,7 +759,7 @@ class YPF(object):
             nlines, name, match = YPFEnum.parseDef(l, lines)
             self.enums[name] = YPFEnum(name, match)
         return nlines
-    
+
     def parseString(self, s):
         """ Parse a string into our declarations and definitions.
         """
@@ -772,7 +772,7 @@ class YPF(object):
             logging.log(10, "raw line %05d: %s" % (lineno, l))
             if len(l) == 0 or l[0] == '#':
                 continue
-            
+
             if l.startswith('typedef'):
                 lidx = self.parseTypedef(l, lines)
                 lineno += lidx
@@ -791,10 +791,10 @@ class YPF(object):
                             newValue = v.value
                             oldValue = self.vars[v.name].value
                             if newValue != oldValue:
-                                print(("Variable %s is being defined with a new value, overwriting it. old=%s, new=%s" 
+                                print(("Variable %s is being defined with a new value, overwriting it. old=%s, new=%s"
                                       % (v.name, oldValue, newValue)))
                         self.vars[v.name] = v
-    
+
     def parseFile(self, filename):
         """ Parse an entire parameter file.
 
@@ -845,24 +845,24 @@ class YPF(object):
         s = self.asString()
         if os.access(filename, os.F_OK):
             raise RuntimeError("file %s already exists -- not overwritten." % (filename))
-        
+
         f = file(filename, "w")
         f.write(s)
         f.close()
-              
+
     def __getitem__(self, name):
         """ x = ypf[NAME]. For variables and structures """
-        
+
         # Can you have a variable and a structure with the same name?
         if name in self.vars:
             return self.vars[name]
-        
+
         name = name.upper()
         if name in self.structs:
             return self.struct[name]
 
         raise KeyError('%s not found as a variable or structure' % (name))
-            
+
     def __setitem__(self, name, val):
         """ ypf[NAME] = VAL. For variables only. """
 

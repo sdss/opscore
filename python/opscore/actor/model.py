@@ -21,10 +21,10 @@ NumKeysToGetAtOnce = 20
 
 class Model(object):
     """Model for an actor.
-    
+
     The actor's keyword variables are available as named attributes.
     In addition, registers the actor's keyword variables with the dispatcher.
-    
+
     Warnings:
     * You must have only one instance of this class per actor.
     * Before instantiating the first model, call setDispatcher (else you'll get a RuntimeError).
@@ -37,7 +37,7 @@ class Model(object):
         self._keyNameVarDict = dict()
         if actor in self._registeredActors:
             raise RuntimeError("%s model already instantiated" % (actor,))
-        
+
         self.actor = actor
         if self.dispatcher is None:
             raise RuntimeError("Dispatcher not set")
@@ -51,7 +51,7 @@ class Model(object):
             else:
                 self.dispatcher.addKeyVar(keyVar)
             setattr(self, keyVar.name, keyVar)
-        
+
         for ind in range(0, len(cachedKeyVars), NumKeysToGetAtOnce):
             keyVars = cachedKeyVars[ind:ind+NumKeysToGetAtOnce]
             keyNames = [(kv.name) for kv in keyVars]
@@ -62,7 +62,7 @@ class Model(object):
                 self.dispatcher.addKeyVar(keyVar)
 
         self._registeredActors.add(actor)
-    
+
     @property
     def keyVarDict(self):
         """Return a dictionary of keyVar name:keyVar
@@ -76,10 +76,10 @@ class Model(object):
     @classmethod
     def setDispatcher(cls, dispatcher):
         """Set the keyword dispatcher.
-        
+
         Inputs:
         - dispatcher: a keyword dispatcher. An instance of KeyVarDispatcher or a subclass
-        
+
         Warning: must be called exactly once, before instantiating the first Model.
         """
         if cls.dispatcher:

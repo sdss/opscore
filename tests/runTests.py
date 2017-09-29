@@ -25,7 +25,7 @@ def setup():
 
 def runTests(testList):
     """Run the specified tests.
-    
+
     If this test runner file is included in the list it will be skipped.
     """
     for test in testList:
@@ -41,4 +41,4 @@ if __name__ == "__main__":
     else:
         testList = sys.argv[1:]
     runTests(testList)
-    
+

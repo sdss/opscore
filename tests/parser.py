@@ -108,10 +108,10 @@ class ParserTests(unittest.TestCase):
         hdr = reply.header
         self.assertEqual(hdr.commandId,7)
         self.assertEqual(hdr.userId,35)
-    
+
     def testActorReplyInvalid(self):
         """Invalid actor reply headers
-        
+
         Could also test initial whitespace and a empty message with no space after the message code,
         but those are errors that may be made valid someday.
         """
@@ -120,8 +120,8 @@ class ParserTests(unittest.TestCase):
         self.assertRaises(parser.ParseError, rParser.parse, "911 : key=value") # missing userId
         self.assertRaises(parser.ParseError, rParser.parse, ": key=value") # missing commandId and userId
         self.assertRaises(parser.ParseError, rParser.parse, "911 5 Fkey=value") # missing space between code and key
-        # could also test initial whitespace and 
-    
+        # could also test initial whitespace and
+
     def testActorRepyRoundTrip(self):
         rParser = parser.ActorReplyParser()
         self.roundTrip(rParser,"911 5 : key=value")
