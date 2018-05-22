@@ -6,6 +6,16 @@ Change Log
 
 This document records the main changes to the opscore code.
 
+.. _changelog-v2_5_1:
+v2_5_1 (unreleased)
+-------------------
+
+Added
+^^^^^
+* Added bumpversion configuration.
+* Adds ``cmdVar.keyVarTimestampDict`` and ``cmdVar.getKeyVarTimestamps()`` to keep track of the timestamps associated to ``keyVar`` data.
+
+
 .. _changelog-v2_5:
 v2_5 (2017-06-11)
 -----------------
