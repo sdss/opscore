@@ -15,6 +15,10 @@ Added
 * Added bumpversion configuration.
 * Adds ``cmdVar.keyVarTimestampDict`` and ``cmdVar.getKeyVarTimestamps()`` to keep track of the timestamps associated to ``keyVar`` data.
 
+Changed
+^^^^^^^
+* Now using ``X.Y.Z`` versions.
+
 
 .. _changelog-v2_5:
 v2_5 (2017-06-11)
