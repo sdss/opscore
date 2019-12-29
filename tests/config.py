@@ -12,124 +12,129 @@ import optparse
 
 from opscore.utility import config
 
+
 class ConfigTest(unittest.TestCase):
-    
+
     def setUp(self):
         testPath = os.path.split(__file__)[0]
-        testConfig = os.path.join(testPath,'config-test.ini')
-        self.cli = config.ConfigOptionParser(
-            config_file=testConfig,config_section='test')
+        testConfig = os.path.join(testPath, 'config-test.ini')
+        self.cli = config.ConfigOptionParser(config_file=testConfig, config_section='test')
         if not self.cli.configOptions.foundFiles:
             raise Exception('Unable to find %s' % testConfig)
         self.short_message = 'hello, world'
-        self.long_message = ''.join([chr(i%256) for i in range(1000)])
-        
+        self.long_message = ''.join([chr(i % 256) for i in range(1000)])
+
     def test00(self):
-        "String option"
+        'String option'
         self.cli.add_option('--stringOpt')
-        (options,args) = self.cli.parse_args([])
-        self.assertEqual(options.stringOpt,'string')
-        
+        (options, args) = self.cli.parse_args([])
+        self.assertEqual(options.stringOpt, 'string')
+
     def test01(self):
-        "String option with spaces"
+        'String option with spaces'
         self.cli.add_option('--spacesOpt')
-        (options,args) = self.cli.parse_args([])
-        self.assertEqual(options.spacesOpt,"'quoted string with spaces'")
-                
+        (options, args) = self.cli.parse_args([])
+        self.assertEqual(options.spacesOpt, "'quoted string with spaces'")
+
     def test02(self):
-        "Float option"
-        self.cli.add_option('--floatOpt',type='float')
-        (options,args) = self.cli.parse_args([])
-        self.assertEqual(options.floatOpt,3.141)
-        
+        'Float option'
+        self.cli.add_option('--floatOpt', type='float')
+        (options, args) = self.cli.parse_args([])
+        self.assertEqual(options.floatOpt, 3.141)
+
     def test03(self):
-        "Decimal int option"
-        self.cli.add_option('--decIntOpt',type='int')
-        (options,args) = self.cli.parse_args([])
-        self.assertEqual(options.decIntOpt,-123)
+        'Decimal int option'
+        self.cli.add_option('--decIntOpt', type='int')
+        (options, args) = self.cli.parse_args([])
+        self.assertEqual(options.decIntOpt, -123)
 
     def test04(self):
-        "Hex log option"
-        self.cli.add_option('--hexIntOpt',type='long')
-        (options,args) = self.cli.parse_args([])
-        self.assertEqual(options.hexIntOpt,long(0x123))
+        'Hex log option'
+        self.cli.add_option('--hexIntOpt', type='long')
+        (options, args) = self.cli.parse_args([])
+        self.assertEqual(options.hexIntOpt, int(0x123))
 
     def test05(self):
-        "Boolean option"
-        self.cli.add_option('--boolOpt1',action='store_true')
-        (options,args) = self.cli.parse_args([])
-        self.failUnless(options.boolOpt1)
+        'Boolean option'
+        self.cli.add_option('--boolOpt1', action='store_true')
+        (options, args) = self.cli.parse_args([])
+        self.assertTrue(options.boolOpt1)
 
     def test06(self):
-        "Boolean option"
-        self.cli.add_option('--boolOpt2',action='store_false')
-        (options,args) = self.cli.parse_args([])
-        self.failUnless(options.boolOpt2)
+        'Boolean option'
+        self.cli.add_option('--boolOpt2', action='store_false')
+        (options, args) = self.cli.parse_args([])
+        self.assertTrue(options.boolOpt2)
 
     def test07(self):
-        "Boolean option"
-        self.cli.add_option('--boolOpt3',action='store_true')
-        (options,args) = self.cli.parse_args([])
-        self.failUnless(options.boolOpt3)
+        'Boolean option'
+        self.cli.add_option('--boolOpt3', action='store_true')
+        (options, args) = self.cli.parse_args([])
+        self.assertTrue(options.boolOpt3)
 
     def test08(self):
-        "Boolean option"
-        self.cli.add_option('--boolOpt4',action='store_false')
-        (options,args) = self.cli.parse_args([])
-        self.failUnless(options.boolOpt4)
+        'Boolean option'
+        self.cli.add_option('--boolOpt4', action='store_false')
+        (options, args) = self.cli.parse_args([])
+        self.assertTrue(options.boolOpt4)
 
     def test09(self):
-        "Invalid bool option"
+        'Invalid bool option'
         self.assertRaises(ValueError,
-            lambda: self.cli.add_option('--badBoolOpt',action='store_true'))
+                          lambda: self.cli.add_option('--badBoolOpt', action='store_true'))
 
     def test10(self):
-        "Secret option"
-        self.cli.add_option('--goodSecret',type='secret',dest='goodSecret')
-        (options,args) = self.cli.parse_args(args=[],
-            passphrase='The quick brown fox jumps over the lazy dog')
-        self.assertEqual(options.goodSecret,'Secret Value')
+        'Secret option'
+        self.cli.add_option('--goodSecret', type='secret', dest='goodSecret')
+        (options,
+         args) = self.cli.parse_args(args=[],
+                                     passphrase='The quick brown fox jumps over the lazy dog')
+        self.assertEqual(options.goodSecret, 'Secret Value')
 
     def test11(self):
-        "Secret option without dest"
+        'Secret option without dest'
         self.assertRaises(optparse.OptionValueError,
-            lambda: self.cli.add_option('--goodSecret',type='secret'))
+                          lambda: self.cli.add_option('--goodSecret', type='secret'))
 
     def test12(self):
-        "Secret option"
-        self.cli.add_option('--badSecret1',type='secret',dest='secretOpt')
-        self.assertRaises(config.ConfigError,lambda: self.cli.parse_args(args=[],
-            passphrase='The quick brown fox jumps over the lazy dog'))
-            
+        'Secret option'
+        self.cli.add_option('--badSecret1', type='secret', dest='secretOpt')
+        self.assertRaises(
+            config.ConfigError,
+            lambda: self.cli.parse_args(args=[],
+                                        passphrase='The quick brown fox jumps over the lazy dog'))
+
     def test13(self):
-        "Secret option"
-        self.cli.add_option('--badSecret2',type='secret',dest='secretOpt')
-        self.assertRaises(config.ConfigError,lambda: self.cli.parse_args(args=[],
-            passphrase='The quick brown fox jumps over the lazy dog'))
+        'Secret option'
+        self.cli.add_option('--badSecret2', type='secret', dest='secretOpt')
+        self.assertRaises(
+            config.ConfigError,
+            lambda: self.cli.parse_args(args=[],
+                                        passphrase='The quick brown fox jumps over the lazy dog'))
 
     def test14(self):
-        "bin2hex - hex2bin roundtrip for short message"
+        'bin2hex - hex2bin roundtrip for short message'
         hex = config.ConfigOptionParser.bin2hex(self.short_message)
-        self.assertEqual(config.ConfigOptionParser.hex2bin(hex),self.short_message)
+        self.assertEqual(config.ConfigOptionParser.hex2bin(hex), self.short_message)
 
     def test15(self):
-        "bin2hex - hex2bin roundtrip for long message"
+        'bin2hex - hex2bin roundtrip for long message'
         hex = config.ConfigOptionParser.bin2hex(self.long_message)
-        self.assertEqual(config.ConfigOptionParser.hex2bin(hex),self.long_message)
-        
+        self.assertEqual(config.ConfigOptionParser.hex2bin(hex), self.long_message)
+
     def test16(self):
-        "DEFAULT section option"
+        'DEFAULT section option'
         self.cli.add_option('--defaultSectionOpt')
-        (options,args) = self.cli.parse_args([])
-        self.assertEqual(options.defaultSectionOpt,'ok')
-    
+        (options, args) = self.cli.parse_args([])
+        self.assertEqual(options.defaultSectionOpt, 'ok')
+
     def test17(self):
-        "ProductConfig test"
+        'ProductConfig test'
         testPath = os.path.split(__file__)[0]
-        testConfig = os.path.join(testPath,'config-test.ini')
-        options = config.ProductConfig(
-            productName=None,fileName=testConfig,sectionName='test')
-        self.assertEqual(options.getValue('boolOpt2','boolean'),True)
+        testConfig = os.path.join(testPath, 'config-test.ini')
+        options = config.ProductConfig(productName=None, fileName=testConfig, sectionName='test')
+        self.assertEqual(options.getValue('boolOpt2', 'boolean'), True)
+
 
 if __name__ == '__main__':
     unittest.main()

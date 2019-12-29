@@ -6,74 +6,81 @@ Refer to https://trac.sdss3.org/wiki/Ops/Config for details.
 
 # Created 8-Apr-2009 by David Kirkby (dkirkby@uci.edu)
 
-import sys
-import os,os.path
+import os
+import os.path
 import optparse
-import ConfigParser
+import configparser
+
 
 class ConfigError(Exception):
     pass
 
-class ProductConfig(ConfigParser.SafeConfigParser):
+
+class ProductConfig(configparser.SafeConfigParser):
     """
     A product-aware INI configuration file parser
     """
-    def __init__(self,productName,fileName,sectionName=None):
-        ConfigParser.SafeConfigParser.__init__(self)
+
+    def __init__(self, productName, fileName, sectionName=None):
+        configparser.SafeConfigParser.__init__(self)
         self.sectionName = sectionName or 'DEFAULT'
         # build a search path for INI files...
-        configFiles = [ ]
+        configFiles = []
         # look for INI files in $PRODUCTNAME_DIR/etc if a product_name is
         # provided and a corresponding $PRODUCTNAME_DIR envvar is defined
         if productName:
-            productPath = os.getenv(productName.upper()+'_DIR')
+            productPath = os.getenv(productName.upper() + '_DIR')
             if productPath:
-                configFiles.append(os.path.join(productPath,'etc',fileName))
+                configFiles.append(os.path.join(productPath, 'etc', fileName))
         # also search the current working dir if it is different from the above
-        if not configFiles or (os.path.abspath(os.getcwd()) !=
-            os.path.abspath(os.path.join(productPath,'etc'))):
-            configFiles.append(os.path.join(os.getcwd(),fileName))
+        if not configFiles or (os.path.abspath(os.getcwd()) != os.path.abspath(
+                os.path.join(productPath, 'etc'))):
+            configFiles.append(os.path.join(os.getcwd(), fileName))
         # read all available INI config parameters
         self.foundFiles = self.read(configFiles)
-        
-    def getValue(self,optionName,getType=None):
+
+    def getValue(self, optionName, getType=None):
         """
         Returns the named option value using a typed accessor.
-        
+
         Supported types include 'int', 'boolean' and 'float'. The
         default return type is a string. Raises a ConfigError if the
         option is not defined or this object was initialized with an
         invalid section name.
         """
         try:
-            getter = getattr(self,'get' + (getType or ''),self.get)
-            return getter(self.sectionName,optionName)
-        except (ConfigParser.NoOptionError,ConfigParser.NoSectionError):
+            getter = getattr(self, 'get' + (getType or ''), self.get)
+            return getter(self.sectionName, optionName)
+        except (configparser.NoOptionError, configparser.NoSectionError):
             raise ConfigError
+
 
 class ConfigOptionGroup(optparse.OptionGroup):
     """
     A group of related command-line options that take defaults from INI files
     """
-    def add_option(self,*args,**kwargs):
+
+    def add_option(self, *args, **kwargs):
         """
-        Adds an option for command line processing        
+        Adds an option for command line processing
         """
         # use our parent parser for preprocessing
-        kwargs = self.parser.preprocess_option(args,kwargs)
+        kwargs = self.parser.preprocess_option(args, kwargs)
         # do the normal option processing
-        return optparse.OptionGroup.add_option(self,*args,**kwargs)
+        return optparse.OptionGroup.add_option(self, *args, **kwargs)
+
 
 class ConfigOptionParser(optparse.OptionParser):
     """
     A command-line options parser that takes defaults from INI files
     """
-    def __init__(self,*args,**kwargs):
+
+    def __init__(self, *args, **kwargs):
         # look for an optional 'configfile' keyword arg that specifies the
         # INI file containing our configuration defaults
-        productName = kwargs.get('product_name',None)
-        configFileName = kwargs.get('config_file','config.ini')
-        sectionName = kwargs.get('config_section','DEFAULT')
+        productName = kwargs.get('product_name', None)
+        configFileName = kwargs.get('config_file', 'config.ini')
+        sectionName = kwargs.get('config_section', 'DEFAULT')
         # strip out our special options
         if 'product_name' in kwargs:
             del kwargs['product_name']
@@ -82,13 +89,13 @@ class ConfigOptionParser(optparse.OptionParser):
         if 'config_section' in kwargs:
             del kwargs['config_section']
         # initialize our INI file parser
-        self.configOptions = ProductConfig(productName,configFileName,sectionName)
+        self.configOptions = ProductConfig(productName, configFileName, sectionName)
         # initialize our list of secret option names
-        self.secretOptions = [ ]
+        self.secretOptions = []
         # initialize our base class
-        optparse.OptionParser.__init__(self,*args,**kwargs)
+        optparse.OptionParser.__init__(self, *args, **kwargs)
 
-    def preprocess_option(self,args,kwargs):
+    def preprocess_option(self, args, kwargs):
         """
         Preprocesses an option before adding it to a parser or option group
 
@@ -99,7 +106,7 @@ class ConfigOptionParser(optparse.OptionParser):
         """
         # what type of value does this option expect
         getType = None
-        if 'action' in kwargs and kwargs['action'] in ('store_true','store_false'):
+        if 'action' in kwargs and kwargs['action'] in ('store_true', 'store_false'):
             getType = 'boolean'
         # loop over option aliases
         for alias in args:
@@ -108,48 +115,47 @@ class ConfigOptionParser(optparse.OptionParser):
             # lookup each long-form option name in turn, until we get a match
             optionName = alias[2:]
             try:
-                defaultValue = self.configOptions.getValue(optionName,getType)
+                defaultValue = self.configOptions.getValue(optionName, getType)
                 kwargs['default'] = defaultValue
                 break
             except ConfigError:
                 pass
         # is this a secret option?
-        optionType = kwargs.get('type','string')
+        optionType = kwargs.get('type', 'string')
         if optionType == 'secret':
-            if not 'dest' in kwargs:
-                raise optparse.OptionValueError(
-                    'A secret option must specify a destination')
+            if 'dest' not in kwargs:
+                raise optparse.OptionValueError('A secret option must specify a destination')
             self.secretOptions.append(kwargs['dest'])
             kwargs['type'] = 'string'
         # return the updated keyword args
         return kwargs
 
-    def add_option(self,*args,**kwargs):
+    def add_option(self, *args, **kwargs):
         """
-        Adds an option for command line processing        
+        Adds an option for command line processing
         """
         # preprocess
-        kwargs = self.preprocess_option(args,kwargs)
+        kwargs = self.preprocess_option(args, kwargs)
         # do the normal option processing
-        return optparse.OptionParser.add_option(self,*args,**kwargs)
-        
-    def parse_args(self,args=None,values=None,
-        passphrase=None,prompt='Enter the pass phrase: '):
+        return optparse.OptionParser.add_option(self, *args, **kwargs)
+
+    def parse_args(self, args=None, values=None, passphrase=None,
+                   prompt='Enter the pass phrase: '):
         """
         Parses command line arguments
         """
         # do the normal parsing
-        (options,args) = optparse.OptionParser.parse_args(self,args,values)
+        (options, args) = optparse.OptionParser.parse_args(self, args, values)
         # build a table summarizing all non-secret options
-        table = [ ]
+        table = []
         for opt in self.option_list:
             if opt.dest and opt.dest not in self.secretOptions:
-                value = getattr(options,opt.dest)
+                value = getattr(options, opt.dest)
                 if opt.default == optparse.NO_DEFAULT:
                     default_value = '(none)'
                 else:
                     default_value = opt.default
-                table.append((str(opt),value,default_value,opt.help))
+                table.append((str(opt), value, default_value, opt.help))
         # add the summary table to the returned options
         options._summary_table = table
         # is there is any secret data that needs decrypting?
@@ -164,18 +170,18 @@ class ConfigOptionParser(optparse.OptionParser):
             if not passphrase:
                 passphrase = getpass.getpass(prompt)
             key = hasher.new(passphrase).digest()
-            assert(len(key) in [16,24,32])
-            engine = cipher.new(key,cipher.MODE_ECB)
+            assert (len(key) in [16, 24, 32])
+            engine = cipher.new(key, cipher.MODE_ECB)
             for secret in self.secretOptions:
-                data = engine.decrypt(ConfigOptionParser.hex2bin(getattr(options,secret)))
+                data = engine.decrypt(ConfigOptionParser.hex2bin(getattr(options, secret)))
                 npad = ord(data[-1])
                 if (npad <= 0 or npad > cipher.block_size or
-                    data[-npad:-1] != '\x00'*(npad-1)):
+                        data[-npad:-1] != '\x00' * (npad - 1)):
                     raise optparse.OptionValueError('badly formed value for %s' % secret)
-                setattr(options,secret,data[0:-npad])
+                setattr(options, secret, data[0:-npad])
         # return the parse results
-        return (options,args)
-    
+        return (options, args)
+
     def get_config_info(self):
         """
         Returns a multi-line string describing our config setup
@@ -189,18 +195,18 @@ class ConfigOptionParser(optparse.OptionParser):
                     default_value = '(none)'
                 else:
                     default_value = opt.default
-                text += '  %20s: %s\n' % (str(opt),default_value)
+                text += '  %20s: %s\n' % (str(opt), default_value)
         return text
-    
-    def print_help(self,*args,**kwargs):
+
+    def print_help(self, *args, **kwargs):
         """
         Appends config info to the standard OptionParser help
         """
-        retval = optparse.OptionParser.print_help(self,*args,**kwargs)
-        print '\n' + self.get_config_info()
+        retval = optparse.OptionParser.print_help(self, *args, **kwargs)
+        print('\n' + self.get_config_info())
         return retval
-    
-    @staticmethod    
+
+    @staticmethod
     def bin2hex(data):
         """
         Returns an ASCII hexadecimal representation of binary data
@@ -216,9 +222,9 @@ class ConfigOptionParser(optparse.OptionParser):
         if not len(data) % 2 == 0:
             raise ConfigError('hex digest must have even length')
         try:
-            bytes = [ ]
-            for index in xrange(len(data)/2):
-                bytes.append(chr(int(data[2*index:2*(index+1)],16)))
+            bytes = []
+            for index in range(len(data) / 2):
+                bytes.append(chr(int(data[2 * index:2 * (index + 1)], 16)))
             return ''.join(bytes)
         except ValueError:
             raise ConfigError('badly formmated hex digest')
