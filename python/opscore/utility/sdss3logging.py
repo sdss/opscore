@@ -26,12 +26,12 @@ Todo:
      functions, etc.
 """
 
+import logging
 import os
+import os.path
 import sys
 import time
 import types
-import logging
-import os.path
 
 
 # Configure the default formatter and logger.
@@ -104,7 +104,8 @@ class OpsRotatingFileHandler(logging.StreamHandler):
         # Get local midnight for the day.
         t = list(time.localtime(now))
         t[3] = t[4] = t[5] = 0
-        self.rolloverAt = time.mktime(t) + self.rolloverTime
+
+        self.rolloverAt = time.mktime(tuple(t)) + self.rolloverTime
 
         # Add a day if we are past today's rolloverTime.
         if now >= self.rolloverAt:
