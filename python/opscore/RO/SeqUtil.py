@@ -31,7 +31,7 @@ History:
 2010-06-28 ROwen    Modified to require Python 2.4 by assuming set is a builtin type.
 """
 
-import collections.UserString as UserString
+import collections as UserString
 
 import opscore.RO.MathUtil
 
