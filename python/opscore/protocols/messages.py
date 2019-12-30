@@ -56,6 +56,13 @@ class Values(list, Canonized):
         is, by definition, invariant under parsing.
         """
         result = ''
+
+        def string_escape(s, encoding='utf-8'):
+            return (s.encode('latin1')          # To bytes, required by 'unicode-escape'
+                     .decode('unicode-escape')  # Perform the actual octal-escaping decode
+                     .encode('latin1')          # 1:1 mapping back to bytes
+                     .decode(encoding))         # Decode original encoding
+
         for (comma, value) in enumerate(self):
             if comma:
                 result += ','
@@ -69,7 +76,7 @@ class Values(list, Canonized):
                 result += value
             else:
                 # only double quotes need to be escaped
-                result += '"%s"' % value.decode('string_escape').replace('"', '\\"')
+                result += '"%s"' % string_escape(value).replace('"', '\\"')
         return result
 
     def tokenized(self):
