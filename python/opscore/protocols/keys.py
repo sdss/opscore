@@ -427,8 +427,6 @@ class KeysDictionary(object):
         if not forceReload and dictname in KeysDictionary.registry:
             return KeysDictionary.registry[dictname]
 
-        # try to find a corresponding file on the import search path
-        dictfile = None
         try:
             # get the path corresponding to the actorkeys package
             import actorkeys  # noqa
@@ -437,7 +435,7 @@ class KeysDictionary(object):
 
         try:
             mod = importlib.import_module(f'actorkeys.{dictname}')
-            kdict = getattr(mod, dictfile)
+            kdict = getattr(mod, dictname)
             return kdict
         except ImportError as e:
             raise KeysDictionaryError('no keys dictionary found for %s: %s' % (dictname, str(e)))
@@ -445,7 +443,4 @@ class KeysDictionary(object):
             indent = '\n >> '
             description = indent + indent.join(str(e).split('\n'))
             raise KeysDictionaryError(
-                'badly formatted keys dictionary in %s:%s' % (dictfile.name, description))
-        finally:
-            if dictfile:
-                dictfile.close()
+                'badly formatted keys dictionary in %s:%s' % (mod.__file__, description))

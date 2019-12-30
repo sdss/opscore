@@ -195,7 +195,8 @@ class KeyVarDispatcher(object):
             )
         except Exception as e:
             sys.stderr.write(
-                'Could not log msgStr=%r; severity=%r; actor=%r; cmdr=%r; keywords=%r\n    error: %s\n' %
+                'Could not log msgStr=%r; severity=%r; actor=%r; '
+                'cmdr=%r; keywords=%r\n    error: %s\n' %
                 (msgStr, severity, actor, cmdr, keywords, strFromException(e)))
             traceback.print_exc(file=sys.stderr)
 
@@ -208,7 +209,7 @@ class KeyVarDispatcher(object):
         """
         try:
             msgCode = reply.header.code
-            severity = MsgCodeSeverity[msgCode]
+            severity = MsgCodeSeverity[str(msgCode)]
             self.logMsg(
                 msgStr=reply.string,
                 severity=severity,
