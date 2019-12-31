@@ -7,7 +7,7 @@ Change Log
 This document records the main changes to the opscore code.
 
 
-.. _changelog-3.0.0:
+.. _opscore-3.0.0:
 
 3.0.0 (unreleased)
 ------------------
@@ -18,7 +18,7 @@ Support
 * Implemented proper packaging.
 
 
-.. _changelog-v2_5:
+.. _opscore-v2_5:
 
 v2_5 (2017-06-11)
 -----------------
