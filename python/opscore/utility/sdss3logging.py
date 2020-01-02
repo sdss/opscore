@@ -255,7 +255,8 @@ except BaseException:
 def setConsoleLevel(level):
     if not consoleHandler:
         logging.critical(
-            'the root logger must be setup via sdss3logging.setupRootHandler() before the console level can be set.'
+            'the root logger must be setup via sdss3logging.setupRootHandler() '
+            'before the console level can be set.'
         )
         return
 
@@ -263,7 +264,8 @@ def setConsoleLevel(level):
 
 
 def setupRootLogger(basedir, level=logging.INFO, hackRollover=False):
-    """ (re-)configure the root logger to save all output to a APO-style rotating file Handler, plus a console Handler. """
+    """ (re-)configure the root logger to save all output to a APO-style
+    rotating file Handler, plus a console Handler. """
 
     # TBD: Is this global stuff really necessary?
     # I'd bet it isn't.
