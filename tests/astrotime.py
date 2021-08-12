@@ -12,7 +12,6 @@ import opscore.utility.astrotime as astrotime
 
 
 class AstroTimeTests(unittest.TestCase):
-
     def test00_AstroTime(self):
         """Special astrotime.AstroTime constructors"""
         dt = datetime.now()
@@ -21,8 +20,10 @@ class AstroTimeTests(unittest.TestCase):
         self.assertEqual(dt2 - dt1, timedelta(seconds=+10))
         dt3 = astrotime.AstroTime(datetime=dt, deltasecs=-10)
         self.assertEqual(dt3 - dt1, timedelta(seconds=-10))
-        self.assertRaises(astrotime.AstroTimeException,
-                          lambda: astrotime.AstroTime(datetime='invalid'))
+        self.assertRaises(
+            astrotime.AstroTimeException,
+            lambda: astrotime.AstroTime(datetime="invalid"),
+        )
         self.assertRaises(TypeError, lambda: astrotime.AstroTime(deltasecs=0))
 
     def test01_AstroTime(self):
@@ -90,12 +91,15 @@ class AstroTimeTests(unittest.TestCase):
 
     def test07_AstroTime(self):
         """astrotime.AstroTime TAI-UTC leap seconds"""
-        t1 = astrotime.AstroTime(2008,12,31,23,59,59,0,astrotime.TAI)
-        t2 = astrotime.AstroTime(2009,1,1,0,0,0,0,astrotime.TAI)
-        self.assertEqual((t2-t1).seconds,1)
-        t1b= t1.astimezone(astrotime.UTC)
-        t2b= t2.astimezone(astrotime.UTC)
-        self.assertEqual((t2b-t1b).seconds,0) #UTC 23:59:59 == 00:00:00 on 31-Dec-2008
+        t1 = astrotime.AstroTime(2008, 12, 31, 23, 59, 59, 0, astrotime.TAI)
+        t2 = astrotime.AstroTime(2009, 1, 1, 0, 0, 0, 0, astrotime.TAI)
+        self.assertEqual((t2 - t1).seconds, 1)
+        t1b = t1.astimezone(astrotime.UTC)
+        t2b = t2.astimezone(astrotime.UTC)
+        self.assertEqual(
+            (t2b - t1b).seconds, 0
+        )  # UTC 23:59:59 == 00:00:00 on 31-Dec-2008
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

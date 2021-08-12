@@ -1,4 +1,3 @@
-
 """Mixing class(es) for adding callback capabilities.
 
 History:
@@ -36,7 +35,7 @@ History:
 2015-09-24 ROwen    Replace "== None" with "is None" to modernize the code.
 2015-11-03 ROwen    Replace "!= None" with "is not None" to modernize the code.
 """
-__all__ = ['safeCall', 'safeCall2', 'BaseMixin', 'TkButtonMixin', 'TkVarMixin']
+__all__ = ["safeCall", "safeCall2", "BaseMixin", "TkButtonMixin", "TkVarMixin"]
 
 import sys
 import traceback
@@ -57,7 +56,15 @@ def safeCall(func, *args, **kwargs):
     try:
         return func(*args, **kwargs)
     except Exception as e:
-        sys.stderr.write('%s(*%s, **%s) failed: %s\n' % (func, args, kwargs, e,))
+        sys.stderr.write(
+            "%s(*%s, **%s) failed: %s\n"
+            % (
+                func,
+                args,
+                kwargs,
+                e,
+            )
+        )
         traceback.print_exc(file=sys.stderr)
 
 
@@ -79,7 +86,16 @@ def safeCall2(descr, func, *args, **kwargs):
     try:
         return func(*args, **kwargs)
     except Exception as e:
-        sys.stderr.write('%s %s(*%s, **%s) failed: %s\n' % (descr, func, args, kwargs, e,))
+        sys.stderr.write(
+            "%s %s(*%s, **%s) failed: %s\n"
+            % (
+                descr,
+                func,
+                args,
+                kwargs,
+                e,
+            )
+        )
         traceback.print_exc(file=sys.stderr)
 
 
@@ -95,12 +111,15 @@ class _DisableCallbacksContext(object):
     def __enter__(self):
         self.initialCallbacksEnabled = self.callbackObj._enableCallbacks
         self.callbackObj._enableCallbacks = False
-# print "%s.__enter__; _enableCallbacks %s -> %s" % (self.callbackObj,
-# self.initialCallbacksEnabled, self.callbackObj._enableCallbacks)
+
+    # print "%s.__enter__; _enableCallbacks %s -> %s" % (self.callbackObj,
+    # self.initialCallbacksEnabled, self.callbackObj._enableCallbacks)
 
     def __exit__(self, type, value, traceback):
         #        temp = self.callbackObj._enableCallbacks
         self.callbackObj._enableCallbacks = self.initialCallbacksEnabled
+
+
 # print "%s.__exit__; _enableCallbacks %s -> %s" % (self.callbackObj,
 # temp, self.callbackObj._enableCallbacks)
 
@@ -120,21 +139,23 @@ class BaseMixin(object):
         warning: is always False while callbacks are running
     """
 
-    def __init__(self,
-                 callFunc=None,
-                 callNow=None,
-                 defCallNow=False,
-                 ):
+    def __init__(
+        self,
+        callFunc=None,
+        callNow=None,
+        defCallNow=False,
+    ):
         self._defCallNow = bool(defCallNow)
         self._callbacks = []
         self._enableCallbacks = True
         if callFunc is not None:
             self.addCallback(callFunc, callNow)
 
-    def addCallback(self,
-                    callFunc,
-                    callNow=None,
-                    ):
+    def addCallback(
+        self,
+        callFunc,
+        callNow=None,
+    ):
         """Add a callback function to the list.
 
         If the callback is already present, it is not re-added.
@@ -152,7 +173,7 @@ class BaseMixin(object):
             return
 
         if not callable(callFunc):
-            raise ValueError('callFunc %r is not callable' % (callFunc,))
+            raise ValueError("callFunc %r is not callable" % (callFunc,))
 
         # add new function
         if callFunc not in self._callbacks:
@@ -194,7 +215,7 @@ class BaseMixin(object):
             return True
         except ValueError:
             if doRaise:
-                raise ValueError('Callback %r not found' % callFunc)
+                raise ValueError("Callback %r not found" % callFunc)
             return False
 
     def _basicDoCallbacks(self, *args, **kwargs):
@@ -202,7 +223,7 @@ class BaseMixin(object):
 
         If callbacks are already being executed then this function is a no-op
         """
-#        print "%s._basicDoCallbacks; _enableCallbacks=%s" % (self, self._enableCallbacks)
+        #        print "%s._basicDoCallbacks; _enableCallbacks=%s" % (self, self._enableCallbacks)
         if not self._enableCallbacks:
             return
 
@@ -257,25 +278,24 @@ class TkButtonMixin(BaseMixin):
       that might include command
     """
 
-    def __init__(self,
-                 callFunc=None,
-                 callNow=None,
-                 command=None,
-                 defCallNow=False,
-                 **kwargs):
-        self['command'] = self._doCallbacks
-        BaseMixin.__init__(self,
-                           callFunc=callFunc,
-                           callNow=callNow,
-                           defCallNow=defCallNow,
-                           )
+    def __init__(
+        self, callFunc=None, callNow=None, command=None, defCallNow=False, **kwargs
+    ):
+        self["command"] = self._doCallbacks
+        BaseMixin.__init__(
+            self,
+            callFunc=callFunc,
+            callNow=callNow,
+            defCallNow=defCallNow,
+        )
 
         if command is not None:
             if not callable(command):
-                raise ValueError('command %r is not callable' % (command,))
+                raise ValueError("command %r is not callable" % (command,))
 
             def doCommand(wdg):
                 return command()
+
             self.addCallback(doCommand)
 
 
@@ -296,20 +316,23 @@ class TkVarMixin(BaseMixin):
     _var: the tk variable
     """
 
-    def __init__(self,
-                 tkVar,
-                 callFunc=None,
-                 callNow=False,
-                 defCallNow=False,
-                 ):
+    def __init__(
+        self,
+        tkVar,
+        callFunc=None,
+        callNow=False,
+        defCallNow=False,
+    ):
         self._var = tkVar
-        BaseMixin.__init__(self,
-                           callFunc=callFunc,
-                           callNow=callNow,
-                           defCallNow=defCallNow,
-                           )
+        BaseMixin.__init__(
+            self,
+            callFunc=callFunc,
+            callNow=callNow,
+            defCallNow=defCallNow,
+        )
 
         def doTraceVar(*args):
             """ignore trace_variable callback arguments"""
             self._doCallbacks()
-        tkVar.trace_variable('w', doTraceVar)
+
+        tkVar.trace_variable("w", doTraceVar)

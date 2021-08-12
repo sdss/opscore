@@ -1,4 +1,3 @@
-
 """Twisted one-shot timer
 
 Requires a running twisted reactor.
@@ -15,8 +14,7 @@ _reactor = twisted.internet.reactor
 
 
 class Timer(object):
-    """A restartable one-shot timer
-    """
+    """A restartable one-shot timer"""
 
     def __init__(self, sec=None, callFunc=None, *args, **keyArgs):
         """Start or set up a one-shot timer

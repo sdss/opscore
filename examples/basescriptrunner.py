@@ -20,8 +20,8 @@ def initFunc(sr):
 def endFunc(sr):
     print(("%s end function called" % (sr,)))
 
-def script(sr):
 
+def script(sr):
     def threadFunc(nSec):
         time.sleep(nSec)
 
@@ -37,9 +37,9 @@ def script(sr):
 def stateFunc(sr):
     state, reason = sr.fullState
     if reason:
-        msgStr = '%s state=%s: %s' % (sr, state, reason)
+        msgStr = "%s state=%s: %s" % (sr, state, reason)
     else:
-        msgStr = '%s state=%s' % (sr, state)
+        msgStr = "%s state=%s" % (sr, state)
     print(msgStr)
     for sr in scriptList:
         if not sr.isDone:
@@ -49,7 +49,7 @@ def stateFunc(sr):
 
 sr1 = BaseScriptRunner(
     runFunc=script,
-    name='Script 1',
+    name="Script 1",
     dispatcher=dispatcher,
     initFunc=initFunc,
     endFunc=endFunc,
@@ -58,7 +58,7 @@ sr1 = BaseScriptRunner(
 
 sr2 = BaseScriptRunner(
     runFunc=script,
-    name='Script 2',
+    name="Script 2",
     dispatcher=dispatcher,
     initFunc=initFunc,
     endFunc=endFunc,

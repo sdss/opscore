@@ -1,4 +1,3 @@
-
 """A single-actor version of CmdKeyVarDispatcher.
 
 Send commands to a single actor and dispatches replies from that actor.
@@ -24,7 +23,7 @@ from .keydispatcher import KeyVarDispatcher
 from .keyvar import KeyVar, MsgCodeSeverity
 
 
-__all__ = ['ActorDispatcher']
+__all__ = ["ActorDispatcher"]
 
 
 class SimpleModel(object):
@@ -49,8 +48,7 @@ class SimpleModel(object):
 
     @property
     def keyVarDict(self):
-        """Return a dictionary of keyVar name:keyVar
-        """
+        """Return a dictionary of keyVar name:keyVar"""
         retDict = dict()
         for name, item in self.__dict__.items():
             if isinstance(item, KeyVar):
@@ -69,11 +67,11 @@ class ActorDispatcher(CmdKeyVarDispatcher):
     _ParserClass = ActorReplyParser
 
     def __init__(
-            self,
-            name,
-            connection=None,
-            logFunc=None,
-            yourUserIDKeyName='yourUserID',
+        self,
+        name,
+        connection=None,
+        logFunc=None,
+        yourUserIDKeyName="yourUserID",
     ):
         """Create a new ActorDispatcher
 
@@ -112,7 +110,10 @@ class ActorDispatcher(CmdKeyVarDispatcher):
             self._myUserID = 0
 
         if self.refreshCmdDict:
-            raise RuntimeError("Internal error: refreshCmdDict should be empty but contains %s" % (self.refreshCmdDict,))
+            raise RuntimeError(
+                "Internal error: refreshCmdDict should be empty but contains %s"
+                % (self.refreshCmdDict,)
+            )
 
         # start background tasks
         self.checkCmdTimeouts()
@@ -126,8 +127,10 @@ class ActorDispatcher(CmdKeyVarDispatcher):
         - keyVar: the keyword variable (opscore.actor.keyvar.KeyVar)
         """
         if keyVar.actor != self.name:
-            raise RuntimeError('keyVar.actor=%r; this actor dispatcher only handles actor %r' %
-                               (keyVar.actor, self.name))
+            raise RuntimeError(
+                "keyVar.actor=%r; this actor dispatcher only handles actor %r"
+                % (keyVar.actor, self.name)
+            )
         KeyVarDispatcher.addKeyVar(self, keyVar)
 
     def logReply(self, reply, fallbackToStdOut=False):
@@ -155,13 +158,13 @@ class ActorDispatcher(CmdKeyVarDispatcher):
                 fallbackToStdOut=fallbackToStdOut,
             )
         except Exception as e:
-            sys.stderr.write('Could not log reply=%r\n    error=%s\n' %
-                             (reply, strFromException(e)))
+            sys.stderr.write(
+                "Could not log reply=%r\n    error=%s\n" % (reply, strFromException(e))
+            )
             traceback.print_exc(file=sys.stderr)
 
     def replyIsMine(self, reply):
-        """Return True if I am the commander for this message.
-        """
+        """Return True if I am the commander for this message."""
         return reply.header.userId == self._myUserID
 
     def refreshAllVar(self, resetAll=True):
@@ -184,39 +187,39 @@ class ActorDispatcher(CmdKeyVarDispatcher):
             keyVarList = self.getKeyVarList(self.name, keyword.name)
             for keyVar in keyVarList:
                 try:
-                    keyVar.set(keyword.values,
-                               isGenuine=True,
-                               reply=reply,
-                               doCallbacks=doCallbacks)
+                    keyVar.set(
+                        keyword.values,
+                        isGenuine=True,
+                        reply=reply,
+                        doCallbacks=doCallbacks,
+                    )
                 except TypeError:
                     self.logMsg(
-                        'InvalidKeywordData=%s.%s, %s' % (self.name, keyword.name, keyword.values),
+                        "InvalidKeywordData=%s.%s, %s"
+                        % (self.name, keyword.name, keyword.values),
                         severity=opscore.RO.Constants.sevError,
                         fallbackToStdOut=True,
                     )
                 except Exception:
-                    print('Failed to set %s to %s:' % (keyVar, keyword.values))
+                    print("Failed to set %s to %s:" % (keyVar, keyword.values))
                     traceback.print_exc(file=sys.stderr)
 
-
     def _formatCmdStr(self, cmdVar):
-        """Format a command; one-actor version
-        """
+        """Format a command; one-actor version"""
         return "%d %s" % (cmdVar.cmdID, cmdVar.cmdStr)
 
-    def _formatReplyHeader(self,
-        cmdr = None,
-        cmdID = 0,
-        actor = None,
-        msgCode = "F",
-        dataStr = "",
+    def _formatReplyHeader(
+        self,
+        cmdr=None,
+        cmdID=0,
+        actor=None,
+        msgCode="F",
+        dataStr="",
     ):
-        """Format a reply header; one-actor version
-        """
+        """Format a reply header; one-actor version"""
         id = self._myUserID or 0
         return "%d %d %s" % (cmdID, id, msgCode)
 
     def _yourUserIDKeyVarCallback(self, keyVar):
-        """Set _myUserID based on the keyVar; called by the keyVar specified by yourUserIDKeyName
-        """
+        """Set _myUserID based on the keyVar; called by the keyVar specified by yourUserIDKeyName"""
         self._myUserID = keyVar[0]

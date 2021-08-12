@@ -78,16 +78,14 @@ def asSet(item):
 
 
 def flatten(a):
-    """Flatten an arbitrarily nested Sequence of Sequences.
-    """
+    """Flatten an arbitrarily nested Sequence of Sequences."""
     if not isSequence(a):
-        raise ValueError('Argument not a sequence: %s' % (a,))
+        raise ValueError("Argument not a sequence: %s" % (a,))
     return _flatten(a)
 
 
 def _flatten(a):
-    """Iterative solver for flatten.
-    """
+    """Iterative solver for flatten."""
     ret = []
     for ai in a:
         if isSequence(ai):
@@ -155,10 +153,11 @@ def oneOrNAsList(
     """
     if isSequence(oneOrNVal):
         if len(oneOrNVal) != n:
-            valDescr = valDescr or 'oneOrNVal'
+            valDescr = valDescr or "oneOrNVal"
             raise ValueError(
-                '%s has length %d but should be length %d' %
-                (valDescr, len(oneOrNVal), n))
+                "%s has length %d but should be length %d"
+                % (valDescr, len(oneOrNVal), n)
+            )
         return list(oneOrNVal)
     else:
         return [oneOrNVal] * n
@@ -188,17 +187,23 @@ def matchSequences(a, b, rtol=1.0e-5, atol=opscore.RO.SysConst.FAccuracy):
     This is essentially the same as numpy.allclose,
     but returns a bit more information.
     """
-    return [ind for ind in range(len(a))
-            if opscore.RO.MathUtil.compareFloats(a[ind], b[ind], rtol, atol) != 0]
+    return [
+        ind
+        for ind in range(len(a))
+        if opscore.RO.MathUtil.compareFloats(a[ind], b[ind], rtol, atol) != 0
+    ]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+
     class NewStyleClass(object):
         pass
+
     nsc = NewStyleClass()
 
     class OldStyleClass:
         pass
+
     osc = OldStyleClass()
 
     dataDict = {
@@ -208,9 +213,9 @@ if __name__ == '__main__':
             (False, False),
             (5, False),
             (7.5, False),
-            ('unicode string', False),
-            ('regular string', False),
-            (UserString('user string'), False),
+            ("unicode string", False),
+            ("regular string", False),
+            (UserString("user string"), False),
             (dict(), False),
             (set(), False),
             (list(), True),
@@ -222,9 +227,9 @@ if __name__ == '__main__':
             (False, False),
             (5, False),
             (7.5, False),
-            ('unicode string', False),
-            ('regular string', False),
-            (UserString('user string'), False),
+            ("unicode string", False),
+            ("regular string", False),
+            (UserString("user string"), False),
             (dict(), True),
             (set(), True),
             (list(), True),
@@ -236,9 +241,9 @@ if __name__ == '__main__':
             (False, False),
             (5, False),
             (7.5, False),
-            ('unicode string', True),
-            ('regular string', True),
-            (UserString('user string'), True),
+            ("unicode string", True),
+            ("regular string", True),
+            (UserString("user string"), True),
             (dict(), False),
             (set(), False),
             (list(), False),
@@ -247,13 +252,13 @@ if __name__ == '__main__':
     }
     for func, dataList in dataDict.items():
         funcName = func.__name__
-        print('testing', funcName)
+        print("testing", funcName)
         for dataItem, expectTrue in dataList:
             try:
                 assert func(dataItem) == expectTrue
             except AssertionError:
-                print('%s(%r) failed; should be %r' % (funcName, dataItem, expectTrue))
+                print("%s(%r) failed; should be %r" % (funcName, dataItem, expectTrue))
 
-    print('testing flatten')
-    f = (((), ('abc',)), 'abc', ['a', 'b', 'c'])
-    assert flatten(f) == ['abc', 'abc', 'a', 'b', 'c']
+    print("testing flatten")
+    f = (((), ("abc",)), "abc", ["a", "b", "c"])
+    assert flatten(f) == ["abc", "abc", "a", "b", "c"]

@@ -58,11 +58,11 @@ import re
 import numpy
 
 
-AngstromStr = '\N{ANGSTROM SIGN}'
-DegStr = '\N{DEGREE SIGN}'
-DMSStr = DegStr + '\"'
-LambdaStr = '\u00c5'  # for some reason this fails: u"\N{GREEK SMALL LETTER LAMBDA}"
-MuStr = '\N{GREEK SMALL LETTER MU}'
+AngstromStr = "\N{ANGSTROM SIGN}"
+DegStr = "\N{DEGREE SIGN}"
+DMSStr = DegStr + '"'
+LambdaStr = "\u00c5"  # for some reason this fails: u"\N{GREEK SMALL LETTER LAMBDA}"
+MuStr = "\N{GREEK SMALL LETTER MU}"
 
 
 def dmsStrFromDeg(decDeg, nFields=3, precision=1, omitExtraFields=False):
@@ -80,7 +80,7 @@ def dmsStrFromDeg(decDeg, nFields=3, precision=1, omitExtraFields=False):
     - Returns "" if decDeg is not finite
     """
     if not numpy.isfinite(decDeg):
-        return ''
+        return ""
     nFields = min(3, nFields)
     signStr, fieldStrs = _getDMSFields(decDeg, nFields, precision)
 
@@ -88,7 +88,7 @@ def dmsStrFromDeg(decDeg, nFields=3, precision=1, omitExtraFields=False):
         while fieldStrs and float(fieldStrs[-1]) == 0.0:
             fieldStrs.pop(-1)
 
-    return signStr + ':'.join(fieldStrs)
+    return signStr + ":".join(fieldStrs)
 
 
 def dmsStrFromSec(decSec, nFields=3, precision=1, omitExtraFields=True):
@@ -108,18 +108,18 @@ def dmsStrFromSec(decSec, nFields=3, precision=1, omitExtraFields=True):
     - Returns "" if decDeg is not finite
     """
     if not numpy.isfinite(decSec):
-        return ''
+        return ""
     nFields = min(3, nFields)
     if nFields < 1:
-        raise ValueError('nFields=%r; must be >= 1' % (nFields,))
-    adjNum = decSec / (60.0**(nFields - 1))
+        raise ValueError("nFields=%r; must be >= 1" % (nFields,))
+    adjNum = decSec / (60.0 ** (nFields - 1))
     signStr, fieldStrs = _getDMSFields(adjNum, nFields, precision)
 
     if omitExtraFields:
         while fieldStrs and float(fieldStrs[0]) == 0.0:
             fieldStrs.pop(0)
 
-    return signStr + ':'.join(fieldStrs)
+    return signStr + ":".join(fieldStrs)
 
 
 def degFromDMSStr(dmsStr):
@@ -132,7 +132,7 @@ def degFromDMSStr(dmsStr):
     dmsItems = splitDMSStr(dmsStr)
 
     # extract sign
-    if dmsItems[0] == '-':
+    if dmsItems[0] == "-":
         signMult = -1.0
     else:
         signMult = 1.0
@@ -163,7 +163,7 @@ def secFromDMSStr(dmsStr):
     dmsItems = splitDMSStr(dmsStr)
 
     # extract sign
-    if dmsItems[0] == '-':
+    if dmsItems[0] == "-":
         signMult = -1.0
     else:
         signMult = 1.0
@@ -204,15 +204,14 @@ def secStrFromDMSStr(dmsStr):
     intSec = 0
     for intVal in intList:
         intSec = abs(intVal) + (intSec * 60)
-    return '%s%s%s' % (signStr, intSec, fracSecStr)
+    return "%s%s%s" % (signStr, intSec, fracSecStr)
 
 
-FloatChars = '0123456789+-.eE'
+FloatChars = "0123456789+-.eE"
 
 
 def checkDMSStr(dmsStr):
-    """Verify a sexagesimal string; returns True if valid, False if not
-    """
+    """Verify a sexagesimal string; returns True if valid, False if not"""
     try:
         splitDMSStr(dmsStr)
         return True
@@ -225,15 +224,15 @@ def dmsStrFieldsPrec(dmsStr):
     - the number of colon-separated fields
     - the precision of the right-most field
     """
-    if dmsStr == '':
+    if dmsStr == "":
         return (0, 0)
 
-    precArry = dmsStr.split('.')
+    precArry = dmsStr.split(".")
     if len(precArry) > 1:
         precision = len(precArry[1])
     else:
         precision = 0
-    nFields = dmsStr.count(':') + 1
+    nFields = dmsStr.count(":") + 1
     return (nFields, precision)
 
 
@@ -319,15 +318,15 @@ def neatenDMSStr(dmsStr):
     error conditions:
         raises ValueError if the string cannot be parsed
     """
-    if dmsStr == '':
-        return ''
+    if dmsStr == "":
+        return ""
 
-    precArry = dmsStr.split('.')
+    precArry = dmsStr.split(".")
     if len(precArry) > 1:
         precision = len(precArry[1])
     else:
         precision = 0
-    fieldArry = dmsStr.split(':')
+    fieldArry = dmsStr.split(":")
     nFields = len(fieldArry)
 
     floatValue = degFromDMSStr(dmsStr)
@@ -343,7 +342,7 @@ def plural(num, singStr, plStr):
     return plStr
 
 
-def prettyDict(aDict, entrySepStr='\n', keyValSepStr=': '):
+def prettyDict(aDict, entrySepStr="\n", keyValSepStr=": "):
     """Format a dictionary in a nice way
 
     Inputs:
@@ -362,9 +361,11 @@ def prettyDict(aDict, entrySepStr='\n', keyValSepStr=': '):
 
 # constants used by splitDMSStr
 # DMSRE = re.compile(r"^\s*([+-]?)(\d{0,3})\s*(?:\:\s*(\d{0,2})\s*){0,2}(\.\d*)?\s*$")
-_DegRE = re.compile(r'^\s*([+-]?)(\d*)(\.\d*)?\s*$')
-_DegMinRE = re.compile(r'^\s*([+-]?)(\d*)\s*\:\s*([0-5]?\d?)(\.\d*)?\s*$')
-_DegMinSecRE = re.compile(r'^\s*([+-]?)(\d*)\s*\:\s*([0-5]?\d?):\s*([0-5]?\d?)(\.\d*)?\s*$')
+_DegRE = re.compile(r"^\s*([+-]?)(\d*)(\.\d*)?\s*$")
+_DegMinRE = re.compile(r"^\s*([+-]?)(\d*)\s*\:\s*([0-5]?\d?)(\.\d*)?\s*$")
+_DegMinSecRE = re.compile(
+    r"^\s*([+-]?)(\d*)\s*\:\s*([0-5]?\d?):\s*([0-5]?\d?)(\.\d*)?\s*$"
+)
 
 
 def splitDMSStr(dmsStr):
@@ -384,15 +385,17 @@ def splitDMSStr(dmsStr):
     assert isinstance(dmsStr, str)
     m = _DegRE.match(dmsStr) or _DegMinRE.match(dmsStr) or _DegMinSecRE.match(dmsStr)
     if m is None:
-        raise ValueError('splitDMSStr cannot parse %s as a sexagesimal string' % (dmsStr))
+        raise ValueError(
+            "splitDMSStr cannot parse %s as a sexagesimal string" % (dmsStr)
+        )
     matchSet = list(m.groups())
     if matchSet[-1] is None:
-        matchSet[-1] = ''
+        matchSet[-1] = ""
     return matchSet
 
 
-_FloatRE = re.compile(r'^\s*[-+]?[0-9]*\.?[0-9]*(e[-+]?)?[0-9]*\s*$', re.IGNORECASE)
-_FloatNoExpRE = re.compile(r'^\s*[-+]?[0-9]*\.?[0-9]*\s*$')
+_FloatRE = re.compile(r"^\s*[-+]?[0-9]*\.?[0-9]*(e[-+]?)?[0-9]*\s*$", re.IGNORECASE)
+_FloatNoExpRE = re.compile(r"^\s*[-+]?[0-9]*\.?[0-9]*\s*$")
 
 
 def floatFromStr(astr, allowExp=1):
@@ -409,7 +412,7 @@ def floatFromStr(astr, allowExp=1):
         match = _FloatNoExpRE.match(astr)
 
     if match is None:
-        raise ValueError('cannot convert :%s: to a float' % (astr))
+        raise ValueError("cannot convert :%s: to a float" % (astr))
 
     try:
         return float(astr)
@@ -418,7 +421,7 @@ def floatFromStr(astr, allowExp=1):
         return 0.0
 
 
-_IntRE = re.compile(r'^\s*[-+]?[0-9]*\s*$')
+_IntRE = re.compile(r"^\s*[-+]?[0-9]*\s*$")
 
 
 def intFromStr(astr):
@@ -429,7 +432,7 @@ def intFromStr(astr):
         raises ValueError if astr cannot be converted
     """
     if _IntRE.match(astr) is None:
-        raise ValueError('cannot convert :%s: to an integer' % (astr))
+        raise ValueError("cannot convert :%s: to an integer" % (astr))
 
     try:
         return int(astr)
@@ -438,7 +441,7 @@ def intFromStr(astr):
         return 0
 
 
-def quoteStr(astr, escChar='\\', quoteChar='"'):
+def quoteStr(astr, escChar="\\", quoteChar='"'):
     """Escape all instances of quoteChar and escChar in astr
     with a preceding escChar and surrounds the result with quoteChar.
 
@@ -456,7 +459,7 @@ def quoteStr(astr, escChar='\\', quoteChar='"'):
     return quoteChar + astr.replace(quoteChar, escChar + quoteChar) + quoteChar
 
 
-def unquoteStr(astr, escChar='\\', quoteChars='"\''):
+def unquoteStr(astr, escChar="\\", quoteChars="\"'"):
     """Remove quotes from a string and unescapes contained escaped quotes.
 
     Based on email.unquote.
@@ -464,8 +467,11 @@ def unquoteStr(astr, escChar='\\', quoteChars='"\''):
     if len(astr) > 1:
         for quoteChar in quoteChars:
             if astr.startswith(quoteChar) and astr.endswith(quoteChar):
-                return astr[1:-1].replace(escChar + escChar,
-                                          escChar).replace(escChar + quoteChar, quoteChar)
+                return (
+                    astr[1:-1]
+                    .replace(escChar + escChar, escChar)
+                    .replace(escChar + quoteChar, quoteChar)
+                )
     return astr
 
 
@@ -475,7 +481,7 @@ def strFromException(exc):
         return str(exc)
     except Exception:
         try:
-            return ','.join([str(s) for s in exc.args])
+            return ",".join([str(s) for s in exc.args])
         except Exception:
             # in case exc is some unexpected type
             return repr(exc)
@@ -502,18 +508,18 @@ def _getDMSFields(decDeg, nFields=3, precision=1):
     - Raises ValueError if precision < 0
     """
     if nFields < 1:
-        raise ValueError('nFields=%r; must be >= 1' % (nFields,))
+        raise ValueError("nFields=%r; must be >= 1" % (nFields,))
     if precision < 0:
-        raise ValueError('precision=%r; must be >= 0' % (precision,))
+        raise ValueError("precision=%r; must be >= 0" % (precision,))
 
     if decDeg < 0:
-        signStr = '-'
+        signStr = "-"
     else:
-        signStr = ''
+        signStr = ""
 
     if nFields == 1:
         retNum = round(abs(decDeg), precision)
-        retStr = '%.*f' % (precision, retNum)
+        retStr = "%.*f" % (precision, retNum)
         return signStr, [retStr]
 
     # compute a list of output fields; all but the last one are integer
@@ -542,9 +548,9 @@ def _getDMSFields(decDeg, nFields=3, precision=1):
         minFloatWidth = precision + 3
     else:
         minFloatWidth = 2
-    fieldStrs = ['%d' % (fieldNums[0],)]
+    fieldStrs = ["%d" % (fieldNums[0],)]
     for numVal in fieldNums[1:-1]:
-        fieldStrs.append('%02d' % (numVal,))
-    fieldStrs.append('%0*.*f' % (minFloatWidth, precision, fieldNums[-1]))
+        fieldStrs.append("%02d" % (numVal,))
+    fieldStrs.append("%0*.*f" % (minFloatWidth, precision, fieldNums[-1]))
 
     return signStr, fieldStrs

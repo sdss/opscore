@@ -1,4 +1,3 @@
-
 """Constants for the RO package, especially RO.Wdg.
 
 Supplies the following constants:
@@ -27,13 +26,14 @@ History:
 
 
 __all__ = [
-    'sevDebug',
-    'sevNormal',
-    'sevWarning',
-    'sevError',
-    'sevCritical',
-    'SevNameDict',
-    'NameSevDict']
+    "sevDebug",
+    "sevNormal",
+    "sevWarning",
+    "sevError",
+    "sevCritical",
+    "SevNameDict",
+    "NameSevDict",
+]
 
 
 import urllib.parse as parse
@@ -48,27 +48,31 @@ sevError = 2
 sevCritical = 3
 
 # ordered dictionary of severity: name (lowercase); order is least to most severe
-SevNameDict = OrderedDict((
-    (sevDebug, 'debug'),
-    (sevNormal, 'normal'),
-    (sevWarning, 'warning'),
-    (sevError, 'error'),
-    (sevCritical, 'critical'),
-))
+SevNameDict = OrderedDict(
+    (
+        (sevDebug, "debug"),
+        (sevNormal, "normal"),
+        (sevWarning, "warning"),
+        (sevError, "error"),
+        (sevCritical, "critical"),
+    )
+)
 
 # ordered dictionary of severity name (lowercase): severity; order is least to most severe
-NameSevDict = OrderedDict(list(zip(list(SevNameDict.values()), list(SevNameDict.keys()))))
+NameSevDict = OrderedDict(
+    list(zip(list(SevNameDict.values()), list(SevNameDict.keys())))
+)
 
 # Call setHelpURLBase if you want to specify URLs relative to a base
-_HelpURLBase = ''
+_HelpURLBase = ""
 _gotHelpURLBase = False
 
 
-def _joinHelpURL(urlSuffix=''):
+def _joinHelpURL(urlSuffix=""):
     """Prepend the help url base and return the result.
     If urlSuffix is "" then return the help url base.
     """
-#   print "_joinHelpURL(urlSuffix=%r)" % (urlSuffix,)
+    #   print "_joinHelpURL(urlSuffix=%r)" % (urlSuffix,)
     global _HelpURLBase, _gotHelpURLBase
     _gotHelpURLBase = True
     return parse.urljoin(_HelpURLBase, urlSuffix)
@@ -79,12 +83,12 @@ def _setHelpURLBase(urlBase):
     May only be called before getHelpURLBase is called
     (i.e. before any widgets are created that use url help).
     """
-#   print "_setHelpURLBase(urlBase=%r)" % (urlBase,)
+    #   print "_setHelpURLBase(urlBase=%r)" % (urlBase,)
     global _HelpURLBase, _gotHelpURLBase
     if _gotHelpURLBase:
-        raise RuntimeError('helpURL already requested; cannot change it now.')
+        raise RuntimeError("helpURL already requested; cannot change it now.")
 
-    if urlBase.endswith('/'):
+    if urlBase.endswith("/"):
         _HelpURLBase = urlBase
     else:
-        _HelpURLBase = urlBase + '/'
+        _HelpURLBase = urlBase + "/"

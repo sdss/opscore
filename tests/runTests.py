@@ -19,10 +19,10 @@ def setup():
     """
     global TestPath
     TestPath = os.path.dirname(__file__)
-    pythonPath = os.path.join(os.path.dirname(os.path.abspath(TestPath)), 'python')
-    if 'PYTHONPATH' in os.environ:
-        pythonPath += ':' + os.environ['PYTHONPATH']
-    os.environ['PYTHONPATH'] = pythonPath
+    pythonPath = os.path.join(os.path.dirname(os.path.abspath(TestPath)), "python")
+    if "PYTHONPATH" in os.environ:
+        pythonPath += ":" + os.environ["PYTHONPATH"]
+    os.environ["PYTHONPATH"] = pythonPath
 
 
 def runTests(testList):
@@ -36,11 +36,11 @@ def runTests(testList):
         print("\n*** Running %s ***\n" % (test,))
         subprocess.call(["python", test], env=os.environ)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     setup()
     if len(sys.argv) == 1:
-        testList = glob.glob(os.path.join(TestPath, '*.py'))
+        testList = glob.glob(os.path.join(TestPath, "*.py"))
     else:
         testList = sys.argv[1:]
     runTests(testList)
-

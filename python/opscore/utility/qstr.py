@@ -1,4 +1,4 @@
-__all__ = ['qstr']
+__all__ = ["qstr"]
 
 
 def qstr(o, tquote='"', equotes=None, doNewlines=True):
@@ -27,21 +27,21 @@ def qstr(o, tquote='"', equotes=None, doNewlines=True):
     if equotes is None:
         if tquote is None:
             return s
-        equotes = '\\' + tquote
+        equotes = "\\" + tquote
     else:
-        equotes = '\\' + tquote + equotes
+        equotes = "\\" + tquote + equotes
 
     # Could compare with a clever RE scheme:
     #   matches = match_all(equotes)
     #   '\\'.join(match pieces)
     #
     for equote in equotes:
-        equote_repl = '\\' + equote
+        equote_repl = "\\" + equote
         s = s.replace(equote, equote_repl)
 
     if doNewlines:
-        s = s.replace('\n', '\\n')
-        s = s.replace('\r', '\\r')
+        s = s.replace("\n", "\\n")
+        s = s.replace("\r", "\\r")
 
     if tquote:
         return tquote + s + tquote
@@ -50,18 +50,25 @@ def qstr(o, tquote='"', equotes=None, doNewlines=True):
 
 
 if __name__ == "__main__":
-    tests = ('',
-             'a',
-             '"',
-             "'",
-             '""',
-             "''",
-             "\'",
-             '\"',
-             '\\',
-             'abcdef',
-             'a"b\"c\'d\\e\\',
-             chr(7), chr(12), chr(255), chr(10), chr(13), chr(0))
+    tests = (
+        "",
+        "a",
+        '"',
+        "'",
+        '""',
+        "''",
+        "'",
+        '"',
+        "\\",
+        "abcdef",
+        'a"b"c\'d\\e\\',
+        chr(7),
+        chr(12),
+        chr(255),
+        chr(10),
+        chr(13),
+        chr(0),
+    )
 
     for t in tests:
         qt = qstr(t)

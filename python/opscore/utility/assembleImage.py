@@ -1,4 +1,3 @@
-
 """Assemble a set of postage stamps images of guide fiber bundles into one image
 
 The postage stamp images are displayed at full scale and in roughly
@@ -53,41 +52,41 @@ PlateDiameterMM = 0.06053 * 3600 * 3  # 60.53 arcsec/mm, 3 degree FOV
 
 
 class AIException(Exception):
-    """Base class for exceptions thrown by AssembleImage.
-    """
+    """Base class for exceptions thrown by AssembleImage."""
+
     pass
 
 
 class NoPlateInfo(AIException):
-    """Exception thrown by AssembleImage if the image has no plate information.
-    """
+    """Exception thrown by AssembleImage if the image has no plate information."""
+
     pass
 
 
 class PlateInfoWrongVersion(AIException):
-    """Exception thrown by AssembleImage if the image has an unparseable version of plate info.
-    """
+    """Exception thrown by AssembleImage if the image has an unparseable version of plate info."""
+
     pass
 
 
 class PlateInfoInvalid(AIException):
-    """Plate information is invalid and cannot be parsed
-    """
+    """Plate information is invalid and cannot be parsed"""
+
     pass
 
 
-def asArr(seq, shape=(2, ), dtype=float):
-    """Convert a sequence of floats to a numpy array
-    """
+def asArr(seq, shape=(2,), dtype=float):
+    """Convert a sequence of floats to a numpy array"""
     retArr = numpy.array(seq, dtype=dtype)
     if retArr.shape != tuple(shape):
-        raise ValueError('Input data shape = %s != desired shape %s' % (retArr.shape, shape))
+        raise ValueError(
+            "Input data shape = %s != desired shape %s" % (retArr.shape, shape)
+        )
     return retArr
 
 
 class PlateInfo(object):
-    """An object containing SDSS guide probe data including a plate image
-    """
+    """An object containing SDSS guide probe data including a plate image"""
 
     def __init__(self, plateImageArr, plateMaskArr, stampList):
         self.plateImageArr = plateImageArr
@@ -111,26 +110,27 @@ class PostageStamp(object):
     - decImEndPos: end position of postage stamp on main image
                    (i,j int pixels); None until set by setDecimatedImagePos
     """
+
     Separation = 2  # separation between postage stamps, in binned pixels
 
     def __init__(
-            self,
-            image,
-            mask,
-            gpNumber,
-            gpExists=True,
-            gpEnabled=True,
-            gpBits=None,
-            gpPlatePosMM=(numpy.nan, numpy.nan),
-            gpCtr=(numpy.nan, numpy.nan),
-            gpRadius=numpy.nan,
-            gpFocusOffset=numpy.nan,
-            starCtr=(numpy.nan, numpy.nan),
-            starRotation=numpy.nan,
-            starXYErrArcsec=(numpy.nan, numpy.nan),
-            starRADecErrArcSec=(numpy.nan, numpy.nan),
-            fwhmArcSec=numpy.nan,
-            posErr=numpy.nan,
+        self,
+        image,
+        mask,
+        gpNumber,
+        gpExists=True,
+        gpEnabled=True,
+        gpBits=None,
+        gpPlatePosMM=(numpy.nan, numpy.nan),
+        gpCtr=(numpy.nan, numpy.nan),
+        gpRadius=numpy.nan,
+        gpFocusOffset=numpy.nan,
+        starCtr=(numpy.nan, numpy.nan),
+        starRotation=numpy.nan,
+        starXYErrArcsec=(numpy.nan, numpy.nan),
+        starRADecErrArcSec=(numpy.nan, numpy.nan),
+        fwhmArcSec=numpy.nan,
+        posErr=numpy.nan,
     ):
         """Create a PostageStamp
         Inputs (all in binned pixels unless noted):
@@ -158,7 +158,9 @@ class PostageStamp(object):
         self.mask = numpy.array(mask)
         self.gpNumber = int(gpNumber)
         self.gpExists = bool(gpExists)
-        self.gpEnabled = bool(gpEnabled) and self.gpExists  # force false if probe does not exist
+        self.gpEnabled = (
+            bool(gpEnabled) and self.gpExists
+        )  # force false if probe does not exist
         self.gpBits = None if gpBits is None else int(gpBits)
         self.gpPlatePosMM = asArr(gpPlatePosMM)
         self.gpCtr = asArr(gpCtr)
@@ -190,10 +192,12 @@ class PostageStamp(object):
         """
         ctrPos = numpy.array(ctrPos, dtype=float)
         if numpy.any(numpy.logical_not(numpy.isfinite(ctrPos))):
-            raise RuntimeError('ctrPos %s is not finite' % (ctrPos, ))
+            raise RuntimeError("ctrPos %s is not finite" % (ctrPos,))
         if numpy.any(self.image.shape > mainImageShape):
-            raise RuntimeError('main image shape %s < %s stamp image shape' %
-                               (self.image.shape, mainImageShape))
+            raise RuntimeError(
+                "main image shape %s < %s stamp image shape"
+                % (self.image.shape, mainImageShape)
+            )
 
         # swap i,j axes to get x,y axes
         imageXYShape = numpy.array(self.image.shape[::-1], dtype=int)
@@ -206,8 +210,11 @@ class PostageStamp(object):
         maxEndPos = mainImageXYShape
         leftMargin = self.decImStartPos - minStartPos
         rightMargin = maxEndPos - self.decImEndPos
-        adjustment = numpy.where(leftMargin < 0, -leftMargin,
-                                 numpy.where(rightMargin < 0, rightMargin, (0, 0)))
+        adjustment = numpy.where(
+            leftMargin < 0,
+            -leftMargin,
+            numpy.where(rightMargin < 0, rightMargin, (0, 0)),
+        )
         if numpy.any(adjustment != (0, 0)):
             self.decImStartPos += adjustment
             self.decImEndPos += adjustment
@@ -223,9 +230,11 @@ class PostageStamp(object):
         return tuple(slice(self.decImStartPos[i], self.decImEndPos[i]) for i in (1, 0))
 
     def getRadius(self):
-        """Return radius of this region (float pixels)
-        """
-        return (math.sqrt(self.image.shape[0]**2 + self.image.shape[1]**2) + self.Separation) / 2.0
+        """Return radius of this region (float pixels)"""
+        return (
+            math.sqrt(self.image.shape[0] ** 2 + self.image.shape[1] ** 2)
+            + self.Separation
+        ) / 2.0
 
 
 def decimateStrip(imArr):
@@ -249,9 +258,13 @@ def decimateStrip(imArr):
         return []
     numIm = stampShape[0] // stampSize
     if stampSize * numIm != stampShape[0]:
-        raise ValueError('image shape %s is not a column of an even number of squares' %
-                         (stampShape, ))
-    stampImageList = [imArr[(ind * stampSize):((ind + 1) * stampSize), :] for ind in range(numIm)]
+        raise ValueError(
+            "image shape %s is not a column of an even number of squares"
+            % (stampShape,)
+        )
+    stampImageList = [
+        imArr[(ind * stampSize) : ((ind + 1) * stampSize), :] for ind in range(numIm)
+    ]
     return stampImageList
 
 
@@ -289,44 +302,58 @@ class AssembleImage(object):
         """
         # check version info
         try:
-            sdssFmtStr = guideImage[0].header['SDSSFMT']
+            sdssFmtStr = guideImage[0].header["SDSSFMT"]
         except Exception:
-            raise NoPlateInfo('Could not find SDSSFMT header entry')
+            raise NoPlateInfo("Could not find SDSSFMT header entry")
         try:
             formatName, versMajStr, versMinStr = sdssFmtStr.split()
             formatMajorVers = int(versMajStr)
             # formatMinorVers = int(versMinStr) # don't need minor number for anything
         except Exception:
-            raise NoPlateInfo('Could not parse SDSSFMT = {}'.format(sdssFmtStr, ))
-        if formatName.lower() != 'gproc':
-            raise NoPlateInfo('SDSSFMT {} != gproc'.format(formatName.lower(), ))
+            raise NoPlateInfo(
+                "Could not parse SDSSFMT = {}".format(
+                    sdssFmtStr,
+                )
+            )
+        if formatName.lower() != "gproc":
+            raise NoPlateInfo(
+                "SDSSFMT {} != gproc".format(
+                    formatName.lower(),
+                )
+            )
         if formatMajorVers != 1:
             raise PlateInfoWrongVersion(
-                'Can only process SDSSFMT version 1: found {}'.format(formatMajorVers))
+                "Can only process SDSSFMT version 1: found {}".format(formatMajorVers)
+            )
 
         # IMAGETYP 'object' has all the necessary HDUs, while 'flat' and 'dark' do not.
         try:
-            imagetyp = guideImage[0].header['IMAGETYP'].lower()
+            imagetyp = guideImage[0].header["IMAGETYP"].lower()
         except Exception as e:
-            raise NoPlateInfo('Could not find IMAGETYP header entry: {}'.format(e))
-        if imagetyp != 'object':
-            raise NoPlateInfo('SDSS guider {} files do not have a plate view.'.format(imagetyp))
+            raise NoPlateInfo("Could not find IMAGETYP header entry: {}".format(e))
+        if imagetyp != "object":
+            raise NoPlateInfo(
+                "SDSS guider {} files do not have a plate view.".format(imagetyp)
+            )
 
         try:
-            plateScale = float(guideImage[0].header['PLATSCAL'])  # plate scale in mm/deg
+            plateScale = float(
+                guideImage[0].header["PLATSCAL"]
+            )  # plate scale in mm/deg
             plateArcSecPerMM = 3600.0 / plateScale  # plate scale in arcsec/mm
         except Exception:
-            raise PlateInfoInvalid('Could not find or parse PLATSCAL header entry')
+            raise PlateInfoInvalid("Could not find or parse PLATSCAL header entry")
 
         inImageShape = numpy.array(guideImage[0].data.shape, dtype=int)
         imageShape = numpy.array(inImageShape * self.relSize, dtype=int)
         dataTable = guideImage[6].data
 
         try:
-            background = float(guideImage[0].header['IMGBACK'])
+            background = float(guideImage[0].header["IMGBACK"])
         except Exception:
             sys.stderr.write(
-                'AssembleImage: IMGBACK header missing; estimating background locally\n')
+                "AssembleImage: IMGBACK header missing; estimating background locally\n"
+            )
             background = numpy.median(guideImage[0].data.astype(numpy.float))
 
         smallStampImage = guideImage[2].data - background
@@ -335,60 +362,68 @@ class AssembleImage(object):
         smallStampImageList = decimateStrip(smallStampImage)
         smallStampMaskList = decimateStrip(guideImage[3].data)
         if len(smallStampImageList) != len(smallStampMaskList):
-            raise PlateInfoInvalid('%s small image stamps != %s small image masks' %
-                                   (len(smallStampImageList), len(smallStampMaskList)))
+            raise PlateInfoInvalid(
+                "%s small image stamps != %s small image masks"
+                % (len(smallStampImageList), len(smallStampMaskList))
+            )
         numSmallStamps = len(smallStampImageList)
 
         largeStampImageList = decimateStrip(largeStampImage)
         largeStampMaskList = decimateStrip(guideImage[5].data)
         if len(largeStampImageList) != len(largeStampMaskList):
-            raise PlateInfoInvalid('%s large image stamps != %s large image masks' %
-                                   (len(largeStampImageList), len(largeStampMaskList)))
+            raise PlateInfoInvalid(
+                "%s large image stamps != %s large image masks"
+                % (len(largeStampImageList), len(largeStampMaskList))
+            )
         numLargeStamps = len(largeStampImageList)
         numStamps = numSmallStamps + numLargeStamps
 
         if numStamps == 0:
-            raise NoPlateInfo('No postage stamps')
+            raise NoPlateInfo("No postage stamps")
 
         if smallStampImageList:
             smallStampShape = smallStampImageList[0].shape
         else:
             # no small postage stamps; use the usual value
             smallStampShape = (19, 19)
-        bgPixPerMM = numpy.mean(
-            (imageShape - smallStampShape - (2 * self.margin))) / PlateDiameterMM
+        bgPixPerMM = (
+            numpy.mean((imageShape - smallStampShape - (2 * self.margin)))
+            / PlateDiameterMM
+        )
         minPosXYMM = -imageShape[::-1] / (2.0 * bgPixPerMM)
 
         stampList = []
         for ind, dataEntry in enumerate(dataTable):
-            stampSizeIndex = dataEntry['stampSize']
-            stampIndex = dataEntry['stampIdx']
+            stampSizeIndex = dataEntry["stampSize"]
+            stampIndex = dataEntry["stampIdx"]
             if (stampSizeIndex < 0) or (stampIndex < 0):
                 continue
             if stampSizeIndex == 1:
                 if stampIndex > numSmallStamps:
                     raise PlateInfoInvalid(
-                        'stampSize=%s and stampIdx=%s but there are only %s small stamps' %
-                        (stampSizeIndex, stampIndex, numSmallStamps))
+                        "stampSize=%s and stampIdx=%s but there are only %s small stamps"
+                        % (stampSizeIndex, stampIndex, numSmallStamps)
+                    )
                 image = smallStampImageList[stampIndex]
                 mask = smallStampMaskList[stampIndex]
             elif stampSizeIndex == 2:
                 if stampIndex > numLargeStamps:
                     raise PlateInfoInvalid(
-                        'stampSize=%s and stampIdx=%s but there are only %s large stamps' %
-                        (stampSizeIndex, stampIndex, numLargeStamps))
+                        "stampSize=%s and stampIdx=%s but there are only %s large stamps"
+                        % (stampSizeIndex, stampIndex, numLargeStamps)
+                    )
                 image = largeStampImageList[stampIndex]
                 mask = largeStampMaskList[stampIndex]
             else:
                 continue
-            if not dataEntry['exists']:
+            if not dataEntry["exists"]:
                 # do not show postage stamp images for nonexistent (e.g. broken) probes
                 continue
 
             # older image files don't contain gprobebits
             # and pyfits tables don't support "get", so...
             try:
-                gpBits = dataEntry['gprobebits']
+                gpBits = dataEntry["gprobebits"]
             except KeyError:
                 gpBits = None
             stampList.append(
@@ -396,22 +431,25 @@ class AssembleImage(object):
                     image=image,
                     mask=mask,
                     gpNumber=ind + 1,
-                    gpExists=dataEntry['exists'],
-                    gpEnabled=dataEntry['enabled'],
+                    gpExists=dataEntry["exists"],
+                    gpEnabled=dataEntry["enabled"],
                     gpBits=gpBits,
-                    gpPlatePosMM=(dataEntry['xFocal'], dataEntry['yFocal']),
-                    gpCtr=(dataEntry['xCenter'], dataEntry['yCenter']),
-                    gpRadius=dataEntry['radius'],
-                    gpFocusOffset=dataEntry['focusOffset'],
-                    starRotation=dataEntry['rotStar2Sky'],
-                    starCtr=(dataEntry['xstar'], dataEntry['ystar']),
-                    starXYErrArcsec=numpy.array(
-                        (dataEntry['dx'], dataEntry['dy'])) * plateArcSecPerMM,
+                    gpPlatePosMM=(dataEntry["xFocal"], dataEntry["yFocal"]),
+                    gpCtr=(dataEntry["xCenter"], dataEntry["yCenter"]),
+                    gpRadius=dataEntry["radius"],
+                    gpFocusOffset=dataEntry["focusOffset"],
+                    starRotation=dataEntry["rotStar2Sky"],
+                    starCtr=(dataEntry["xstar"], dataEntry["ystar"]),
+                    starXYErrArcsec=numpy.array((dataEntry["dx"], dataEntry["dy"]))
+                    * plateArcSecPerMM,
                     starRADecErrArcSec=numpy.array(
-                        (dataEntry['dRA'], dataEntry['dDec'])) * plateArcSecPerMM,
-                    fwhmArcSec=(dataEntry['fwhm']),
-                    posErr=dataEntry['poserr'],
-                ))
+                        (dataEntry["dRA"], dataEntry["dDec"])
+                    )
+                    * plateArcSecPerMM,
+                    fwhmArcSec=(dataEntry["fwhm"]),
+                    posErr=dataEntry["poserr"],
+                )
+            )
         radArr = numpy.array([stamp.getRadius() for stamp in stampList])
         desPosArrMM = numpy.array([stamp.gpPlatePosMM for stamp in stampList])
         desPosArr = (desPosArrMM - minPosXYMM) * bgPixPerMM
@@ -419,10 +457,11 @@ class AssembleImage(object):
         actPosArr, quality, nIter = self.removeOverlap(desPosArr, radArr, imageShape)
         if not numpy.isfinite(quality):
             raise PlateInfoInvalid(
-                'removeOverlap failed: guide probe plate positions probably invalid')
+                "removeOverlap failed: guide probe plate positions probably invalid"
+            )
 
         plateImageArr = numpy.zeros(imageShape, dtype=numpy.float32)
-        plateMaskArr  = numpy.zeros(imageShape, dtype=numpy.uint8)
+        plateMaskArr = numpy.zeros(imageShape, dtype=numpy.uint8)
         for stamp, actPos in zip(stampList, actPosArr):
             stamp.setDecimatedImagePos(actPos, plateImageArr.shape)
             mainRegion = stamp.getDecimatedImageRegion()
@@ -452,16 +491,22 @@ class AssembleImage(object):
         nIter = 0
         while quality >= self.MinQuality:
             corrArr[:, :] = 0.0
-            edgeQuality = self.computeEdgeCorr(corrArr, actPosArr, radArr, corrFrac, imageShape)
-            conflictQuality = self.computeConflictCorr(corrArr, actPosArr, radArr, corrFrac)
+            edgeQuality = self.computeEdgeCorr(
+                corrArr, actPosArr, radArr, corrFrac, imageShape
+            )
+            conflictQuality = self.computeConflictCorr(
+                corrArr, actPosArr, radArr, corrFrac
+            )
             quality = edgeQuality + conflictQuality
 
             # limit correction to max corr
-            corrRadius = numpy.sqrt(corrArr[:, 0]**2 + corrArr[:, 1]**2)
+            corrRadius = numpy.sqrt(corrArr[:, 0] ** 2 + corrArr[:, 1] ** 2)
             for ind in range(2):
-                corrArr[:, ind] = numpy.where(corrRadius > maxCorr,
-                                              (corrArr[:, ind] / corrRadius) * maxCorr,
-                                              corrArr[:, ind])
+                corrArr[:, ind] = numpy.where(
+                    corrRadius > maxCorr,
+                    (corrArr[:, ind] / corrRadius) * maxCorr,
+                    corrArr[:, ind],
+                )
             actPosArr += corrArr
             quality = edgeQuality + conflictQuality
 
@@ -489,10 +534,11 @@ class AssembleImage(object):
         quality = 0
         xyImageSize = numpy.array(imageShape[::-1])
         maxXYPosArr = xyImageSize - radArr[:, numpy.newaxis]
-        corrArr = numpy.where(posArr < radArr[:, numpy.newaxis], radArr[:, numpy.newaxis] - posArr,
-                              0)
+        corrArr = numpy.where(
+            posArr < radArr[:, numpy.newaxis], radArr[:, numpy.newaxis] - posArr, 0
+        )
         corrArr += numpy.where(posArr > maxXYPosArr, maxXYPosArr - posArr, 0)
-        quality = numpy.sum(corrArr[:, 0]**2 + corrArr[:, 1]**2)
+        quality = numpy.sum(corrArr[:, 0] ** 2 + corrArr[:, 1] ** 2)
         corrArr *= corrFrac
         return quality
 
@@ -514,12 +560,16 @@ class AssembleImage(object):
             minSepArr = radArr + rad
             corr = numpy.zeros(2, dtype=float)
             diffVec = pos - posArr
-            radSepArr = numpy.sqrt(diffVec[:, 0]**2 + diffVec[:, 1]**2)
+            radSepArr = numpy.sqrt(diffVec[:, 0] ** 2 + diffVec[:, 1] ** 2)
             radSepArr[ind] = minSepArr[ind]  # don't try to avoid self
             # note: correct half of error; let other object correct the rest
-            corrRadArr = numpy.where(radSepArr < minSepArr, 0.5 * (minSepArr - radSepArr), 0.0)
-            corrArr2 = (diffVec / radSepArr[:, numpy.newaxis]) * corrRadArr[:, numpy.newaxis]
+            corrRadArr = numpy.where(
+                radSepArr < minSepArr, 0.5 * (minSepArr - radSepArr), 0.0
+            )
+            corrArr2 = (diffVec / radSepArr[:, numpy.newaxis]) * corrRadArr[
+                :, numpy.newaxis
+            ]
             corr = numpy.sum(corrArr2, 0)
-            quality += (corr[0]**2 + corr[1]**2)
+            quality += corr[0] ** 2 + corr[1] ** 2
             corrArr[ind] += corr * corrFrac
         return quality

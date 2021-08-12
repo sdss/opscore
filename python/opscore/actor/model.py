@@ -1,4 +1,3 @@
-
 """A Model is a container for keyVars for an actor
 
 History:
@@ -18,7 +17,7 @@ from opscore.protocols.keys import KeysDictionary
 from .keyvar import KeyVar
 
 
-__all__ = ['Model']
+__all__ = ["Model"]
 
 # number of keywork names to ask for in a given "keys getFor=actor" command
 NumKeysToGetAtOnce = 20
@@ -36,6 +35,7 @@ class Model(object):
     * Only keyVars defined in the actor's dictionary are refreshed automatically.
       Any keyVars you add to the subclass are synthetic keyVars that you should set yourself.
     """
+
     _registeredActors = set()
     dispatcher = None
 
@@ -46,7 +46,7 @@ class Model(object):
 
         self.actor = actor
         if self.dispatcher is None:
-            raise RuntimeError('Dispatcher not set')
+            raise RuntimeError("Dispatcher not set")
 
         cachedKeyVars = []
         keysDict = KeysDictionary.load(actor)
@@ -59,11 +59,11 @@ class Model(object):
             setattr(self, keyVar.name, keyVar)
 
         for ind in range(0, len(cachedKeyVars), NumKeysToGetAtOnce):
-            keyVars = cachedKeyVars[ind:ind + NumKeysToGetAtOnce]
+            keyVars = cachedKeyVars[ind : ind + NumKeysToGetAtOnce]
             keyNames = [(kv.name) for kv in keyVars]
-            refreshCmdStr = 'getFor=%s %s' % (self.actor, ' '.join(keyNames))
+            refreshCmdStr = "getFor=%s %s" % (self.actor, " ".join(keyNames))
             for keyVar in keyVars:
-                keyVar.refreshActor = 'keys'
+                keyVar.refreshActor = "keys"
                 keyVar.refreshCmd = refreshCmdStr
                 self.dispatcher.addKeyVar(keyVar)
 
@@ -71,8 +71,7 @@ class Model(object):
 
     @property
     def keyVarDict(self):
-        """Return a dictionary of keyVar name:keyVar
-        """
+        """Return a dictionary of keyVar name:keyVar"""
         retDict = dict()
         for name, item in self.__dict__.items():
             if isinstance(item, KeyVar):
@@ -89,5 +88,5 @@ class Model(object):
         Warning: must be called exactly once, before instantiating the first Model.
         """
         if cls.dispatcher:
-            raise RuntimeError('Dispatcher cannot be modified once set')
+            raise RuntimeError("Dispatcher cannot be modified once set")
         cls.dispatcher = dispatcher

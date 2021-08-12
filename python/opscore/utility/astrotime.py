@@ -20,6 +20,7 @@ class AstroTime(datetime):
     specified via the timezone and conversion to/from Modified Julian
     Date formats.
     """
+
     # a datetime whose MJD is exactly 50000.
     mjdEpoch = datetime(1995, 10, 10)
 
@@ -30,14 +31,26 @@ class AstroTime(datetime):
         AstroTime(datetime=dt)
         AstroTime(datetime=dt,deltasecs=+33)
         """
-        if (len(args) == 0 and 'datetime' in kargs and
-                (len(kargs) == 1 or (len(kargs) == 2 and 'deltasecs' in kargs))):
-            if not isinstance(kargs['datetime'], datetime):
-                raise AstroTimeException('expect datetime instance')
-            deltasecs = kargs['deltasecs'] if 'deltasecs' in kargs else 0
-            dt = kargs['datetime'] + timedelta(seconds=deltasecs)
-            return datetime.__new__(cls, dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second,
-                                    dt.microsecond, dt.tzinfo)
+        if (
+            len(args) == 0
+            and "datetime" in kargs
+            and (len(kargs) == 1 or (len(kargs) == 2 and "deltasecs" in kargs))
+        ):
+            if not isinstance(kargs["datetime"], datetime):
+                raise AstroTimeException("expect datetime instance")
+            deltasecs = kargs["deltasecs"] if "deltasecs" in kargs else 0
+            dt = kargs["datetime"] + timedelta(seconds=deltasecs)
+            return datetime.__new__(
+                cls,
+                dt.year,
+                dt.month,
+                dt.day,
+                dt.hour,
+                dt.minute,
+                dt.second,
+                dt.microsecond,
+                dt.tzinfo,
+            )
         else:
             return datetime.__new__(cls, *args, **kargs)
 
@@ -71,7 +84,9 @@ class AstroTime(datetime):
 
     def utcoffset(self):
         """Returns our offset from UTC, including any leap-second adjustments."""
-        return datetime.utcoffset(self) + timedelta(seconds=self.__leapseconds(self.tzinfo))
+        return datetime.utcoffset(self) + timedelta(
+            seconds=self.__leapseconds(self.tzinfo)
+        )
 
     def utctimetuple(self):
         dt = self - timedelta(seconds=self.__leapseconds(self.tzinfo))
@@ -89,19 +104,25 @@ class AstroTime(datetime):
     def timetz(self):
         delta = self.__leapseconds(self.tzinfo, 0)
         if not delta == 0:
-            raise AstroTimeException('time.time does not support leap seconds')
+            raise AstroTimeException("time.time does not support leap seconds")
         return datetime.timetz(self)
 
     def MJD(self):
         """Returns the Modified Julian Date corresponding to our date and time."""
         if self.year <= 0:
-            raise AstroTimeException('MJD calculations not supported for BC dates')
+            raise AstroTimeException("MJD calculations not supported for BC dates")
         (y, m, d) = (self.year, self.month, self.day)
-        jd = (367 * y - floor(7 * (y + floor((m + 9) / 12)) / 4) - floor(3 * (floor(
-            (y + (m - 9) / 7) / 100) + 1) / 4) + floor(275 * m / 9) + d + 1721028.5)
+        jd = (
+            367 * y
+            - floor(7 * (y + floor((m + 9) / 12)) / 4)
+            - floor(3 * (floor((y + (m - 9) / 7) / 100) + 1) / 4)
+            + floor(275 * m / 9)
+            + d
+            + 1721028.5
+        )
         mjd = jd - 2400000.5
         (h, m, s, us) = (self.hour, self.minute, self.second, self.microsecond)
-        mjd += (h + (m + (s + us / 1000000.) / 60.) / 60.) / 24.
+        mjd += (h + (m + (s + us / 1000000.0) / 60.0) / 60.0) / 24.0
         return mjd
 
     @staticmethod
@@ -112,21 +133,24 @@ class AstroTime(datetime):
         No timezone or leap-second adjustments are made since the MJD
         value is assumed to already be in the specified time zone.
         """
-        dt = AstroTime.mjdEpoch.replace(tzinfo=tz) + timedelta(days=mjd - 50000.)
+        dt = AstroTime.mjdEpoch.replace(tzinfo=tz) + timedelta(days=mjd - 50000.0)
         return AstroTime(datetime=dt)
 
     def __str__(self):
         formatted = datetime.__str__(self)
         delta = self.__leapseconds(self.tzinfo, None)
         if delta is not None:
-            formatted += '%+03d' % self.tzinfo.leapseconds(self)
-        formatted += ' MJD %.6f' % self.MJD()
+            formatted += "%+03d" % self.tzinfo.leapseconds(self)
+        formatted += " MJD %.6f" % self.MJD()
         if self.tzname() is not None:
-            formatted += ' %s' % self.tzname()
+            formatted += " %s" % self.tzname()
         return formatted
 
     def __repr__(self):
-        return datetime.__repr__(self).replace('datetime.datetime',self.__class__.__name__)
+        return datetime.__repr__(self).replace(
+            "datetime.datetime", self.__class__.__name__
+        )
+
 
 ZERO = timedelta(0)
 
@@ -143,7 +167,7 @@ class CoordinatedUniversalTime(tzinfo):
         return ZERO
 
     def tzname(self, dt):
-        return 'UTC'
+        return "UTC"
 
     def leapseconds(self, dt):
         return int(0)
@@ -160,11 +184,11 @@ class InternationalAtomicTime(CoordinatedUniversalTime):
     """
 
     def tzname(self, dt):
-        return 'TAI'
+        return "TAI"
 
     def leapseconds(self, dt):
         if dt.year < 1999:
-            raise AstroTimeException('Leap seconds not tabulated before 1999')
+            raise AstroTimeException("Leap seconds not tabulated before 1999")
         elif dt.year < 2006:
             # leap second added 31 Dec 1999
             return int(+32)

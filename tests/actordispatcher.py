@@ -9,13 +9,14 @@ import unittest
 
 try:
     import RO.Comm.Generic
-    RO.Comm.Generic.setFramework('twisted')
+
+    RO.Comm.Generic.setFramework("twisted")
 except ImportError:
     # older version of RO
     pass
 from opscore.actor import Model, ActorDispatcher, CmdVar
 
-HubDispatcher = ActorDispatcher('hub', yourUserIDKeyName=None)
+HubDispatcher = ActorDispatcher("hub", yourUserIDKeyName=None)
 HubDispatcher._myUserID = 0
 
 
@@ -26,12 +27,13 @@ class ModelTests(unittest.TestCase):
     def testDispatch(self):
         """Test dispatching"""
         # keywords are initialized to empty tuples or tuples of None
-        for keyName in ('actors', 'commanders', 'user', 'users', 'version', 'httpRoot'):
+        for keyName in ("actors", "commanders", "user", "users", "version", "httpRoot"):
             keyVar = getattr(self.model, keyName)
-            self.assertEqual(keyVar[:], (None,)*len(keyVar))
+            self.assertEqual(keyVar[:], (None,) * len(keyVar))
 
         reply = self.dispatcher.makeReply(
-            dataStr='actors=calvin,hobbes; commanders=tu01.mice,tu02.men; users=anon,you,me; version=1.0; httpRoot=hub25m.apo, image/dir')
+            dataStr="actors=calvin,hobbes; commanders=tu01.mice,tu02.men; users=anon,you,me; version=1.0; httpRoot=hub25m.apo, image/dir"
+        )
         self.dispatcher.dispatchReply(reply)
         self.assertEqual(self.model.actors[:], ("calvin", "hobbes"))
         self.assertEqual(self.model.commanders[:], ("tu01.mice", "tu02.men"))
@@ -41,8 +43,8 @@ class ModelTests(unittest.TestCase):
 
     def testGetKeyVarList(self):
         """test getKeyVarList"""
-        for keyName in ('actors', 'commanders', 'user', 'users', 'version', 'httpRoot'):
-            keyVarList = self.dispatcher.getKeyVarList('hub', keyName)
+        for keyName in ("actors", "commanders", "user", "users", "version", "httpRoot"):
+            keyVarList = self.dispatcher.getKeyVarList("hub", keyName)
             self.assertEqual(len(keyVarList), 1)
             self.assertEqual(keyVarList[0], getattr(self.model, keyName))
         self.assertEqual(self.dispatcher.getKeyVarList("badactorname", "users"), [])
@@ -50,8 +52,8 @@ class ModelTests(unittest.TestCase):
 
     def testGetKeyVar(self):
         """test getKeyVar"""
-        for keyName in ('actors', 'commanders', 'user', 'users', 'version', 'httpRoot'):
-            keyVar = self.dispatcher.getKeyVar('hub', keyName)
+        for keyName in ("actors", "commanders", "user", "users", "version", "httpRoot"):
+            keyVar = self.dispatcher.getKeyVar("hub", keyName)
             self.assertEqual(keyVar, getattr(self.model, keyName))
         self.assertRaises(Exception, self.dispatcher.getKeyVar, "badactorname", "users")
         self.assertRaises(Exception, self.dispatcher.getKeyVar, "hub", "badkeyvarname")
@@ -61,37 +63,37 @@ class ModelTests(unittest.TestCase):
 
         More complete testing would require an event loop
         """
-        cmdVar1 = CmdVar(cmdStr='command 1')
+        cmdVar1 = CmdVar(cmdStr="command 1")
         self.dispatcher.executeCmd(cmdVar1)
         self.assertNotEqual(cmdVar1.cmdID, 0)
         self.assertTrue(not cmdVar1.isDone)
         self.assertTrue(not cmdVar1.didFail)
-        reply = self.dispatcher.makeReply(cmdID=cmdVar1.cmdID, msgCode='i')
+        reply = self.dispatcher.makeReply(cmdID=cmdVar1.cmdID, msgCode="i")
         self.dispatcher.dispatchReply(reply)
         self.assertTrue(not cmdVar1.isDone)
         self.assertTrue(not cmdVar1.didFail)
-        reply = self.dispatcher.makeReply(cmdID=cmdVar1.cmdID + 1, msgCode=':')
+        reply = self.dispatcher.makeReply(cmdID=cmdVar1.cmdID + 1, msgCode=":")
         self.dispatcher.dispatchReply(reply)
         self.assertTrue(not cmdVar1.isDone)
         self.assertTrue(not cmdVar1.didFail)
-        reply = self.dispatcher.makeReply(cmdID=cmdVar1.cmdID, msgCode=':')
+        reply = self.dispatcher.makeReply(cmdID=cmdVar1.cmdID, msgCode=":")
         self.dispatcher.dispatchReply(reply)
         self.assertTrue(cmdVar1.isDone)
         self.assertTrue(not cmdVar1.didFail)
 
-        cmdVar2 = CmdVar(cmdStr='command 2')
+        cmdVar2 = CmdVar(cmdStr="command 2")
         self.dispatcher.executeCmd(cmdVar2)
         self.assertNotEqual(cmdVar2.cmdID, 0)
         self.assertTrue(not cmdVar2.isDone)
         self.assertTrue(not cmdVar2.didFail)
-        reply = self.dispatcher.makeReply(cmdID=cmdVar2.cmdID, msgCode='f')
+        reply = self.dispatcher.makeReply(cmdID=cmdVar2.cmdID, msgCode="f")
         self.dispatcher.dispatchReply(reply)
         self.assertTrue(cmdVar2.isDone)
         self.assertTrue(cmdVar2.didFail)
 
     def testAbortCmdByID(self):
         """test abortCmdByID"""
-        cmdVar = CmdVar(cmdStr='a command')
+        cmdVar = CmdVar(cmdStr="a command")
         self.dispatcher.executeCmd(cmdVar)
         self.assertNotEqual(cmdVar.cmdID, 0)
         self.assertTrue(not cmdVar.isDone)
@@ -106,15 +108,17 @@ class ModelTests(unittest.TestCase):
 
     def testModel(self):
         """Test most or all aspects of the model (an instance of SimpleModel)"""
-        for keyName in ('actors', 'commanders', 'user', 'users', 'version', 'httpRoot'):
+        for keyName in ("actors", "commanders", "user", "users", "version", "httpRoot"):
             if not hasattr(self.model, keyName):
-                self.fail('model is missing attribute %s' % (keyName, ))
-        self.assertEqual(self.model.actor, 'hub')
+                self.fail("model is missing attribute %s" % (keyName,))
+        self.assertEqual(self.model.actor, "hub")
 
         keyNames = set(self.model.keyVarDict.keys())
         self.assertTrue(
-            keyNames > set(('actors', 'commanders', 'user', 'users', 'version', 'httpRoot')))
+            keyNames
+            > set(("actors", "commanders", "user", "users", "version", "httpRoot"))
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

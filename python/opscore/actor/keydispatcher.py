@@ -1,4 +1,3 @@
-
 """Sets KeyVars based on replies from the hub.
 
 History:
@@ -36,7 +35,7 @@ from opscore.RO.StringUtil import strFromException
 from .keyvar import MsgCodeSeverity
 
 
-__all__ = ['logToStdOut', 'KeyVarDispatcher']
+__all__ = ["logToStdOut", "KeyVarDispatcher"]
 
 
 def logToStdOut(msgStr, *dumArgs, **dumKeyArgs):
@@ -44,14 +43,14 @@ def logToStdOut(msgStr, *dumArgs, **dumKeyArgs):
 
 
 class KeyVarDispatcher(object):
-    """Parse replies and set KeyVars.
-    """
+    """Parse replies and set KeyVars."""
+
     _ParserClass = ReplyParser
 
     def __init__(
-            self,
-            name='KeyVarDispatcher',
-            logFunc=None,
+        self,
+        name="KeyVarDispatcher",
+        logFunc=None,
     ):
         """Create a new KeyVarDispatcher
 
@@ -110,7 +109,8 @@ class KeyVarDispatcher(object):
             reply = self.parser.parse(replyStr)
         except Exception as e:
             self.logMsg(
-                msgStr='CouldNotParse; Reply=%r; Text=%r' % (replyStr, strFromException(e)),
+                msgStr="CouldNotParse; Reply=%r; Text=%r"
+                % (replyStr, strFromException(e)),
                 severity=opscore.RO.Constants.sevError,
             )
             return
@@ -119,8 +119,10 @@ class KeyVarDispatcher(object):
         try:
             self.dispatchReply(reply)
         except Exception:
-            sys.stderr.write('Could not dispatch replyStr=%r\n    which was parsed as reply=%r\n' %
-                             (replyStr, reply))
+            sys.stderr.write(
+                "Could not dispatch replyStr=%r\n    which was parsed as reply=%r\n"
+                % (replyStr, reply)
+            )
             traceback.print_exc(file=sys.stderr)
 
     def getKeyVarList(self, actor, keyName):
@@ -140,19 +142,20 @@ class KeyVarDispatcher(object):
         """
         keyVarList = self.getKeyVarList(actor, keyName)
         if not keyVarList:
-            raise LookupError('Could not find a keyVar with actor=%s, keyName=%s' %
-                              (actor, keyName))
+            raise LookupError(
+                "Could not find a keyVar with actor=%s, keyName=%s" % (actor, keyName)
+            )
         return keyVarList[0]
 
     def logMsg(
-            self,
-            msgStr,
-            severity=opscore.RO.Constants.sevNormal,
-            actor=None,
-            cmdr=None,
-            cmdID=0,
-            keywords=None,
-            fallbackToStdOut=False,
+        self,
+        msgStr,
+        severity=opscore.RO.Constants.sevNormal,
+        actor=None,
+        cmdr=None,
+        cmdID=0,
+        keywords=None,
+        fallbackToStdOut=False,
     ):
         """Writes a message to the log.
         On error, prints an error message that includes the original message data
@@ -196,12 +199,13 @@ class KeyVarDispatcher(object):
             )
         except Exception as e:
             sys.stderr.write(
-                'Could not log msgStr=%r; severity=%r; actor=%r; '
-                'cmdr=%r; keywords=%r\n    error: %s\n' %
-                (msgStr, severity, actor, cmdr, keywords, strFromException(e)))
+                "Could not log msgStr=%r; severity=%r; actor=%r; "
+                "cmdr=%r; keywords=%r\n    error: %s\n"
+                % (msgStr, severity, actor, cmdr, keywords, strFromException(e))
+            )
             traceback.print_exc(file=sys.stderr)
 
-    def logReply(self, reply, fallbackToStdOut = False):
+    def logReply(self, reply, fallbackToStdOut=False):
         """Log a reply (an opscore.protocols.messages.Reply)
 
         Inputs:
@@ -221,8 +225,9 @@ class KeyVarDispatcher(object):
                 fallbackToStdOut=fallbackToStdOut,
             )
         except Exception as e:
-            sys.stderr.write('Could not log reply=%r\n    error=%s\n' %
-                             (reply, strFromException(e)))
+            sys.stderr.write(
+                "Could not log reply=%r\n    error=%s\n" % (reply, strFromException(e))
+            )
             traceback.print_exc(file=sys.stderr)
 
     def removeKeyVar(self, keyVar):
@@ -251,7 +256,7 @@ class KeyVarDispatcher(object):
         """
         #         print "dispatchReply(reply=%s, doCallbacks=%s)" % (reply, doCallbacks)
         actor = reply.header.actor.lower()
-        if actor.startswith('keys_'):
+        if actor.startswith("keys_"):
             # data is from the hub's keyword cache
             actor = actor[5:]
             isGenuine = False
@@ -261,18 +266,21 @@ class KeyVarDispatcher(object):
             keyVarList = self.getKeyVarList(actor, keyword.name)
             for keyVar in keyVarList:
                 try:
-                    keyVar.set(keyword.values,
-                               isGenuine=isGenuine,
-                               reply=reply,
-                               doCallbacks=doCallbacks)
+                    keyVar.set(
+                        keyword.values,
+                        isGenuine=isGenuine,
+                        reply=reply,
+                        doCallbacks=doCallbacks,
+                    )
                 except TypeError:
                     self.logMsg(
-                        'InvalidKeywordData=%s.%s, %s' % (actor, keyword.name, keyword.values),
+                        "InvalidKeywordData=%s.%s, %s"
+                        % (actor, keyword.name, keyword.values),
                         severity=opscore.RO.Constants.sevError,
                         fallbackToStdOut=True,
                     )
                 except Exception:
-                    print('Failed to set %s to %s:' % (keyVar, keyword.values))
+                    print("Failed to set %s to %s:" % (keyVar, keyword.values))
                     traceback.print_exc(file=sys.stderr)
 
     def setLogFunc(self, logFunc=None):
@@ -285,6 +293,5 @@ class KeyVarDispatcher(object):
 
     @staticmethod
     def _makeDictKey(actor, keyName):
-        """Make a keyVarListDict key out of an actor and keyword name
-        """
+        """Make a keyVarListDict key out of an actor and keyword name"""
         return (actor.lower(), keyName.lower())

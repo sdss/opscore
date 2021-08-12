@@ -1,4 +1,3 @@
-
 """KeyVar and CmdVar
 
 History:
@@ -42,23 +41,30 @@ import opscore.RO.Constants
 import opscore.RO.MathUtil
 
 
-__all__ = ['KeyVar', 'CmdVar', 'AllCodes', 'DoneCodes', 'FailedCodes', 'MsgCodeSeverity']
+__all__ = [
+    "KeyVar",
+    "CmdVar",
+    "AllCodes",
+    "DoneCodes",
+    "FailedCodes",
+    "MsgCodeSeverity",
+]
 
 
-AllCodes = 'DIWE:F!>'
-DoneCodes = ':F!'
-FailedCodes = 'F!'
+AllCodes = "DIWE:F!>"
+DoneCodes = ":F!"
+FailedCodes = "F!"
 
 # MsgCodeSeverity a dictionary of: message code: associated severity
 MsgCodeSeverity = {
-    'D': opscore.RO.Constants.sevDebug,  # debug
-    'I': opscore.RO.Constants.sevNormal,  # information
-    '>': opscore.RO.Constants.sevNormal,  # command queued
-    ':': opscore.RO.Constants.sevNormal,  # command finished
-    'W': opscore.RO.Constants.sevWarning,  # warning
-    'E': opscore.RO.Constants.sevError,  # error
-    'F': opscore.RO.Constants.sevError,  # command failed
-    '!': opscore.RO.Constants.sevError,  # command failed and actor is in trouble
+    "D": opscore.RO.Constants.sevDebug,  # debug
+    "I": opscore.RO.Constants.sevNormal,  # information
+    ">": opscore.RO.Constants.sevNormal,  # command queued
+    ":": opscore.RO.Constants.sevNormal,  # command finished
+    "W": opscore.RO.Constants.sevWarning,  # warning
+    "E": opscore.RO.Constants.sevError,  # error
+    "F": opscore.RO.Constants.sevError,  # command failed
+    "!": opscore.RO.Constants.sevError,  # command failed and actor is in trouble
 }
 
 
@@ -84,7 +90,7 @@ class KeyVar(opscore.RO.AddCallback.BaseMixin):
         self.key = key
         self._typedValues = key.typedValues
         self.doPrint = bool(doPrint)
-        self.valueList = (None, ) * self.minVals
+        self.valueList = (None,) * self.minVals
         self._isCurrent = False
         self._isGenuine = False
         self._timeStamp = 0
@@ -95,21 +101,27 @@ class KeyVar(opscore.RO.AddCallback.BaseMixin):
             # have the model set this to a keys command later if not keys.doCache
             self.refreshActor = None
             self.refreshCmd = None
-        RO.AddCallback.BaseMixin.__init__(self, defCallNow = True)
+        RO.AddCallback.BaseMixin.__init__(self, defCallNow=True)
 
     def __repr__(self):
-        """Return a long str representation of a KeyVar
-        """
-        return '%s(%r, %s[%s]=%s isCurrent=%s)' % (self.__class__.__name__,
-                                                   self.actor, self.name,
-                                                   self._typedValues,
-                                                   self.valueList,
-                                                   self._isCurrent)
+        """Return a long str representation of a KeyVar"""
+        return "%s(%r, %s[%s]=%s isCurrent=%s)" % (
+            self.__class__.__name__,
+            self.actor,
+            self.name,
+            self._typedValues,
+            self.valueList,
+            self._isCurrent,
+        )
 
     def __str__(self):
-        """Return a short str representation of a KeyVar
-        """
-        return '%s(%r, %s=%s)' % (self.__class__.__name__, self.actor, self.name, self.valueList)
+        """Return a short str representation of a KeyVar"""
+        return "%s(%r, %s=%s)" % (
+            self.__class__.__name__,
+            self.actor,
+            self.name,
+            self.valueList,
+        )
 
     def __getitem__(self, ind):
         """Implement keyVar[ind] to return the specified value from the valueList.
@@ -119,13 +131,11 @@ class KeyVar(opscore.RO.AddCallback.BaseMixin):
         return self.valueList[ind]
 
     def __iter__(self):
-        """Implement for x in keyVar (appears to be redundant, but can't hurt)
-        """
+        """Implement for x in keyVar (appears to be redundant, but can't hurt)"""
         return iter(self.valueList)
 
     def __len__(self):
-        """Implement len(keyVar) to return the number of values
-        """
+        """Implement len(keyVar) to return the number of values"""
         return len(self.valueList)
 
     def addValueCallback(self, callFunc, ind=0, cnvFunc=None, callNow=True):
@@ -161,7 +171,9 @@ class KeyVar(opscore.RO.AddCallback.BaseMixin):
 
         self.addCallback(adapterFunc, callNow)
 
-    def addValueListCallback(self, callFuncList, startInd=0, cnvFunc=None, callNow=True):
+    def addValueListCallback(
+        self, callFuncList, startInd=0, cnvFunc=None, callNow=True
+    ):
         """Similar to addCallback, but each callback function receives
         3 arguments including the specified value.
 
@@ -191,7 +203,9 @@ class KeyVar(opscore.RO.AddCallback.BaseMixin):
         if not cnvFunc:
             cnvFunc = lambda x: x
 
-        def adapterFunc(keyVar, callFuncList=callFuncList, startInd=startInd, cnvFunc=cnvFunc):
+        def adapterFunc(
+            keyVar, callFuncList=callFuncList, startInd=startInd, cnvFunc=cnvFunc
+        ):
             for ind, callFunc in enumerate(callFuncList[startInd:]):
                 try:
                     val = keyVar.valueList[ind]
@@ -202,14 +216,12 @@ class KeyVar(opscore.RO.AddCallback.BaseMixin):
         self.addCallback(adapterFunc, callNow)
 
     def doCallbacks(self):
-        """Execute callbacks
-        """
+        """Execute callbacks"""
         self._basicDoCallbacks(self)
 
     @property
     def hasRefreshCmd(self):
-        """Return True if has a refresh command.
-        """
+        """Return True if has a refresh command."""
         return bool(self.refreshCmd)
 
     @property
@@ -240,14 +252,12 @@ class KeyVar(opscore.RO.AddCallback.BaseMixin):
 
     @property
     def maxVals(self):
-        """Return the maximum number of (converted) values for this KeyVar, or None if no limit
-        """
+        """Return the maximum number of (converted) values for this KeyVar, or None if no limit"""
         return self.key.typedValues.maxVals
 
     @property
     def minVals(self):
-        """Return the minimum number of (converted) values for this KeyVar
-        """
+        """Return the minimum number of (converted) values for this KeyVar"""
         return self.key.typedValues.minVals
 
     @property
@@ -257,7 +267,9 @@ class KeyVar(opscore.RO.AddCallback.BaseMixin):
         """
         return self._timeStamp
 
-    def set(self, valueList, isCurrent=True, isGenuine=True, reply=None, doCallbacks=True):
+    def set(
+        self, valueList, isCurrent=True, isGenuine=True, reply=None, doCallbacks=True
+    ):
         """Set the values, converting from strings as necessary.
 
         Inputs:
@@ -271,13 +283,15 @@ class KeyVar(opscore.RO.AddCallback.BaseMixin):
         """
         valueList = list(valueList)
         if not self._typedValues.consume(valueList):
-            raise TypeError('%s invalid valueList=%s' % (self, valueList))
+            raise TypeError("%s invalid valueList=%s" % (self, valueList))
         # extract native types from wrapper classes, if available
-        valueList = tuple(val.native if hasattr(val, 'native') else val for val in valueList)
+        valueList = tuple(
+            val.native if hasattr(val, "native") else val for val in valueList
+        )
 
         # print to stderr, if requested
         if self.doPrint:
-            sys.stderr.write('%s = %r\n' % (self, valueList))
+            sys.stderr.write("%s = %r\n" % (self, valueList))
 
         # apply callbacks, if any
         self.valueList = tuple(valueList)
@@ -304,7 +318,7 @@ class KeyVar(opscore.RO.AddCallback.BaseMixin):
         - return keyVar.valueList in all other cases
         """
         if doRaise and (None in self.valueList):
-            raise ValueError('%s is unknown' % (self, ))
+            raise ValueError("%s is unknown" % (self,))
         if self.maxVals == 0:
             return True
         if (self.maxVals == 1) and (self.minVals == 1):
@@ -318,19 +332,19 @@ class CmdVar(object):
     """
 
     def __init__(
-            self,
-            cmdStr='',
-            actor='',
-            timeLim=0,
-            description='',
-            callFunc=None,
-            callCodes=DoneCodes,
-            isRefresh=False,
-            timeLimKeyVar=None,
-            timeLimKeyInd=0,
-            abortCmdStr=None,
-            keyVars=None,
-            forUserCmd=None,
+        self,
+        cmdStr="",
+        actor="",
+        timeLim=0,
+        description="",
+        callFunc=None,
+        callCodes=DoneCodes,
+        isRefresh=False,
+        timeLimKeyVar=None,
+        timeLimKeyInd=0,
+        abortCmdStr=None,
+        keyVars=None,
+        forUserCmd=None,
     ):
         """
         Inputs:
@@ -374,7 +388,8 @@ class CmdVar(object):
         if self._timeLimKeyVar:
             # check that value exists and can be cast to a float
             opscore.RO.MathUtil.checkRange(
-                self._timeLimKeyInd, 0, self._timeLimKeyVar.minVals, 'timeLimKeyInd')
+                self._timeLimKeyInd, 0, self._timeLimKeyVar.minVals, "timeLimKeyInd"
+            )
         self.abortCmdStr = None if abortCmdStr is None else str(abortCmdStr)
         # a dictionary of keyVar values; keys is keyVar; value is a list of
         # keyVar.valueList seen for that keyVar
@@ -385,7 +400,7 @@ class CmdVar(object):
 
         self.dispatcher = None  # set by dispatcher when it executes the command
         self.replyList = []
-        self.lastCode = 'I'
+        self.lastCode = "I"
         self.startTime = None
         self.maxEndTime = None
 
@@ -425,8 +440,7 @@ class CmdVar(object):
 
     @property
     def didFail(self):
-        """Return True if the command failed, False otherwise.
-        """
+        """Return True if the command failed, False otherwise."""
         return self.lastCode in FailedCodes
 
     @property
@@ -485,7 +499,9 @@ class CmdVar(object):
         Warn and do nothing else if called after the command has finished.
         """
         if self.lastCode in DoneCodes:
-            sys.stderr.write('Command %s already finished; no more replies allowed\n' % (self, ))
+            sys.stderr.write(
+                "Command %s already finished; no more replies allowed\n" % (self,)
+            )
             return
         self.replyList.append(reply)
         msgCode = reply.header.code
@@ -495,21 +511,19 @@ class CmdVar(object):
                 try:
                     callFunc(self)
                 except Exception:
-                    sys.stderr.write('%s callback %s failed\n' % (self, callFunc))
+                    sys.stderr.write("%s callback %s failed\n" % (self, callFunc))
                     traceback.print_exc(file=sys.stderr)
         if self.lastCode in DoneCodes:
             self._cleanup()
 
     @property
     def isDone(self):
-        """Return True if the command is finished, False otherwise.
-        """
+        """Return True if the command is finished, False otherwise."""
         return self.lastCode in DoneCodes
 
     @property
     def lastReply(self):
-        """Return the last reply object, or None if no replies seen
-        """
+        """Return the last reply object, or None if no replies seen"""
         if not self.replyList:
             return None
         return self.replyList[-1]
@@ -532,7 +546,7 @@ class CmdVar(object):
                 self.callCodesFuncList.remove(callCodeFunc)
                 return True
         if doRaise:
-            raise ValueError('Callback %r not found' % callFunc)
+            raise ValueError("Callback %r not found" % callFunc)
         return False
 
     def _timeLimKeyVarCallback(self, keyVar):
@@ -549,8 +563,10 @@ class CmdVar(object):
         try:
             newTimeLim = float(newTimeLim)
         except Exception:
-            raise ValueError('Invalid timeout value %r in keyword %s for command %s' %
-                             (newTimeLim, keyVar, self))
+            raise ValueError(
+                "Invalid timeout value %r in keyword %s for command %s"
+                % (newTimeLim, keyVar, self)
+            )
         self.maxEndTime = time.time() + newTimeLim
         if self.timeLim:
             self.maxEndTime += self.timeLim
@@ -566,11 +582,12 @@ class CmdVar(object):
         for keyVar in self.keyVars:
             keyVar.removeCallback(self._keyVarCallback, doRaise=False)
         if self._timeLimKeyVar:
-            self._timeLimKeyVar.removeCallback(self._timeLimKeyVarCallback, doRaise=False)
+            self._timeLimKeyVar.removeCallback(
+                self._timeLimKeyVarCallback, doRaise=False
+            )
 
     def _setStartInfo(self, dispatcher, cmdID):
-        """Called by the dispatcher when dispatching the command.
-        """
+        """Called by the dispatcher when dispatching the command."""
         self.dispatcher = dispatcher
         self.cmdID = cmdID
         self.startTime = time.time()
@@ -583,8 +600,7 @@ class CmdVar(object):
             self._timeLimKeyVar.addCallback(self._timeLimKeyVarCallback, callNow=False)
 
     def _keyVarIsMine(self, keyVar):
-        """Return True if keyVar is in response to this command; False otherwise.
-        """
+        """Return True if keyVar is in response to this command; False otherwise."""
         if (not keyVar.isCurrent) or (not keyVar.reply):
             return False
         # note: self.dispatcher should be set, but play it safe
@@ -595,31 +611,34 @@ class CmdVar(object):
         return True
 
     def _keyVarCallback(self, keyVar):
-        """Keyword seen; archive the data.
-        """
+        """Keyword seen; archive the data."""
         if not self._keyVarIsMine(keyVar):
             return
         self.keyVarDataDict[keyVar].append(keyVar.valueList)
 
     def _keyVarID(self, keyVar):
-        """Return an ID suitable for use in a dictionary.
-        """
+        """Return an ID suitable for use in a dictionary."""
         return id(keyVar)
 
     def __repr__(self):
-        return "%s(cmdID=%r, actor=%r, cmdStr=%r)" % (self.__class__.__name__, self.cmdID, self.actor, self.cmdStr)
+        return "%s(cmdID=%r, actor=%r, cmdStr=%r)" % (
+            self.__class__.__name__,
+            self.cmdID,
+            self.actor,
+            self.cmdStr,
+        )
 
     def __str__(self):
-        return '%s %r' % (self.actor, self.cmdStr)
+        return "%s %r" % (self.actor, self.cmdStr)
 
 
 class _SetWdgSet(object):
-    """KeyVar callback to set a collection of RO.Wdg widgets.
-    """
+    """KeyVar callback to set a collection of RO.Wdg widgets."""
 
     def __init__(self, wdgSet):
         self.wdgSet = wdgSet
         self.wdgInd = list(range(len(wdgSet)))
+
     def __call__(self, keyVar):
         isCurrent = keyVar.isCurrent
         for wdg, val in zip(self.wdgSet, keyVar.valueList):
@@ -627,12 +646,12 @@ class _SetWdgSet(object):
 
 
 class _SetDefaultWdgSet(object):
-    """KeyVar callback to set the default of a collection of RO.Wdg widgets.
-    """
+    """KeyVar callback to set the default of a collection of RO.Wdg widgets."""
 
     def __init__(self, wdgSet):
         self.wdgSet = wdgSet
         self.wdgInd = list(range(len(wdgSet)))
+
     def __call__(self, keyVar):
         isCurrent = keyVar.isCurrent
         for wdg, val in zip(self.wdgSet, keyVar.valueList):

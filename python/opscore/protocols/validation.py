@@ -37,7 +37,7 @@ class KeywordsIterator(object):
         self.index += amount
 
     def __repr__(self):
-        return '[%s]' % ','.join([repr(key) for key in self.keys[self.index:]])
+        return "[%s]" % ",".join([repr(key) for key in self.keys[self.index :]])
 
     def clone(self):
         # this could be optimized to only clone keys[index:]
@@ -49,17 +49,16 @@ class KeywordsIterator(object):
 
 
 class DispatchMixin(object):
-
     def __rshift__(self, callback):
         if not callable(callback):
-            raise ValidationError('invalid callback %r' % callback)
-        if not hasattr(self, 'callbacks'):
+            raise ValidationError("invalid callback %r" % callback)
+        if not hasattr(self, "callbacks"):
             self.callbacks = []
         self.callbacks.append(callback)
         return self
 
     def invokeCallbacks(self, message):
-        if hasattr(self, 'callbacks'):
+        if hasattr(self, "callbacks"):
             for callback in self.callbacks:
                 callback(message)
 
@@ -79,24 +78,24 @@ class Cmd(Consumer, DispatchMixin):
         if args:
             self.format = args[-1]
         else:
-            self.format = ''
+            self.format = ""
         if self.format:
             self.consumer = self.parser.parse(self.format)
-        self.help = metadata.get('help', None)
+        self.help = metadata.get("help", None)
 
     def __repr__(self):
-        return 'Cmd(%r,%r,%r)' % (self.verb, self.typedValues, self.format)
+        return "Cmd(%r,%r,%r)" % (self.verb, self.typedValues, self.format)
 
     def consume(self, message):
         self.trace(message)
 
         if not isinstance(message, protoMess.Command):
-            return self.failed('message is not a command')
+            return self.failed("message is not a command")
         if not message.name == self.verb:
-            return self.failed('command has wrong verb')
+            return self.failed("command has wrong verb")
         # match any command values
         if not self.typedValues.consume(message.values):
-            return self.failed('no match for command values')
+            return self.failed("no match for command values")
         # remember the current state of our parsed command in case we need to
         # restore it after an incomplete keywords validation
         self.checkpoint = message.clone()
@@ -105,11 +104,11 @@ class Cmd(Consumer, DispatchMixin):
         if self.consumer and not self.consumer.consume(iterator):
             # restore the original message
             message.copy(self.checkpoint)
-            return self.failed('keywords do not match format string')
+            return self.failed("keywords do not match format string")
         if iterator.keyword():
             # restore the original message
             message.copy(self.checkpoint)
-            return self.failed('command has unmatched keywords: %r' % iterator)
+            return self.failed("command has unmatched keywords: %r" % iterator)
         # if we get here, the message has been fully validated
         self.invokeCallbacks(message)
         return self.passed(message)
@@ -119,12 +118,12 @@ class Cmd(Consumer, DispatchMixin):
         self.trace(message)
 
         if not isinstance(message, protoMess.Command):
-            return self.failed('message is not a command')
+            return self.failed("message is not a command")
         if not message.name == self.verb:
-            return self.failed('command has wrong verb')
+            return self.failed("command has wrong verb")
         # match any command values
         if not self.typedValues.consume(message.values):
-            return self.failed('no match for command values')
+            return self.failed("no match for command values")
         # remember the current state of our parsed command in case we need to
         # restore it after an incomplete keywords validation
         self.checkpoint = message.clone()
@@ -134,7 +133,7 @@ class Cmd(Consumer, DispatchMixin):
         if self.consumer and not self.consumer.consume(iterator):
             # restore the original message
             message.copy(self.checkpoint)
-            return self.failed('keywords do not match format string')
+            return self.failed("keywords do not match format string")
 
         if iterator.keyword():
             # If iterator still has more keywords it means that there are
@@ -151,7 +150,7 @@ class Cmd(Consumer, DispatchMixin):
         return message, self.callbacks
 
     def create(self, *kspecs, **kwargs):
-        values = kwargs.get('values', None)
+        values = kwargs.get("values", None)
         if len(kspecs) == 1 and isinstance(kspecs[0], list):
             kspecs = kspecs[0]
         keywords = []
@@ -165,20 +164,22 @@ class Cmd(Consumer, DispatchMixin):
                     vlist = vlist[0]
                 keywords.append(key.create(vlist))
             else:
-                raise ValidationError('Invalid keyword specification: %r' % kspec)
+                raise ValidationError("Invalid keyword specification: %r" % kspec)
         command = protoMess.Command(self.verb, values, keywords)
         if not self.consume(command):
-            raise ValidationError('Keywords or values do match Cmd template')
+            raise ValidationError("Keywords or values do match Cmd template")
         return command
 
     def describe(self):
-        text = '%12s: %s\n' % ('Command', self.verb)
+        text = "%12s: %s\n" % ("Command", self.verb)
         if self.help:
-            pad = '\n' + ' ' * 14
-            formatted = textwrap.fill(textwrap.dedent(self.help), width=66).replace('\n', pad)
-            text += '%12s: %s\n' % ('Description', formatted)
-        text += self.typedValues.describe()[:-1] + '\n'
-        text += '%12s: %s\n' % ('Keywords', self.format)
+            pad = "\n" + " " * 14
+            formatted = textwrap.fill(textwrap.dedent(self.help), width=66).replace(
+                "\n", pad
+            )
+            text += "%12s: %s\n" % ("Description", formatted)
+        text += self.typedValues.describe()[:-1] + "\n"
+        text += "%12s: %s\n" % ("Keywords", self.format)
         return text
 
     def describeAsHTML(self):
@@ -193,7 +194,7 @@ class HandlerBase(object):
     """
 
     def consume(self, string):
-        for line in string.split('\n'):
+        for line in string.split("\n"):
             # ignore empty lines
             if not line.strip():
                 continue
@@ -224,46 +225,48 @@ class CommandHandler(HandlerBase):
         self.parser = parser.CommandParser()
 
     def addConsumers(self, *consumers):
-        """ Register a list of consumer Cmds. """
+        """Register a list of consumer Cmds."""
         for consumer in consumers:
             if not isinstance(consumer, Cmd):
-                raise ValidationError('CommandHandler only accepts Cmds')
+                raise ValidationError("CommandHandler only accepts Cmds")
             name = consumer.verb
             if name not in self.consumers:
                 self.consumers[name] = []
             self.consumers[name].append(consumer)
 
     def removeConsumers(self, *consumers):
-        """ Remove a list of consumer Cmds. """
+        """Remove a list of consumer Cmds."""
         for consumer in consumers:
             if not isinstance(consumer, Cmd):
-                raise ValidationError('CommandHandler.removeConsumers only accepts Cmds')
+                raise ValidationError(
+                    "CommandHandler.removeConsumers only accepts Cmds"
+                )
             name = consumer.verb
             if name not in self.consumers:
-                raise KeyError('no consumers found for %s' % (name))
+                raise KeyError("no consumers found for %s" % (name))
             try:
                 self.consumers[name].remove(consumer)
             except ValueError:
-                raise ValueError('no %s consumer found for %s' % (name, consumer))
+                raise ValueError("no %s consumer found for %s" % (name, consumer))
             if self.consumers[name] == []:
                 del self.consumers[name]
 
     def consumeLine(self, parsed):
         if parsed.name not in self.consumers:
-            raise ValidationError('No handler for cmd: %s' % parsed.name)
+            raise ValidationError("No handler for cmd: %s" % parsed.name)
         for consumer in self.consumers[parsed.name]:
             if consumer.consume(parsed):
                 return
-        raise ValidationError('Invalid cmd: %s' % parsed.canonical())
+        raise ValidationError("Invalid cmd: %s" % parsed.canonical())
 
     def matchLine(self, parsed):
         if parsed.name not in self.consumers:
-            raise ValidationError('No handler for cmd: %s' % parsed.name)
+            raise ValidationError("No handler for cmd: %s" % parsed.name)
         for consumer in self.consumers[parsed.name]:
             retval = consumer.match(parsed, extra_keywords=[])
             if retval:
                 return retval
-        raise ValidationError('Invalid cmd: %s' % parsed.canonical())
+        raise ValidationError("Invalid cmd: %s" % parsed.canonical())
 
 
 class ReplyKey(Consumer, DispatchMixin, KeysManager):
@@ -275,12 +278,12 @@ class ReplyKey(Consumer, DispatchMixin, KeysManager):
         self.key = ReplyKey.getKey(name)
 
     def __repr__(self):
-        return 'ReplyKey(%s)' % self.key.name
+        return "ReplyKey(%s)" % self.key.name
 
     def consume(self, keyword):
         self.trace(keyword)
         if not self.key.consume(keyword):
-            return self.failed('no match for reply keyword')
+            return self.failed("no match for reply keyword")
         self.invokeCallbacks(keyword)
         return self.passed(keyword)
 
@@ -294,10 +297,12 @@ class ReplyHandler(HandlerBase):
         self.consumers = {}
         for consumer in consumers:
             if not isinstance(consumer, ReplyKey):
-                raise ValidationError('ReplyHandler only accepts ReplyKeys')
+                raise ValidationError("ReplyHandler only accepts ReplyKeys")
             name = consumer.key.name
             if name in self.consumers:
-                raise ValidationError("Duplicate consumer for reply keyword '%s'" % name)
+                raise ValidationError(
+                    "Duplicate consumer for reply keyword '%s'" % name
+                )
             self.consumers[name] = consumer
         self.parser = parser.ReplyParser()
 
@@ -307,7 +312,7 @@ class ReplyHandler(HandlerBase):
         while next:
             if next.name in self.consumers:
                 if not self.consumers[next.name].consume(next):
-                    raise ValidationError('Handler failed for keyword %r' % next)
+                    raise ValidationError("Handler failed for keyword %r" % next)
             else:
                 # silently move on if we don't have a handler for this keyword
                 pass
@@ -325,6 +330,6 @@ class Trace(object):
 
     def __call__(self, message):
         if self.label:
-            print('%s: %s' % (self.label,message.canonical()))
+            print("%s: %s" % (self.label, message.canonical()))
         else:
             print(message.canonical())

@@ -36,14 +36,14 @@ import types
 
 # Configure the default formatter and logger.
 logging.basicConfig(
-    datefmt='%Y-%m-%d %H:%M:%S',
-    format='%(asctime)s.%(msecs)03dZ %(name)-16s %(levelno)s %(filename)s:%(lineno)d %(message)s')
+    datefmt="%Y-%m-%d %H:%M:%S",
+    format="%(asctime)s.%(msecs)03dZ %(name)-16s %(levelno)s %(filename)s:%(lineno)d %(message)s",
+)
 
 
 class OpsLogFormatter(logging.Formatter):
-
     def __init__(self):
-        """ Defines the canonical log format. Actually, only the timestamp format and 'zone' are canonical.
+        """Defines the canonical log format. Actually, only the timestamp format and 'zone' are canonical.
 
         Notes:
            We force "GMT"/UTC/Zulu time, but cannot tell if we are using UTC or TAI.
@@ -55,23 +55,24 @@ class OpsLogFormatter(logging.Formatter):
         logging.Formatter.__init__(self, fmt, dateFmt)
         self.converter = time.gmtime
 
+
 class OpsRotatingFileHandler(logging.StreamHandler):
     APOrolloverTime = 24 * 3600 * 0.3
 
-    def __init__(self, dirname='.', basename='', rolloverTime=None):
-        """ create a logging.FileHandler which:
-              - names logfiles by their opening date+time, to the second.
-              - names the first file by the invocation date.
-              - rolls subsequent files over at the APO MJD rollover.
+    def __init__(self, dirname=".", basename="", rolloverTime=None):
+        """create a logging.FileHandler which:
+             - names logfiles by their opening date+time, to the second.
+             - names the first file by the invocation date.
+             - rolls subsequent files over at the APO MJD rollover.
 
-         Args:
-           dirname         ? which directory to create the files in. ['.']
-           basename        ? a fixed prefix for the filenames, if any. ['']
-           rolloverTime    ? override the default rollover time, in local hours [10:00 local]
-         """
+        Args:
+          dirname         ? which directory to create the files in. ['.']
+          basename        ? a fixed prefix for the filenames, if any. ['']
+          rolloverTime    ? override the default rollover time, in local hours [10:00 local]
+        """
 
         logging.StreamHandler.__init__(self)
-        self.stream = None              # StreamHandler opens stderr, which we do not want to close.
+        self.stream = None  # StreamHandler opens stderr, which we do not want to close.
 
         self.dirname = os.path.expandvars(os.path.expanduser(dirname))
         self.basename = basename
@@ -82,13 +83,15 @@ class OpsRotatingFileHandler(logging.StreamHandler):
         else:
             self.rolloverTime = rolloverTime
         if self.rolloverTime < 0 or self.rolloverTime >= 3600.0 * 24:
-            raise RuntimeError('invalid rollover time specified: %s' % (self.rolloverTime))
+            raise RuntimeError(
+                "invalid rollover time specified: %s" % (self.rolloverTime)
+            )
 
         # Force file creation now.
         self.doRollover()
 
     def _setTimes(self, startTime=None):
-        """ set .rolloverAt to the next one from now.
+        """set .rolloverAt to the next one from now.
 
         Bug: should all be done in UTC, including .rolloverTime.
         """
@@ -109,9 +112,12 @@ class OpsRotatingFileHandler(logging.StreamHandler):
         if now >= self.rolloverAt:
             self.rolloverAt += 24 * 3600
 
-        print("new rollover = %0.2f s from now, at %s\n" % (self.rolloverAt - time.time(),
-                                                                           time.localtime(self.rolloverAt)), file=sys.stderr)
-        assert(now < self.rolloverAt)
+        print(
+            "new rollover = %0.2f s from now, at %s\n"
+            % (self.rolloverAt - time.time(), time.localtime(self.rolloverAt)),
+            file=sys.stderr,
+        )
+        assert now < self.rolloverAt
 
     def emit(self, record):
         """
@@ -126,21 +132,21 @@ class OpsRotatingFileHandler(logging.StreamHandler):
         if self.shouldRollover(record):
             self.doRollover(record=record)
 
-        #logging.StreamHandler.emit(self, record)
-        #return
+        # logging.StreamHandler.emit(self, record)
+        # return
 
         try:
             msg = self.format(record)
-            fs = '%s\n'
+            fs = "%s\n"
 
             # This was copied from the logging module. Haven't thought about unicode.
-            if not hasattr(types, 'UnicodeType'):  # if no unicode support...
+            if not hasattr(types, "UnicodeType"):  # if no unicode support...
                 self.stream.write(fs % msg)
             else:
                 try:
                     self.stream.write(fs % msg)
                 except UnicodeError:
-                    self.stream.write(fs % msg.encode('UTF-8'))
+                    self.stream.write(fs % msg.encode("UTF-8"))
             self.flush()
         except (KeyboardInterrupt, SystemExit):
             raise
@@ -148,29 +154,31 @@ class OpsRotatingFileHandler(logging.StreamHandler):
             self.handleError(record)
 
     def shouldRollover(self, record):
-        """ Determine if rollover should occur, based on the timestamp of the LogRecord. """
+        """Determine if rollover should occur, based on the timestamp of the LogRecord."""
 
         dt = self.rolloverAt - record.created
         if dt < 0:
             return True
 
         if dt > 24 * 3600:
-            sys.stderr.write('shouldRollover %s >= %s = %s\n' %
-                             (record.created, self.rolloverAt, record.created >= self.rolloverAt))
+            sys.stderr.write(
+                "shouldRollover %s >= %s = %s\n"
+                % (record.created, self.rolloverAt, record.created >= self.rolloverAt)
+            )
 
         return False
 
     def doRollover(self, record=None):
-        """ We keep log files forever, and want them named by the start date.
+        """We keep log files forever, and want them named by the start date.
         We also want a convenience current.log symbolic link to the new file.
         """
 
-        startTime = (record.created if record else None)
+        startTime = record.created if record else None
         self._setTimes(startTime=startTime)
 
         # get the time that this sequence starts at and make it a TimeTuple
-        timeString = time.strftime('%Y-%m-%dT%H:%M:%S', time.gmtime(self.startTime))
-        filename = self.basename + timeString + '.log'
+        timeString = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime(self.startTime))
+        filename = self.basename + timeString + ".log"
 
         try:
             os.makedirs(self.dirname, 0o755)
@@ -181,11 +189,13 @@ class OpsRotatingFileHandler(logging.StreamHandler):
 
         if os.path.exists(path):
             # Append? Raise?
-            raise RuntimeError('logfile %s already exists. Would append to it.' % (path))
+            raise RuntimeError(
+                "logfile %s already exists. Would append to it." % (path)
+            )
 
         oldStream = self.stream
         try:
-            self.stream = open(path, 'a+')
+            self.stream = open(path, "a+")
         except Exception as e:
             sys.stderr.write("Failed to rollover to new logfile %s: %s\n" % (path, e))
             return
@@ -197,7 +207,7 @@ class OpsRotatingFileHandler(logging.StreamHandler):
             oldStream.close()
 
         # Fiddle the current.log link
-        linkname = os.path.join(self.dirname, '%scurrent.log' % (self.basename))
+        linkname = os.path.join(self.dirname, "%scurrent.log" % (self.basename))
         try:
             os.remove(linkname)
         except BaseException:
@@ -208,8 +218,8 @@ class OpsRotatingFileHandler(logging.StreamHandler):
             print("Failed to create current.log symlink to %s" % (filename))
 
 
-def makeOpsFileHandler(dirname, basename='', rolloverTime=None):
-    """ create a rotating file handler with APO-style filenames and timestamps..
+def makeOpsFileHandler(dirname, basename="", rolloverTime=None):
+    """create a rotating file handler with APO-style filenames and timestamps..
 
     Args:
         dirname    - directory name for the logs. Must already exist.
@@ -217,15 +227,16 @@ def makeOpsFileHandler(dirname, basename='', rolloverTime=None):
         basename   ? If set, a prefix to the filenames. ['']
     """
 
-    handler = OpsRotatingFileHandler(dirname=dirname, basename=basename,
-                                     rolloverTime=rolloverTime)
+    handler = OpsRotatingFileHandler(
+        dirname=dirname, basename=basename, rolloverTime=rolloverTime
+    )
     handler.setFormatter(OpsLogFormatter())
 
     return handler
 
 
-def makeOpsFileLogger(dirname, name, basename='', propagate=True, rolloverTime=None):
-    """ create a rotating file logger with APO-style filenames and timestamps..
+def makeOpsFileLogger(dirname, name, basename="", propagate=True, rolloverTime=None):
+    """create a rotating file logger with APO-style filenames and timestamps..
 
     Args:
         dirname    - directory name for the logs. Must already exist.
@@ -253,16 +264,17 @@ except BaseException:
 def setConsoleLevel(level):
     if not consoleHandler:
         logging.critical(
-            'the root logger must be setup via sdss3logging.setupRootHandler() '
-            'before the console level can be set.'
+            "the root logger must be setup via sdss3logging.setupRootHandler() "
+            "before the console level can be set."
         )
         return
 
     consoleHandler.setLevel(level)
 
+
 def setupRootLogger(basedir, level=logging.INFO, hackRollover=False):
-    """ (re-)configure the root logger to save all output to a APO-style
-    rotating file Handler, plus a console Handler. """
+    """(re-)configure the root logger to save all output to a APO-style
+    rotating file Handler, plus a console Handler."""
 
     # TBD: Is this global stuff really necessary?
     # I'd bet it isn't.
@@ -288,45 +300,46 @@ def setupRootLogger(basedir, level=logging.INFO, hackRollover=False):
 
     # Shut stdout output down if we are not a terminal.
     for h in rootLogger.handlers:
-        rootLogger.warn('checking for stderr on %s,%s' % (h, h.stream))
+        rootLogger.warn("checking for stderr on %s,%s" % (h, h.stream))
         if isinstance(h, logging.StreamHandler) and h.stream == sys.stderr:
             consoleHandler = h
             if h.stream.isatty():
                 setConsoleLevel(level)
             else:
                 # Basically disable stderr output
-                rootLogger.warn('disabling all but critical stderr output on %s,%s' %
-                                (h, h.stream))
+                rootLogger.warn(
+                    "disabling all but critical stderr output on %s,%s" % (h, h.stream)
+                )
                 setConsoleLevel(logging.CRITICAL + 1)
                 rootLogger.removeHandler(h)
         else:
-            rootLogger.warn('leaving output on %s,%s alone' % (h, h.stream))
+            rootLogger.warn("leaving output on %s,%s alone" % (h, h.stream))
 
     return rootLogger
+
 
 def main():
     consoleLogger = logging.getLogger()
 
     consoleLogger.setLevel(logging.INFO)
 
-    myLogger = makeOpsFileLogger('/tmp', 'tlog')
+    myLogger = makeOpsFileLogger("/tmp", "tlog")
     myLogger.setLevel(logging.DEBUG)
 
     # Should propagate up to the root as well as log to its own logfile.
-    c2Logger = logging.getLogger('c2')
+    c2Logger = logging.getLogger("c2")
     c2Logger.setLevel(logging.DEBUG)
-    h2 = makeOpsFileHandler('/tmp', basename='c2-')
+    h2 = makeOpsFileHandler("/tmp", basename="c2-")
     h2.setLevel(logging.WARN)
     c2Logger.addHandler(h2)
 
-    consoleLogger.info('max s = %d', 20)
-    c2Logger.critical('me too! max s = %d', 20)
+    consoleLogger.info("max s = %d", 20)
+    c2Logger.critical("me too! max s = %d", 20)
     for s in range(150000):
-        myLogger.critical('crash rollover: %05d', s)
+        myLogger.critical("crash rollover: %05d", s)
         if s % 10000 == 0:
-            c2Logger.info('s=%d, logname=%s', s, myLogger.handlers[0].filename)
+            c2Logger.info("s=%d, logname=%s", s, myLogger.handlers[0].filename)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
