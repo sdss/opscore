@@ -25,10 +25,12 @@ class Group(Consumer):
         self.floating = floating
 
     def __repr__(self):
-        return 'Group{%s;%s}' % (','.join([repr(x) for x in self.positioned]), ','.join(
-            [repr(x) for x in self.floating]))
+        return 'Group{%s;%s}' % (
+            ','.join([repr(x) for x in self.positioned]),
+            ','.join([repr(x) for x in self.floating])
+        )
 
-    def consume(self, where):
+    def consume(self,where):
         self.trace(where)
         # loop over positioned initial keys
         for key in self.positioned:
@@ -86,7 +88,6 @@ class OneOf(Consumer):
         keyword.copy(self.checkpoint)
         return self.failed('no keys match %s' % keyword)
 
-
 class Optional(Consumer):
     """
     Declares that a consumer is optional
@@ -98,7 +99,7 @@ class Optional(Consumer):
     def __repr__(self):
         return '?%r' % self.group
 
-    def consume(self, where):
+    def consume(self,where):
         self.trace(where)
         # remember the current state of the remaining keywords in case we have to
         # restore them after a failed validation
@@ -125,25 +126,25 @@ class KeysFormatParser(object):
     t_NAME = r'[A-Za-z][A-Za-z0-9._]*'
 
     # lexical tokens
-    tokens = ('WS', 'NAME')
+    tokens = ('WS','NAME')
 
-    def p_KeysGroup(self, t):
-        'Group : Positioned WS Floating'
-        t[0] = Group(t[1], t[3])
+    def p_KeysGroup(self,t):
+        "Group : Positioned WS Floating"
+        t[0] = Group(t[1],t[3])
 
-    def p_KeysGroupNoPositioned(self, t):
-        'Group : Floating'
-        t[0] = Group([], t[1])
+    def p_KeysGroupNoPositioned(self,t):
+        "Group : Floating"
+        t[0] = Group([],t[1])
 
-    def p_KeysGroupNoFloating(self, t):
-        'Group : Positioned'
-        t[0] = Group(t[1], [])
+    def p_KeysGroupNoFloating(self,t):
+        "Group : Positioned"
+        t[0] = Group(t[1],[])
 
-    def p_PositionedKey(self, t):
+    def p_PositionedKey(self,t):
         "Positioned : '@' Keyword"
         t[0] = [t[2]]
 
-    def p_PositionedKeys(self, t):
+    def p_PositionedKeys(self,t):
         "Positioned : Positioned WS '@' Keyword"
         t[0] = t[1]
         t[0].append(t[4])
@@ -152,8 +153,8 @@ class KeysFormatParser(object):
         'Floating : Keyword'
         t[0] = [t[1]]
 
-    def p_FloatingKeys(self, t):
-        'Floating : Floating WS Keyword'
+    def p_FloatingKeys(self,t):
+        "Floating : Floating WS Keyword"
         t[0] = t[1]
         t[0].append(t[3])
 
@@ -165,7 +166,7 @@ class KeysFormatParser(object):
         "Keyword : '(' Group ')'"
         t[0] = t[2]
 
-    def p_NonGroupedKeyword(self, t):
+    def p_NonGroupedKeyword(self,t):
         """Keyword : KeywordOr
                    | OneKeyword"""
         t[0] = t[1]
@@ -175,7 +176,7 @@ class KeysFormatParser(object):
         t[0] = t[1]
         t[0].keys.append(t[3])
 
-    def p_KeywordOr(self, t):
+    def p_KeywordOr(self,t):
         "KeywordOr : OneKeyword '|' OneKeyword"
         t[0] = OneOf(t[1], t[3])
 
@@ -190,7 +191,7 @@ class KeysFormatParser(object):
         else:
             t[0] = CmdKey(Key(t[1]))
 
-    def p_error(self, tok):
+    def p_error(self,tok):
         """
         Handles parse errors
         """

@@ -1,3 +1,4 @@
+
 """Sends commands (of type opscore.actor.CmdVar) and dispatches replies
 to key variables (opscore.actor.keyvar.KeyVar and subclasses).
 
@@ -108,8 +109,7 @@ History:
                     Moved logToStdOut function to KeyDispatcher.
 2011-02-02 ROwen    Moved logReplyStr to KeyDispatcher.
                     Modified to let KeyDispatcher log replies.
-2011-05-04 ROwen    Made makeReply a bit more robust by detecting cmdID == None
-                    and changing it to 0.
+2011-05-04 ROwen    Made makeReply a bit more robust by detecting cmdID == None and changing it to 0.
 2011-06-13 ROwen    Added static method getMaxUserCmdID.
                     Changed to log cmdID when issuing a command.
 2011-07-28 ROwen    Modified to not log commands as they are sent; use cmds actor data instead.
@@ -242,14 +242,14 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         else:
             self.connection = NullConnection()
         self._isConnected = self.connection.isConnected
-        self.userCmdIDGen = opscore.RO.Alg.IDGen(1, _CmdNumWrap)
-        self.refreshCmdIDGen = opscore.RO.Alg.IDGen(_CmdNumWrap + 1, 2 * _CmdNumWrap)
+        self.userCmdIDGen = RO.Alg.IDGen(1, _CmdNumWrap)
+        self.refreshCmdIDGen = RO.Alg.IDGen(_CmdNumWrap + 1, 2 * _CmdNumWrap)
 
         try:
             self.makeReply(dataStr='TestName')
         except Exception as e:
-            raise ValueError('Invalid name=%s cannot be parsed as an actor name; error: %s' %
-                             (name, strFromException(e)))
+            raise ValueError("Invalid name=%s cannot be parsed as an actor name; error: %s" % \
+                (name, strFromException(e)))
 
         # start background tasks (refresh variables and check command timeout)
         self.refreshAllVar()
@@ -393,13 +393,12 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         """
         return _CmdNumWrap
 
-    def makeReply(
-            self,
-            cmdr=None,
-            cmdID=0,
-            actor=None,
-            msgCode='F',
-            dataStr='',
+    def makeReply(self,
+        cmdr = None,
+        cmdID = 0,
+        actor = None,
+        msgCode = "F",
+        dataStr = "",
     ):
         """Generate a Reply object (opscore.protocols.messages.Reply) based on the supplied data.
 
@@ -592,15 +591,14 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
                 cmdrStr = '%s.%s ' % (self.connection.cmdr, self.connection.cmdr)
         else:
             # external actor; do not specify the commander
-            cmdrStr = ''
-        return '%s%d %s %s' % (cmdrStr, cmdVar.cmdID, cmdVar.actor, cmdVar.cmdStr)
+            cmdrStr = ""
+        return "%s%d %s %s" % (cmdrStr, cmdVar.cmdID, cmdVar.actor, cmdVar.cmdStr)
 
-    def _formatReplyHeader(
-            self,
-            cmdr=None,
-            cmdID=0,
-            actor=None,
-            msgCode='F',
+    def _formatReplyHeader(self,
+        cmdr = None,
+        cmdID = 0,
+        actor = None,
+        msgCode = "F",
     ):
         """Generate header for Reply object
         """
@@ -614,7 +612,7 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         if cmdID is None:
             cmdID = 0
 
-        return '%s %d %s %s' % (cmdr, cmdID, actor, msgCode)
+        return "%s %d %s %s" % (cmdr, cmdID, actor, msgCode)
 
     def _nextKeyVarCallback(self, keyVarListIter, includeNotCurrent=True):
         """Issue next keyVar callback
@@ -695,9 +693,8 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
     def _sendNextRefreshCmd(self, refreshCmdItemIter=None):
         """Helper function for refreshAllVar.
 
-        Plow through a keyVarList iterator until a refresh command is found
-        that is wanted, issue it, then schedule a call for myself for ASAP
-        (giving other events a chance to execute first).
+        Plow through a keyVarList iterator until a refresh command is found that is wanted, issue it,
+        then schedule a call for myself for ASAP (giving other events a chance to execute first).
 
         Inputs:
         - refreshCmdItemIter: iterator over items in refreshCmdDict;
@@ -751,10 +748,10 @@ class NullConnection(object):
         self.cmdr = 'me.me'
 
     def connect(self):
-        raise RuntimeError('NullConnection is always connected')
+        raise RuntimeError("NullConnection is always connected")
 
     def disconnect(self):
-        raise RuntimeError('NullConnection cannot disconnect')
+        raise RuntimeError("NullConnection cannot disconnect")
 
     def isConnected(self):
         return True

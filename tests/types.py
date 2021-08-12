@@ -62,7 +62,7 @@ class TypesTest(unittest.TestCase):
         self.assertRaises(ValueError, lambda: types.UInt()('xyz'))
 
     def test03(self):
-        'Types created with invalid non-string values'
+        "Types created with invalid non-string values"
         self.assertRaises(ValueError, lambda: types.String()('\u1234'))
 
     def test04(self):
@@ -144,7 +144,7 @@ class TypesTest(unittest.TestCase):
         self.assertRaises(types.ValueTypeError,
                           lambda: types.RepeatedValueType(types.Float(), -1, 1))
         self.assertRaises(types.ValueTypeError,
-                          lambda: types.RepeatedValueType(types.Float(), 1, 'abc'))
+            lambda: types.RepeatedValueType(types.Float(), 1, 'abc'))
 
     def test11(self):
         'Values initialized with an invalid string literal'
@@ -198,9 +198,9 @@ class TypesTest(unittest.TestCase):
         maxFloat = float(3.4028234663852886e+38)
         epsilon = float(2e22)
         self.assertEqual(F(maxFloat), maxFloat)
-        self.assertEqual(F(-maxFloat), -maxFloat)
-        self.assertRaises(OverflowError, lambda: F(maxFloat + epsilon))
-        self.assertRaises(OverflowError, lambda: F(-maxFloat - epsilon))
+        self.assertEqual(F(-maxFloat),-maxFloat)
+        self.assertRaises(OverflowError, lambda: F(maxFloat+epsilon))
+        self.assertRaises(OverflowError, lambda: F(-maxFloat-epsilon))
 
     def test16(self):
         'Name metadata must be valid identifier'
@@ -265,7 +265,6 @@ class TypesTest(unittest.TestCase):
         self.assertRaises(types.ValueTypeError, lambda: types.Int(reprFmt='=%r='))
         self.assertRaises(types.ValueTypeError, lambda: types.Int(strFmt='=%s='))
         self.assertRaises(types.ValueTypeError, lambda: types.Int(strFmt='=%r='))
-
 
 if __name__ == '__main__':
     unittest.main()

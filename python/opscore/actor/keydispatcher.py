@@ -1,3 +1,4 @@
+
 """Sets KeyVars based on replies from the hub.
 
 History:
@@ -200,7 +201,7 @@ class KeyVarDispatcher(object):
                 (msgStr, severity, actor, cmdr, keywords, strFromException(e)))
             traceback.print_exc(file=sys.stderr)
 
-    def logReply(self, reply, fallbackToStdOut=False):
+    def logReply(self, reply, fallbackToStdOut = False):
         """Log a reply (an opscore.protocols.messages.Reply)
 
         Inputs:

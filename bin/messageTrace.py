@@ -28,27 +28,27 @@ try:
             continue
         print('# Parsing...')
         parsed = replyParser.parse(line)
-        print('Header:', parsed.header)
+        print('Header:',parsed.header)
         print('Keywords:')
         for key in parsed.keywords:
-            print('  ', key)
+            print('  ',key)
         actor = parsed.header.actor
         print('# Loading dictionary for actor "%s"...' % actor)
         kdict = keys.KeysDictionary.load(actor)
-        print('loaded dictionary version', kdict.version)
+        print('loaded dictionary version',kdict.version)
         print('# Validating...')
         for keyword in parsed.keywords:
             keytag = '%s.%s' % (actor, keyword.name.lower())
             try:
                 key = kdict[keyword.name]
                 if key.consume(keyword):
-                    print('found valid key', keyword)
+                    print('found valid key',keyword)
                 else:
-                    print('*** Invalid keyword values for %s: %s' % (keytag, keyword.values))
+                    print('*** Invalid keyword values for %s: %s' % (keytag,keyword.values))
             except KeyError:
-                print('*** Unknown keyword', keytag)
+                print('*** Unknown keyword',keytag)
             except Exception as e:
-                print('*** Validation error for', keytag)
+                print('*** Validation error for',keytag)
                 print(str(e))
 except KeyboardInterrupt:
     print('\nbye')

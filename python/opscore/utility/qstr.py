@@ -2,7 +2,7 @@ __all__ = ['qstr']
 
 
 def qstr(o, tquote='"', equotes=None, doNewlines=True):
-    r""" Put a string representation of an object into quotes and escape it minimally.
+    """ Put a string representation of an object into quotes and escape it minimally.
 
     Return the string wrapped in tquotes.
     Escape all the characters in equotes, as well as backslashes. If equotes are
@@ -49,24 +49,34 @@ def qstr(o, tquote='"', equotes=None, doNewlines=True):
         return s
 
 
-if __name__ == '__main__':
-    tests = ('', 'a', '"', "'", '""', "''", "\'", '\"', '\\', 'abcdef', 'a"b\"c\'d\\e\\', chr(7),
-             chr(12), chr(255), chr(10), chr(13), chr(0))
+if __name__ == "__main__":
+    tests = ('',
+             'a',
+             '"',
+             "'",
+             '""',
+             "''",
+             "\'",
+             '\"',
+             '\\',
+             'abcdef',
+             'a"b\"c\'d\\e\\',
+             chr(7), chr(12), chr(255), chr(10), chr(13), chr(0))
 
     for t in tests:
         qt = qstr(t)
         try:
             e = eval(qt)
         except Exception as e:
-            print('===== NE: %r' % (t))
-            print('        : %r' % (qt))
-            print('                 error: %s' % (e))
+            print("===== NE: %r" % (t))
+            print("        : %r" % (qt))
+            print("                 error: %s" % (e))
             continue
         if t == e:
-            print('===== OK: %s' % (qt))
+            print("===== OK: %s" % (qt))
         else:
-            print('===== NG: %r:' % (t))
-            print('        : %r:' % (qt))
+            print("===== NG: %r:" % (t))
+            print("        : %r:" % (qt))
     print()
     print()
 
@@ -75,15 +85,15 @@ if __name__ == '__main__':
         try:
             e = eval(qt)
         except Exception as e:
-            print('===== NE: %r' % (t))
-            print('        : %r' % (qt))
-            print('                 error: %s' % (e))
+            print("===== NE: %r" % (t))
+            print("        : %r" % (qt))
+            print("                 error: %s" % (e))
             continue
         if t == e:
-            print('===== OK: %s' % (qt))
+            print("===== OK: %s" % (qt))
         else:
-            print('===== NG: %s:' % (t))
-            print('        : %s:' % (qt))
+            print("===== NG: %s:" % (t))
+            print("        : %s:" % (qt))
 
     print()
     print()

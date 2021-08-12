@@ -28,7 +28,7 @@ class ModelTests(unittest.TestCase):
         # keywords are initialized to empty tuples or tuples of None
         for keyName in ('actors', 'commanders', 'user', 'users', 'version', 'httpRoot'):
             keyVar = getattr(self.model, keyName)
-            self.assertEqual(keyVar[:], (None, ) * len(keyVar))
+            self.assertEqual(keyVar[:], (None,)*len(keyVar))
 
         reply = self.dispatcher.makeReply(
             actor='badactor',
@@ -37,18 +37,15 @@ class ModelTests(unittest.TestCase):
         self.dispatcher.dispatchReply(reply)
         for keyName in ('actors', 'commanders', 'user', 'users', 'version', 'httpRoot'):
             keyVar = getattr(self.model, keyName)
-            self.assertEqual(keyVar[:], (None, ) * len(keyVar))
+            self.assertEqual(keyVar[:], (None,)*len(keyVar))
 
-        reply = self.dispatcher.makeReply(
-            actor='hub',
-            dataStr='actors=calvin,hobbes; commanders=tu01.mice,tu02.men; users=anon,you,me; version=1.0; httpRoot=hub25m.apo, image/dir'
-        )
+        reply = self.dispatcher.makeReply(actor="hub", dataStr="actors=calvin,hobbes; commanders=tu01.mice,tu02.men; users=anon,you,me; version=1.0; httpRoot=hub25m.apo, image/dir")
         self.dispatcher.dispatchReply(reply)
-        self.assertEqual(self.model.actors[:], ('calvin', 'hobbes'))
-        self.assertEqual(self.model.commanders[:], ('tu01.mice', 'tu02.men'))
-        self.assertEqual(self.model.users[:], ('anon', 'you', 'me'))
-        self.assertEqual(self.model.version[:], ('1.0', ))
-        self.assertEqual(self.model.httpRoot[:], ('hub25m.apo', 'image/dir'))
+        self.assertEqual(self.model.actors[:], ("calvin", "hobbes"))
+        self.assertEqual(self.model.commanders[:], ("tu01.mice", "tu02.men"))
+        self.assertEqual(self.model.users[:], ("anon", "you", "me"))
+        self.assertEqual(self.model.version[:], ("1.0",))
+        self.assertEqual(self.model.httpRoot[:], ("hub25m.apo", "image/dir"))
 
     def testGetKeyVarList(self):
         """test getKeyVarList"""
@@ -56,16 +53,16 @@ class ModelTests(unittest.TestCase):
             keyVarList = self.dispatcher.getKeyVarList('hub', keyName)
             self.assertEqual(len(keyVarList), 1)
             self.assertEqual(keyVarList[0], getattr(self.model, keyName))
-        self.assertEqual(self.dispatcher.getKeyVarList('badactorname', 'users'), [])
-        self.assertEqual(self.dispatcher.getKeyVarList('hub', 'badkeyvarname'), [])
+        self.assertEqual(self.dispatcher.getKeyVarList("badactorname", "users"), [])
+        self.assertEqual(self.dispatcher.getKeyVarList("hub", "badkeyvarname"), [])
 
     def testGetKeyVar(self):
         """test getKeyVar"""
         for keyName in ('actors', 'commanders', 'user', 'users', 'version', 'httpRoot'):
             keyVar = self.dispatcher.getKeyVar('hub', keyName)
             self.assertEqual(keyVar, getattr(self.model, keyName))
-        self.assertRaises(Exception, self.dispatcher.getKeyVar, 'badactorname', 'users')
-        self.assertRaises(Exception, self.dispatcher.getKeyVar, 'hub', 'badkeyvarname')
+        self.assertRaises(Exception, self.dispatcher.getKeyVar, "badactorname", "users")
+        self.assertRaises(Exception, self.dispatcher.getKeyVar, "hub", "badkeyvarname")
 
     def testExecuteCmd(self):
         """test executeCmd

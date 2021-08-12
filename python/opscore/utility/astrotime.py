@@ -126,8 +126,7 @@ class AstroTime(datetime):
         return formatted
 
     def __repr__(self):
-        return datetime.__repr__(self).replace('datetime.datetime', self.__class__.__name__)
-
+        return datetime.__repr__(self).replace('datetime.datetime',self.__class__.__name__)
 
 ZERO = timedelta(0)
 

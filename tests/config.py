@@ -22,25 +22,25 @@ class ConfigTest(unittest.TestCase):
         if not self.cli.configOptions.foundFiles:
             raise Exception('Unable to find %s' % testConfig)
         self.short_message = 'hello, world'
-        self.long_message = ''.join([chr(i % 256) for i in range(1000)])
+        self.long_message = ''.join([chr(i%256) for i in range(1000)])
 
     def test00(self):
         'String option'
         self.cli.add_option('--stringOpt')
-        (options, args) = self.cli.parse_args([])
-        self.assertEqual(options.stringOpt, 'string')
+        (options,args) = self.cli.parse_args([])
+        self.assertEqual(options.stringOpt,'string')
 
     def test01(self):
         'String option with spaces'
         self.cli.add_option('--spacesOpt')
-        (options, args) = self.cli.parse_args([])
-        self.assertEqual(options.spacesOpt, "'quoted string with spaces'")
+        (options,args) = self.cli.parse_args([])
+        self.assertEqual(options.spacesOpt,"'quoted string with spaces'")
 
     def test02(self):
-        'Float option'
-        self.cli.add_option('--floatOpt', type='float')
-        (options, args) = self.cli.parse_args([])
-        self.assertEqual(options.floatOpt, 3.141)
+        "Float option"
+        self.cli.add_option('--floatOpt',type='float')
+        (options,args) = self.cli.parse_args([])
+        self.assertEqual(options.floatOpt,3.141)
 
     def test03(self):
         'Decimal int option'
@@ -49,33 +49,33 @@ class ConfigTest(unittest.TestCase):
         self.assertEqual(options.decIntOpt, -123)
 
     def test04(self):
-        'Hex log option'
-        self.cli.add_option('--hexIntOpt', type='long')
-        (options, args) = self.cli.parse_args([])
-        self.assertEqual(options.hexIntOpt, int(0x123))
+        "Hex log option"
+        self.cli.add_option('--hexIntOpt',type='long')
+        (options,args) = self.cli.parse_args([])
+        self.assertEqual(options.hexIntOpt,int(0x123))
 
     def test05(self):
-        'Boolean option'
-        self.cli.add_option('--boolOpt1', action='store_true')
-        (options, args) = self.cli.parse_args([])
+        "Boolean option"
+        self.cli.add_option('--boolOpt1',action='store_true')
+        (options,args) = self.cli.parse_args([])
         self.assertTrue(options.boolOpt1)
 
     def test06(self):
-        'Boolean option'
-        self.cli.add_option('--boolOpt2', action='store_false')
-        (options, args) = self.cli.parse_args([])
+        "Boolean option"
+        self.cli.add_option('--boolOpt2',action='store_false')
+        (options,args) = self.cli.parse_args([])
         self.assertTrue(options.boolOpt2)
 
     def test07(self):
-        'Boolean option'
-        self.cli.add_option('--boolOpt3', action='store_true')
-        (options, args) = self.cli.parse_args([])
+        "Boolean option"
+        self.cli.add_option('--boolOpt3',action='store_true')
+        (options,args) = self.cli.parse_args([])
         self.assertTrue(options.boolOpt3)
 
     def test08(self):
-        'Boolean option'
-        self.cli.add_option('--boolOpt4', action='store_false')
-        (options, args) = self.cli.parse_args([])
+        "Boolean option"
+        self.cli.add_option('--boolOpt4',action='store_false')
+        (options,args) = self.cli.parse_args([])
         self.assertTrue(options.boolOpt4)
 
     def test09(self):
@@ -97,12 +97,10 @@ class ConfigTest(unittest.TestCase):
                           lambda: self.cli.add_option('--goodSecret', type='secret'))
 
     def test12(self):
-        'Secret option'
-        self.cli.add_option('--badSecret1', type='secret', dest='secretOpt')
-        self.assertRaises(
-            config.ConfigError,
-            lambda: self.cli.parse_args(args=[],
-                                        passphrase='The quick brown fox jumps over the lazy dog'))
+        "Secret option"
+        self.cli.add_option('--badSecret1',type='secret',dest='secretOpt')
+        self.assertRaises(config.ConfigError,lambda: self.cli.parse_args(args=[],
+            passphrase='The quick brown fox jumps over the lazy dog'))
 
     def test13(self):
         'Secret option'
@@ -120,13 +118,13 @@ class ConfigTest(unittest.TestCase):
     def test15(self):
         'bin2hex - hex2bin roundtrip for long message'
         hex = config.ConfigOptionParser.bin2hex(self.long_message)
-        self.assertEqual(config.ConfigOptionParser.hex2bin(hex), self.long_message)
+        self.assertEqual(config.ConfigOptionParser.hex2bin(hex),self.long_message)
 
     def test16(self):
         'DEFAULT section option'
         self.cli.add_option('--defaultSectionOpt')
-        (options, args) = self.cli.parse_args([])
-        self.assertEqual(options.defaultSectionOpt, 'ok')
+        (options,args) = self.cli.parse_args([])
+        self.assertEqual(options.defaultSectionOpt,'ok')
 
     def test17(self):
         'ProductConfig test'

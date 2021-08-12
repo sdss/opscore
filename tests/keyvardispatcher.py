@@ -26,29 +26,28 @@ class ModelTests(unittest.TestCase):
         # keywords are initialized to empty tuples or tuples of None
         for keyName in ('axisConnState', 'userNum', 'version', 'ut1'):
             keyVar = getattr(self.model, keyName)
-            self.assertEqual(keyVar[:], (None, ) * len(keyVar))
+            self.assertEqual(keyVar[:], (None,)*len(keyVar))
 
         replyStr = self.makeReplyStr(actor='badactor', dataStr='userNum=5; version=1.0')
         self.dispatcher.dispatchReplyStr(replyStr)
         for keyName in ('userNum', 'version'):
             keyVar = getattr(self.model, keyName)
-            self.assertEqual(keyVar[:], (None, ) * len(keyVar))
+            self.assertEqual(keyVar[:], (None,)*len(keyVar))
 
-        replyStr = self.makeReplyStr(
-            actor='tcc',
-            dataStr='tccPos=123.4, 45.6, -23.4; userNum=5; version=1.0; convAng=1.1, 0.22, 1234.5')
+        replyStr = self.makeReplyStr(actor="tcc",
+            dataStr="tccPos=123.4, 45.6, -23.4; userNum=5; version=1.0; convAng=1.1, 0.22, 1234.5")
         self.dispatcher.dispatchReplyStr(replyStr)
         for i in range(3):
             self.assertAlmostEqual(self.model.tccPos[i], (123.4, 45.6, -23.4)[i])
             self.assertEqual(type(self.model.tccPos[i]), float)
         self.assertEqual(self.model.userNum[0], 5)
         self.assertEqual(type(self.model.userNum[0]), int)
-        self.assertEqual(self.model.version[0], '1.0')
+        self.assertEqual(self.model.version[0], "1.0")
         self.assertEqual(type(self.model.version[0]), str)
         convAng = self.model.convAng[0]
         self.assertAlmostEqual(convAng.pos, 1.1)
         self.assertAlmostEqual(convAng.vel, 0.22)
-        self.assertAlmostEqual(convAng.t, 1234.5)
+        self.assertAlmostEqual(convAng.t,   1234.5)
         self.assertEqual(type(convAng), PVT)
 
     def testInvalidValues(self):
@@ -66,20 +65,19 @@ class ModelTests(unittest.TestCase):
             keyVarList = self.dispatcher.getKeyVarList('tcc', keyName)
             self.assertEqual(len(keyVarList), 1)
             self.assertEqual(keyVarList[0], getattr(self.model, keyName))
-        self.assertEqual(self.dispatcher.getKeyVarList('badactorname', 'users'), [])
-        self.assertEqual(self.dispatcher.getKeyVarList('tcc', 'badkeyvarname'), [])
+        self.assertEqual(self.dispatcher.getKeyVarList("badactorname", "users"), [])
+        self.assertEqual(self.dispatcher.getKeyVarList("tcc", "badkeyvarname"), [])
 
     def testGetKeyVar(self):
         for keyName in ('convAng', 'userNum', 'version'):
             keyVar = self.dispatcher.getKeyVar('tcc', keyName)
             self.assertEqual(keyVar, getattr(self.model, keyName))
-        self.assertRaises(Exception, self.dispatcher.getKeyVar, 'badactorname', 'users')
-        self.assertRaises(Exception, self.dispatcher.getKeyVar, 'tcc', 'badkeyvarname')
-        self.assertRaises(Exception, self.dispatcher.getKeyVar, 'nonexistentKeyVar')
+        self.assertRaises(Exception, self.dispatcher.getKeyVar, "badactorname", "users")
+        self.assertRaises(Exception, self.dispatcher.getKeyVar, "tcc", "badkeyvarname")
+        self.assertRaises(Exception, self.dispatcher.getKeyVar, "nonexistentKeyVar")
 
-    def makeReplyStr(self, dataStr, cmdr='me.me', cmdID=0, actor='tcc'):
-        return '%s %d %s : %s' % (cmdr, cmdID, actor, dataStr)
-
+    def makeReplyStr(self, dataStr, cmdr="me.me", cmdID=0, actor="tcc"):
+        return "%s %d %s : %s" % (cmdr, cmdID, actor, dataStr)
 
 if __name__ == '__main__':
     unittest.main()

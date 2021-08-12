@@ -9,8 +9,8 @@ from html import escape
 from os.path import splitext
 from socket import gethostname
 from sys import argv
-from time import ctime
-
+from html import escape
+from os.path import splitext
 
 class HTMLDocumentError(Exception):
     """
@@ -88,16 +88,14 @@ class Text(str):
     Declares a text node in an HTML document.
     """
     blockLevel = False
-
-    def __new__(cls, obj, escapeMe=True):
-        code = obj.encode('utf-8')
+    def __new__(cls,obj,escapeMe=True):
+        code = str(obj).encode('utf-8')
         if escapeMe:
             # HTML does not require escaping single quotes but we do this so that
             # the string representation of a document (or document fragment) can
             # be safely enclosed in single quotes.
-            code = escape(code).replace("'", '&apos;')
-        return str.__new__(cls, code)
-
+            code = escape(code).replace("'",'&apos;')
+        return str.__new__(cls,code)
 
 class Entity(Text):
     """

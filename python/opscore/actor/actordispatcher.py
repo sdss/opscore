@@ -1,3 +1,4 @@
+
 """A single-actor version of CmdKeyVarDispatcher.
 
 Send commands to a single actor and dispatches replies from that actor.
@@ -111,8 +112,7 @@ class ActorDispatcher(CmdKeyVarDispatcher):
             self._myUserID = 0
 
         if self.refreshCmdDict:
-            raise RuntimeError('Internal error: refreshCmdDict should be empty but contains %s' %
-                               (self.refreshCmdDict, ))
+            raise RuntimeError("Internal error: refreshCmdDict should be empty but contains %s" % (self.refreshCmdDict,))
 
         # start background tasks
         self.checkCmdTimeouts()
@@ -140,8 +140,7 @@ class ActorDispatcher(CmdKeyVarDispatcher):
           - header.actor: the actor that generated the message (string)
           - header.code: the message type code (opscore.protocols.types.Enum)
           - string: the original unparsed message (string)
-          - keywords: an ordered dictionary of message keywords
-            (opscore.protocols.messages.Keywords)
+          - keywords: an ordered dictionary of message keywords (opscore.protocols.messages.Keywords)
           Refer to https://trac.sdss3.org/wiki/Ops/Protocols for details.
         - fallbackToStdOut: if True and there is no logFunc then prints the message to stdout.
         """
@@ -199,23 +198,23 @@ class ActorDispatcher(CmdKeyVarDispatcher):
                     print('Failed to set %s to %s:' % (keyVar, keyword.values))
                     traceback.print_exc(file=sys.stderr)
 
+
     def _formatCmdStr(self, cmdVar):
         """Format a command; one-actor version
         """
-        return '%d %s' % (cmdVar.cmdID, cmdVar.cmdStr)
+        return "%d %s" % (cmdVar.cmdID, cmdVar.cmdStr)
 
-    def _formatReplyHeader(
-            self,
-            cmdr=None,
-            cmdID=0,
-            actor=None,
-            msgCode='F',
-            dataStr='',
+    def _formatReplyHeader(self,
+        cmdr = None,
+        cmdID = 0,
+        actor = None,
+        msgCode = "F",
+        dataStr = "",
     ):
         """Format a reply header; one-actor version
         """
         id = self._myUserID or 0
-        return '%d %d %s' % (cmdID, id, msgCode)
+        return "%d %d %s" % (cmdID, id, msgCode)
 
     def _yourUserIDKeyVarCallback(self, keyVar):
         """Set _myUserID based on the keyVar; called by the keyVar specified by yourUserIDKeyName

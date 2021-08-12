@@ -1,3 +1,4 @@
+
 """KeyVar and CmdVar
 
 History:
@@ -94,7 +95,7 @@ class KeyVar(opscore.RO.AddCallback.BaseMixin):
             # have the model set this to a keys command later if not keys.doCache
             self.refreshActor = None
             self.refreshCmd = None
-        opscore.RO.AddCallback.BaseMixin.__init__(self, defCallNow=True)
+        RO.AddCallback.BaseMixin.__init__(self, defCallNow = True)
 
     def __repr__(self):
         """Return a long str representation of a KeyVar
@@ -128,8 +129,7 @@ class KeyVar(opscore.RO.AddCallback.BaseMixin):
         return len(self.valueList)
 
     def addValueCallback(self, callFunc, ind=0, cnvFunc=None, callNow=True):
-        """Similar to addCallback, but the callback function receives
-        3 arguments including the specified value.
+        """Similar to addCallback, but the callback function receives 3 arguments including the specified value.
 
         This is useful for tying objects such as widgets directly to KeyVars.
 
@@ -142,17 +142,15 @@ class KeyVar(opscore.RO.AddCallback.BaseMixin):
         - cnvFunc: a conversion function applied to the value before issuing the callback
         - callNow: if true, execute callFunc immediately, else wait until the keyword is seen
 
-        Note: if the KeyVar has a variable number of values and the one specified
-        by ind is not supplied, then the callback is not called.
+        Note: if the KeyVar has a variable number of values and the one specified by ind is not supplied,
+        then the callback is not called.
 
         Raise IndexError if not 0 <= ind < maxVals
         """
-
-        opscore.RO.MathUtil.checkRange(ind, 0, self.maxVals, '%s ind' % (self, ))
+        RO.MathUtil.checkRange(ind, 0, self.maxVals, "%s ind" % (self,))
 
         if not cnvFunc:
-            def cnvFunc(x):
-                return x
+            cnvFunc = lambda x: x
 
         def adapterFunc(keyVar, callFunc=callFunc, ind=ind, cnvFunc=cnvFunc):
             try:
@@ -187,12 +185,11 @@ class KeyVar(opscore.RO.AddCallback.BaseMixin):
         """
 
         endInd = startInd + len(callFuncList) - 1
-        opscore.RO.MathUtil.checkRange(startInd, 0, None, '%s startInd' % (self, ))
-        opscore.RO.MathUtil.checkRange(endInd, None, self.maxVals, '%s end index' % (self, ))
+        RO.MathUtil.checkRange(startInd, 0, None, "%s startInd" % (self,))
+        RO.MathUtil.checkRange(endInd, None, self.maxVals, "%s end index" % (self,))
 
         if not cnvFunc:
-            def cnvFunc(x):
-                return x
+            cnvFunc = lambda x: x
 
         def adapterFunc(keyVar, callFuncList=callFuncList, startInd=startInd, cnvFunc=cnvFunc):
             for ind, callFunc in enumerate(callFuncList[startInd:]):
@@ -362,9 +359,7 @@ class CmdVar(object):
         - If timeLimKeyInfo is seen before timeLim seconds have passed
           then self.maxEndTime is updated with the new value
 
-        Also the time limit is a lower limit. The command is guaranteed
-        to expire no sooner than this.
-
+        Also the time limit is a lower limit. The command is guaranteed to expire no sooner than this.
         """
 
         self.cmdStr = str(cmdStr)
@@ -463,14 +458,12 @@ class CmdVar(object):
         return self.keyVarDataDict[keyVar]
 
     def getLastKeyVarData(self, keyVar):
-        """Return the most recent list of values seen for the specified
-        keyword variable, or None if no data seen.
+        """Return the most recent list of values seen for the specified keyword variable, or None if no data seen.
 
         Inputs:
         - keyVar: the keyword variable for which to return data
 
-        Returns the most recent list of values seen for the specified keyVar,
-        or None if no data seen.
+        Returns the most recent list of values seen for the specified keyVar, or None if no data seen.
         Note: returns None instead of [] because this allows one to tell the difference between
         the keyword value list being itself empty and no data seen for the keyword.
 
@@ -545,8 +538,7 @@ class CmdVar(object):
     def _timeLimKeyVarCallback(self, keyVar):
         """Handle callback from the time limit keyVar.
 
-        Update self.maxEndTime (adding self.timeLim as a margin
-        if timeLim was specified, else 2 seconds).
+        Update self.maxEndTime (adding self.timeLim as a margin if timeLim was specified, else 2 seconds).
 
         Raises ValueError if the keyword exists but the value is invalid.
         """
@@ -615,8 +607,7 @@ class CmdVar(object):
         return id(keyVar)
 
     def __repr__(self):
-        return '%s(cmdID=%r, actor=%r, cmdStr=%r)' % (self.__class__.__name__, self.cmdID,
-                                                      self.actor, self.cmdStr)
+        return "%s(cmdID=%r, actor=%r, cmdStr=%r)" % (self.__class__.__name__, self.cmdID, self.actor, self.cmdStr)
 
     def __str__(self):
         return '%s %r' % (self.actor, self.cmdStr)
@@ -629,7 +620,6 @@ class _SetWdgSet(object):
     def __init__(self, wdgSet):
         self.wdgSet = wdgSet
         self.wdgInd = list(range(len(wdgSet)))
-
     def __call__(self, keyVar):
         isCurrent = keyVar.isCurrent
         for wdg, val in zip(self.wdgSet, keyVar.valueList):
@@ -643,7 +633,6 @@ class _SetDefaultWdgSet(object):
     def __init__(self, wdgSet):
         self.wdgSet = wdgSet
         self.wdgInd = list(range(len(wdgSet)))
-
     def __call__(self, keyVar):
         isCurrent = keyVar.isCurrent
         for wdg, val in zip(self.wdgSet, keyVar.valueList):

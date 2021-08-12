@@ -1,3 +1,4 @@
+
 """A Model is a container for keyVars for an actor
 
 History:
@@ -41,7 +42,7 @@ class Model(object):
     def __init__(self, actor):
         self._keyNameVarDict = dict()
         if actor in self._registeredActors:
-            raise RuntimeError('%s model already instantiated' % (actor, ))
+            raise RuntimeError("%s model already instantiated" % (actor,))
 
         self.actor = actor
         if self.dispatcher is None:

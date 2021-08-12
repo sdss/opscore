@@ -69,7 +69,7 @@ class Values(list, Canonized):
             if isinstance(value, float):
                 # use repr to capture the full precision
                 value = repr(float(value))
-            elif not isinstance(value, str):
+            elif not isinstance(value,str):
                 value = str(value)
             if self.unquoted.match(value) and (comma or len(self) > 1):
                 # a lone value must be quoted so it is not confused with a keyword name
@@ -278,7 +278,7 @@ class Keywords(list, Canonized):
         try:
             return list.__getitem__(self, index)
         except TypeError:
-            if isinstance(index, str):
+            if isinstance(index,str):
                 name = index.lower()
                 for k in self:
                     if k.name.lower() == name:
@@ -305,7 +305,7 @@ class Keywords(list, Canonized):
         """
         Tests if a keyword with the specified name is present
         """
-        if isinstance(name, str):
+        if isinstance(name,str):
             lower = name.lower()
             for k in self:
                 if k.name.lower() == lower:

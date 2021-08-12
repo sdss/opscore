@@ -1,3 +1,4 @@
+
 """Code to run scripts that can wait for various things without messing up the main event loop
 (and thus starving the rest of your program).
 
@@ -50,9 +51,13 @@ import opscore.RO.SeqUtil
 import opscore.RO.StringUtil
 from opscore.utility.timer import Timer
 
+try:
+    import Queue as queue
+except ImportError:
+    import queue
 
-__all__ = ['ScriptError', 'BaseScriptRunner']
 
+__all__ = ["ScriptError", "BaseScriptRunner"]
 
 _DebugState = False
 
@@ -170,7 +175,7 @@ class BaseScriptRunner(opscore.RO.AddCallback.BaseMixin):
         # useful constant for script writers
         self.ScriptError = ScriptError
 
-        opscore.RO.AddCallback.BaseMixin.__init__(self)
+        RO.AddCallback.BaseMixin.__init__(self)
 
         self.globals = _Blank()
 
@@ -186,8 +191,8 @@ class BaseScriptRunner(opscore.RO.AddCallback.BaseMixin):
             self.endFunc = getattr(self.scriptObj, 'end', None)
         elif self.initFunc:
             res = self.initFunc(self)
-            if hasattr(res, 'next'):
-                raise RuntimeError('init function tried to wait')
+            if hasattr(res, "next"):
+                raise RuntimeError("init function tried to wait")
 
         if startNow:
             self.start()
@@ -203,7 +208,7 @@ class BaseScriptRunner(opscore.RO.AddCallback.BaseMixin):
         occur quickly.
         """
         if self.isExecuting:
-            self._setState(self.Cancelled, '')
+            self._setState(self.Cancelled, "")
 
     def debugPrint(self, msgStr):
         """Print the message to stdout if in debug mode.
@@ -306,7 +311,7 @@ class BaseScriptRunner(opscore.RO.AddCallback.BaseMixin):
         """Resume execution from waitUser
         """
         if self._userWaitID is None:
-            raise RuntimeError('Not in user wait mode')
+            raise RuntimeError("Not in user wait mode")
 
         iterID = self._userWaitID
         self._userWaitID = None
@@ -318,7 +323,7 @@ class BaseScriptRunner(opscore.RO.AddCallback.BaseMixin):
         If already running, raises RuntimeError
         """
         if self.isExecuting:
-            raise RuntimeError('already executing')
+            raise RuntimeError("already executing")
 
         self.initVars()
 
@@ -331,11 +336,10 @@ class BaseScriptRunner(opscore.RO.AddCallback.BaseMixin):
     # with few exceptions all wait for something
     # and thus require a "yield"
 
-    def getKeyVar(
-            self,
-            keyVar,
-            ind=0,
-            defVal=Exception,
+    def getKeyVar(self,
+        keyVar,
+        ind=0,
+        defVal=Exception,
     ):
         """Return the current value of keyVar.
         See also waitKeyVar, which can wait for a value.
@@ -392,12 +396,11 @@ class BaseScriptRunner(opscore.RO.AddCallback.BaseMixin):
         """
         _WaitCmdVars(self, cmdVars, checkFail=checkFail, retVal=retVal)
 
-    def waitKeyVar(
-            self,
-            keyVar,
-            ind=0,
-            defVal=Exception,
-            waitNext=False,
+    def waitKeyVar(self,
+        keyVar,
+        ind=0,
+        defVal=Exception,
+        waitNext=False,
     ):
         """Get the value of keyVar in self.value.
         If it is currently unknown or if waitNext is true,
@@ -474,7 +477,7 @@ class BaseScriptRunner(opscore.RO.AddCallback.BaseMixin):
         self._waitCheck(setWait=True)
 
         if self._userWaitID is not None:
-            raise RuntimeError('Already in user wait mode')
+            raise RuntimeError("Already in user wait mode")
 
         self._userWaitID = self._getNextID()
 
@@ -499,8 +502,8 @@ class BaseScriptRunner(opscore.RO.AddCallback.BaseMixin):
             else:
                 reason = lastReply.string or '?'
         else:
-            reason = '?'
-        self._setState(self.Failed, reason='%s failed: %s' % (cmdDescr, reason))
+            reason = "?"
+        self._setState(self.Failed, reason="%s failed: %s" % (cmdDescr, reason))
 
     def _continue(self, iterID, val=None):
         """Continue executing the script.
@@ -511,12 +514,11 @@ class BaseScriptRunner(opscore.RO.AddCallback.BaseMixin):
         """
         self._printState('_continue(%r, %r)' % (iterID, val))
         if not self.isExecuting:
-            raise RuntimeError('%s: bug! _continue called but script not executing' % (self, ))
+            raise RuntimeError('%s: bug! _continue called but script not executing' % (self,))
 
         try:
             if iterID != self._iterID:
-                raise RuntimeError('%s: bug! _continue called with bad id; got %r, expected %r' %
-                                   (self, iterID, self._iterID))
+                raise RuntimeError("%s: bug! _continue called with bad id; got %r, expected %r" % (self, iterID, self._iterID))
 
             self.value = val
 
@@ -536,17 +538,17 @@ class BaseScriptRunner(opscore.RO.AddCallback.BaseMixin):
 
                 self._iterStack = [res]
 
-            self._printState('_continue: before iteration')
+            self._printState("_continue: before iteration")
             self._state = self.Running
             possIter = next(self._iterStack[-1])
-            if hasattr(possIter, 'next'):
+            if hasattr(possIter, "next"):
                 self._iterStack.append(possIter)
                 self._iterID = self._getNextID(addLevel=True)
                 self._continue(self._iterID)
             else:
                 self._iterID = self._getNextID()
 
-            self._printState('_continue: after iteration')
+            self._printState("_continue: after iteration")
 
         except StopIteration:
             self._iterStack.pop(-1)
@@ -563,7 +565,7 @@ class BaseScriptRunner(opscore.RO.AddCallback.BaseMixin):
             self._setState(self.Failed, opscore.RO.StringUtil.strFromException(e))
         except Exception as e:
             traceback.print_exc(file=sys.stderr)
-            self._setState(self.Failed, opscore.RO.StringUtil.strFromException(e))
+            self._setState(self.Failed, RO.StringUtil.strFromException(e))
 
     def _printState(self, prefix):
         """Print the state at various times.
@@ -604,7 +606,7 @@ class BaseScriptRunner(opscore.RO.AddCallback.BaseMixin):
                                 (opscore.RO.StringUtil.strFromException(e), ))
                 traceback.print_exc(file=sys.stderr)
         else:
-            self.debugPrint('BaseScriptRunner._end: no end function to call')
+            self.debugPrint("BaseScriptRunner._end: no end function to call")
 
     def _getNextID(self, addLevel=False):
         """Return the next iterator ID"""
@@ -627,7 +629,7 @@ class BaseScriptRunner(opscore.RO.AddCallback.BaseMixin):
         """
         self._printState('_setState(%r, %r)' % (newState, reason))
         if newState not in self._AllStates:
-            raise RuntimeError('Unknown state', newState)
+            raise RuntimeError("Unknown state", newState)
 
         # if ending, clean up appropriately
         if self.isExecuting and newState in self._DoneStates:
@@ -646,7 +648,7 @@ class BaseScriptRunner(opscore.RO.AddCallback.BaseMixin):
 
     def __str__(self):
         """String representation of script"""
-        return 'script %s' % (self.name, )
+        return "script %s" % (self.name,)
 
     def _waitCheck(self, setWait=False):
         """Verifies that the script runner is running and not already waiting
@@ -658,13 +660,10 @@ class BaseScriptRunner(opscore.RO.AddCallback.BaseMixin):
         - setWait: if True, sets the _waiting flag True
         """
         if self._state != self.Running:
-            raise RuntimeError('Tried to wait when not running')
+            raise RuntimeError("Tried to wait when not running")
 
         if self._waiting:
-            raise RuntimeError(
-                "Already waiting; did you forget the 'yield' "
-                'when calling a BaseScriptRunner method?'
-            )
+            raise RuntimeError("Already waiting; did you forget the 'yield' when calling a BaseScriptRunner method?")
 
         if setWait:
             self._waiting = True
@@ -871,7 +870,7 @@ class _WaitKeyVar(_WaitBase):
         elif self.defVal != Exception:
             self._continue(self.defVal)
         else:
-            self.fail('Value of %s invalid' % (self.keyVar, ))
+            self.fail("Value of %s invalid" % (self.keyVar,))
 
     def cleanup(self):
         """Called when ending for any reason.

@@ -82,15 +82,15 @@ class ParserTests(unittest.TestCase):
         cParser = parser.CommandParser()
         msg = 'cmd key1 raw=raw;text=goes"here key2'
         cmd = cParser.parse(msg)
-        self.assertEqual(cmd.string, msg)
-        rawcmd = validation.Cmd('cmd', '@[key1] raw [key2]')
+        self.assertEqual(cmd.string,msg)
+        rawcmd = validation.Cmd('cmd','@[key1] raw [key2]')
         self.assertTrue(rawcmd.consume(cmd))
-        self.assertEqual(cmd.keywords[0].name, 'key1')
-        self.assertEqual(cmd.keywords[1].name, 'raw')
-        self.assertEqual(len(cmd.keywords), 2)
-        self.assertTrue(isinstance(cmd.keywords[1], messages.RawKeyword))
-        self.assertEqual(len(cmd.keywords[1].values), 1)
-        self.assertEqual(cmd.keywords[1].values[0], 'raw;text=goes"here key2')
+        self.assertEqual(cmd.keywords[0].name,'key1')
+        self.assertEqual(cmd.keywords[1].name,'raw')
+        self.assertEqual(len(cmd.keywords),2)
+        self.assertTrue(isinstance(cmd.keywords[1],messages.RawKeyword))
+        self.assertEqual(len(cmd.keywords[1].values),1)
+        self.assertEqual(cmd.keywords[1].values[0],'raw;text=goes"here key2')
 
     def test05(self):
         """Canonical round trips"""
@@ -109,8 +109,8 @@ class ParserTests(unittest.TestCase):
         rParser = parser.ActorReplyParser()
         reply = rParser.parse('7  35  f ')  # final space is necessary
         hdr = reply.header
-        self.assertEqual(hdr.commandId, 7)
-        self.assertEqual(hdr.userId, 35)
+        self.assertEqual(hdr.commandId,7)
+        self.assertEqual(hdr.userId,35)
 
     def testActorReplyInvalid(self):
         """Invalid actor reply headers
@@ -119,12 +119,10 @@ class ParserTests(unittest.TestCase):
         but those are errors that may be made valid someday.
         """
         rParser = parser.ActorReplyParser()
-        self.assertRaises(parser.ParseError, rParser.parse, '911 5 + key=value')  # invalid code
-        self.assertRaises(parser.ParseError, rParser.parse, '911 : key=value')  # missing userId
-        self.assertRaises(parser.ParseError, rParser.parse,
-                          ': key=value')  # missing commandId and userId
-        self.assertRaises(parser.ParseError, rParser.parse,
-                          '911 5 Fkey=value')  # missing space between code and key
+        self.assertRaises(parser.ParseError, rParser.parse, "911 5 + key=value") # invalid code
+        self.assertRaises(parser.ParseError, rParser.parse, "911 : key=value") # missing userId
+        self.assertRaises(parser.ParseError, rParser.parse, ": key=value") # missing commandId and userId
+        self.assertRaises(parser.ParseError, rParser.parse, "911 5 Fkey=value") # missing space between code and key
         # could also test initial whitespace and
 
     def testActorRepyRoundTrip(self):

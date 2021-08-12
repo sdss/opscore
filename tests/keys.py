@@ -23,7 +23,7 @@ class KeysTest(unittest.TestCase):
         self.key4 = protoKeys.Key('Key4', protoTypes.Float(invalid='?'))
 
     def test00(self):
-        'Key validation passes'
+        "Key validation passes"
         self.assertTrue(self.key1.consume(self.k1))
         self.assertTrue(self.key2.consume(self.k2))
         self.assertTrue(self.key3.consume(self.k3))
@@ -32,10 +32,10 @@ class KeysTest(unittest.TestCase):
         self.assertTrue(self.k2.values[0] == -1.2)
         self.assertTrue(self.k3.values[0] == 0xdead)
         self.assertTrue(self.k3.values[1] == 0xbeef)
-        self.assertTrue(self.k4.values[0] is None)
+        self.assertTrue(self.k4.values[0] == None)
 
     def test01(self):
-        'Key validation fails'
+        "Key validation fails"
         self.assertFalse(self.key1.consume(self.k2))
         self.assertFalse(self.key1.consume(self.k3))
         self.assertFalse(self.key2.consume(self.k1))
@@ -69,10 +69,10 @@ class KeysTest(unittest.TestCase):
         self.assertRaises(protoKeys.KeysError, lambda: self.key3.create('0xdead'))
 
     def test06(self):
-        'Keyword creation with wrong value types'
-        self.assertRaises(protoKeys.KeysError, lambda: self.key2.create('abc'))
-        self.assertRaises(protoKeys.KeysError, lambda: self.key3.create(0xdead, 'abc'))
-        self.assertRaises(protoKeys.KeysError, lambda: self.key3.create('abc', '0xdead'))
+        "Keyword creation with wrong value types"
+        self.assertRaises(protoKeys.KeysError,lambda: self.key2.create('abc'))
+        self.assertRaises(protoKeys.KeysError,lambda: self.key3.create(0xdead,'abc'))
+        self.assertRaises(protoKeys.KeysError,lambda: self.key3.create('abc','0xdead'))
 
     def test07(self):
         'Read testing dictionary (disabled since testing actor has been deleted)'
@@ -82,16 +82,16 @@ class KeysTest(unittest.TestCase):
         #self.failUnless('UnSigned' in kdict)
 
     def test08(self):
-        'Generic compound value type without explicit wrapper'
-        msgKey = protoKeys.Key(
-            'msg',
-            protoTypes.CompoundValueType(protoTypes.Enum('INFO', 'WARN', 'ERROR', name='code'),
-                                         protoTypes.String(name='text')))
-        msg = protoMess.Keyword('msg', ['INFO', 'Hello, world'])
+        "Generic compound value type without explicit wrapper"
+        msgKey = protoKeys.Key('msg',protoTypes.CompoundValueType(
+            protoTypes.Enum('INFO','WARN','ERROR',name='code'),
+            protoTypes.String(name='text')
+        ))
+        msg = protoMess.Keyword('msg',['INFO','Hello, world'])
         self.assertTrue(msgKey.consume(msg))
-        self.assertEqual(len(msg.values), 1)
-        self.assertTrue(isinstance(msg.values[0], tuple))
-        self.assertTrue(msg.values[0] == ('INFO', 'Hello, world'))
+        self.assertEqual(len(msg.values),1)
+        self.assertTrue(isinstance(msg.values[0],tuple))
+        self.assertTrue(msg.values[0] == ('INFO','Hello, world'))
 
     def test09(self):
         'Generic compound value type with explicit wrapper'
@@ -100,16 +100,15 @@ class KeysTest(unittest.TestCase):
 
             def __init__(self, code, text):
                 pass
-
-        msgKey = protoKeys.Key(
-            'msg',
-            protoTypes.CompoundValueType(protoTypes.Enum('INFO', 'WARN', 'ERROR', name='code'),
-                                         protoTypes.String(name='text'),
-                                         wrapper=Wrapped))
-        msg = protoMess.Keyword('msg', ['INFO', 'Hello, world'])
+        msgKey = protoKeys.Key('msg',protoTypes.CompoundValueType(
+            protoTypes.Enum('INFO','WARN','ERROR',name='code'),
+            protoTypes.String(name='text'),
+            wrapper = Wrapped
+        ))
+        msg = protoMess.Keyword('msg',['INFO','Hello, world'])
         self.assertTrue(msgKey.consume(msg))
-        self.assertEqual(len(msg.values), 1)
-        self.assertTrue(isinstance(msg.values[0], Wrapped))
+        self.assertEqual(len(msg.values),1)
+        self.assertTrue(isinstance(msg.values[0],Wrapped))
 
     def test10(self):
         'Generic compound value type with wrapping disabled'
@@ -121,29 +120,28 @@ class KeysTest(unittest.TestCase):
         protoTypes.CompoundValueType.WrapEnable = False
         self.assertTrue(msgKey.consume(msg))
         protoTypes.CompoundValueType.WrapEnable = True
-        self.assertEqual(len(msg.values), 2)
+        self.assertEqual(len(msg.values),2)
         self.assertTrue(msg.values[0] == 'INFO')
         self.assertTrue(msg.values[1] == 'Hello, world')
 
     def test11(self):
-        'PVT test'
-        pvtKey = protoKeys.Key('pvtMsg', protoTypes.PVT(), protoTypes.Float())
-        msg = protoMess.Keyword('pvtMsg', [1, 2, 3, 4])
+        "PVT test"
+        pvtKey = protoKeys.Key('pvtMsg',protoTypes.PVT(),protoTypes.Float())
+        msg = protoMess.Keyword('pvtMsg',[1,2,3,4])
         self.assertTrue(pvtKey.consume(msg))
-        self.assertEqual(len(msg.values), 2)
+        self.assertEqual(len(msg.values),2)
         import RO.PVT
-        self.assertTrue(isinstance(msg.values[0], RO.PVT.PVT))
-        self.assertEqual(repr(msg.values[0]), repr(RO.PVT.PVT(1, 2, 3)))
-        self.assertEqual(msg.values[1], 4)
+        self.assertTrue(isinstance(msg.values[0],RO.PVT.PVT))
+        self.assertEqual(repr(msg.values[0]),repr(RO.PVT.PVT(1,2,3)))
+        self.assertEqual(msg.values[1],4)
 
     def test12(self):
         'Invalid value'
         self.key4.consume(self.k4)
         ival = self.k4.values[0]
-        self.assertEqual(ival, None)
-        self.assertEqual(ival, protoTypes.InvalidValue)
-        self.assertEqual({None: '-None-', protoTypes.InvalidValue: '-Invalid-'}[ival], '-Invalid-')
-
+        self.assertEqual(ival,None)
+        self.assertEqual(ival,protoTypes.InvalidValue)
+        self.assertEqual({None:'-None-',protoTypes.InvalidValue:'-Invalid-'}[ival],'-Invalid-')
 
 if __name__ == '__main__':
     unittest.main()

@@ -46,7 +46,7 @@ class ValidationTest(unittest.TestCase):
         self.rawcmd = protoValid.Cmd('cmd', '@[key1] raw [<key2>]')
 
     def test00(self):
-        'Cmd validation passes'
+        "Cmd validation passes"
         self.assertTrue(self.cmd1.consume(self.c123))
         self.assertTrue(self.cmd1.consume(self.c321))
         self.assertTrue(self.cmd2.consume(self.c123))
@@ -58,7 +58,7 @@ class ValidationTest(unittest.TestCase):
         self.assertTrue(self.c12v.values[1] == 0xbeef)
 
     def test01(self):
-        'Cmd validation fails'
+        "Cmd validation fails"
         self.assertFalse(self.cmd1.consume(self.c12v))
         self.assertFalse(self.cmd2.consume(self.c321))
         self.assertFalse(self.cmd2.consume(self.c12v))
@@ -104,12 +104,12 @@ class ValidationTest(unittest.TestCase):
                           lambda: self.cmd3.create('key1', values=['abc', '0xbeef']))
 
     def test05(self):
-        'Validate Cmd that takes no keywords'
+        "Validate Cmd that takes no keywords"
         self.assertTrue(self.cmd0a.consume(self.c0))
         self.assertTrue(self.cmd0b.consume(self.c0))
 
     def test06(self):
-        'Raw keyword validation'
+        "Raw keyword validation"
         self.assertTrue(self.rawcmd.consume(self.raw1))
         self.assertTrue(self.rawkey.values[0] == 'raw;text=goes"here')
         self.assertTrue(self.rawcmd.consume(self.raw2))
@@ -117,7 +117,7 @@ class ValidationTest(unittest.TestCase):
         self.assertTrue(self.rawcmd.consume(self.raw4))
 
     def test07(self):
-        'Test Cmd validation with extra keywords'
+        "Test Cmd validation with extra keywords"
         self.assertTrue(self.cmd4.match(self.c123))
 
         message, __ = self.cmd4.match(self.c123)

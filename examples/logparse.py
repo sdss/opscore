@@ -35,8 +35,8 @@ def parseTCCLog(stream):
         # Float(units='deg',invalid='NaN',strFmt='%+07.2f')*3
         az, alt, rot = keyword.values
         # Print our values: %s uses the value type's strFmt.
-        print(('%s: Az = %s %s, Alt = %s %s, Rot = %s %s' %
-               (timestamp, az, az.units, alt, alt.units, rot, rot.units)))
+        print(('%s: Az = %s %s, Alt = %s %s, Rot = %s %s'
+            % (timestamp,az,az.units,alt,alt.units,rot,rot.units)))
 
     # Build a simple callback dispatch dictionary
     callbacks = {'tcc.TCCPos': tccPosHandler}
@@ -62,7 +62,7 @@ def parseTCCLog(stream):
             (commandId, userNum, replyCode, replyText) = matched.groups()
             msg = 'telrun.user%s %s tcc %s%s' % (userNum, commandId, replyCode, replyText)
         except Exception:
-            print('Conversion error on line:', line)
+            print('Conversion error on line:',line)
             raise
 
         #################################################################################
@@ -75,10 +75,10 @@ def parseTCCLog(stream):
             actor = parsed.header.actor
             kdict = protoKeys.KeysDictionary.load(actor)
         except protoParser.ParseError:
-            print('Unable to parse line:', line)
+            print('Unable to parse line:',line)
             continue
         except protoKeys.KeysDictionaryError:
-            print('Unknown actor:', actor)
+            print('Unknown actor:',actor)
             continue
 
         #################################################################################
@@ -88,7 +88,7 @@ def parseTCCLog(stream):
             try:
                 key = kdict[keyword.name]
                 if not key.consume(keyword):
-                    print('Invalid values for keyword:', keyword)
+                    print('Invalid values for keyword:',keyword)
                 try:
                     keytag = '%s.%s' % (actor, keyword.name)
                     handler = callbacks[keytag]
@@ -96,7 +96,7 @@ def parseTCCLog(stream):
                 except BaseException:
                     pass
             except KeyError:
-                print('Ignorning unknown %s keyword: %s' % (actor, keyword.name))
+                print('Ignorning unknown %s keyword: %s' % (actor,keyword.name))
             except Exception:
                 raise
 

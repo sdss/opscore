@@ -11,17 +11,14 @@ import os.path
 import optparse
 import configparser
 
-
 class ConfigError(Exception):
     pass
-
 
 class ProductConfig(configparser.SafeConfigParser):
     """
     A product-aware INI configuration file parser
     """
-
-    def __init__(self, productName, fileName, sectionName=None):
+    def __init__(self,productName,fileName,sectionName=None):
         configparser.SafeConfigParser.__init__(self)
         self.sectionName = sectionName or 'DEFAULT'
         # build a search path for INI files...
@@ -39,7 +36,7 @@ class ProductConfig(configparser.SafeConfigParser):
         # read all available INI config parameters
         self.foundFiles = self.read(configFiles)
 
-    def getValue(self, optionName, getType=None):
+    def getValue(self,optionName,getType=None):
         """
         Returns the named option value using a typed accessor.
 
@@ -49,9 +46,9 @@ class ProductConfig(configparser.SafeConfigParser):
         invalid section name.
         """
         try:
-            getter = getattr(self, 'get' + (getType or ''), self.get)
-            return getter(self.sectionName, optionName)
-        except (configparser.NoOptionError, configparser.NoSectionError):
+            getter = getattr(self,'get' + (getType or ''),self.get)
+            return getter(self.sectionName,optionName)
+        except (configparser.NoOptionError,configparser.NoSectionError):
             raise ConfigError
 
 
@@ -137,10 +134,10 @@ class ConfigOptionParser(optparse.OptionParser):
         # preprocess
         kwargs = self.preprocess_option(args, kwargs)
         # do the normal option processing
-        return optparse.OptionParser.add_option(self, *args, **kwargs)
+        return optparse.OptionParser.add_option(self,*args,**kwargs)
 
-    def parse_args(self, args=None, values=None, passphrase=None,
-                   prompt='Enter the pass phrase: '):
+    def parse_args(self,args=None,values=None,
+        passphrase=None,prompt='Enter the pass phrase: '):
         """
         Parses command line arguments
         """
@@ -180,7 +177,7 @@ class ConfigOptionParser(optparse.OptionParser):
                     raise optparse.OptionValueError('badly formed value for %s' % secret)
                 setattr(options, secret, data[0:-npad])
         # return the parse results
-        return (options, args)
+        return (options,args)
 
     def get_config_info(self):
         """
@@ -198,11 +195,11 @@ class ConfigOptionParser(optparse.OptionParser):
                 text += '  %20s: %s\n' % (str(opt), default_value)
         return text
 
-    def print_help(self, *args, **kwargs):
+    def print_help(self,*args,**kwargs):
         """
         Appends config info to the standard OptionParser help
         """
-        retval = optparse.OptionParser.print_help(self, *args, **kwargs)
+        retval = optparse.OptionParser.print_help(self,*args,**kwargs)
         print('\n' + self.get_config_info())
         return retval
 
@@ -222,9 +219,9 @@ class ConfigOptionParser(optparse.OptionParser):
         if not len(data) % 2 == 0:
             raise ConfigError('hex digest must have even length')
         try:
-            bytes = []
-            for index in range(len(data) / 2):
-                bytes.append(chr(int(data[2 * index:2 * (index + 1)], 16)))
+            bytes = [ ]
+            for index in range(len(data)/2):
+                bytes.append(chr(int(data[2*index:2*(index+1)],16)))
             return ''.join(bytes)
         except ValueError:
             raise ConfigError('badly formmated hex digest')

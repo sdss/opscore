@@ -17,14 +17,14 @@ class ModelTests(unittest.TestCase):
 
     def testModel(self):
         """Test most or all aspects of Model"""
-        self.assertRaises(Exception, Model, 'hub')  # no dispatcher set
+        self.assertRaises(Exception, Model, "hub") # no dispatcher set
 
         Model.setDispatcher(KeyVarDispatcher())
         model = Model('hub')
         for keyName in ('actors', 'commanders', 'user', 'users', 'version', 'httpRoot'):
             if not hasattr(model, keyName):
-                self.fail('model is missing attribute %s' % (keyName, ))
-        self.assertEqual(model.actor, 'hub')
+                self.fail("model is missing attribute %s" % (keyName,))
+        self.assertEqual(model.actor, "hub")
 
         newDispatcher = KeyVarDispatcher()
         self.assertRaises(Exception, Model.setDispatcher, newDispatcher)  # already set

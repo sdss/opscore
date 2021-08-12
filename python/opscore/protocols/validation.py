@@ -325,6 +325,6 @@ class Trace(object):
 
     def __call__(self, message):
         if self.label:
-            print('%s: %s' % (self.label, message.canonical()))
+            print('%s: %s' % (self.label,message.canonical()))
         else:
             print(message.canonical())

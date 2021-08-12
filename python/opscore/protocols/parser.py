@@ -34,7 +34,6 @@ class TemporaryBase(object):
     """
     pass
 
-
 class ReplyParser(TemporaryBase):
     """
     Specifies the parsing rules for reply strings
@@ -50,23 +49,23 @@ class ReplyParser(TemporaryBase):
                              (_name, _name, _extra, _number, _name))
 
     # lexical tokens
-    tokens = ['EQUALS', 'COMMA', 'VALUE', 'NAME_OR_VALUE', 'QUOTED', 'SEMICOLON']
+    tokens = ['EQUALS','COMMA','VALUE','NAME_OR_VALUE','QUOTED','SEMICOLON']
 
-    def p_reply(self, p):
-        'reply : keywords'
-        p[0] = Reply(header=self.header, keywords=p[1], string=self.string)
+    def p_reply(self,p):
+        "reply : keywords"
+        p[0] = Reply(header=self.header,keywords=p[1],string=self.string)
 
-    def p_empty_reply(self, p):
-        'reply : '
-        p[0] = Reply(header=self.header, keywords=[], string=self.string)
+    def p_empty_reply(self,p):
+        "reply : "
+        p[0] = Reply(header=self.header,keywords=[],string=self.string)
 
-    def p_reply_keywords(self, p):
-        'keywords : keywords SEMICOLON keyword'
+    def p_reply_keywords(self,p):
+        "keywords : keywords SEMICOLON keyword"
         p[0] = p[1]
         p[0].append(p[3])
 
-    def p_one_keyword(self, p):
-        'keywords : keyword'
+    def p_one_keyword(self,p):
+        "keywords : keyword"
         p[0] = [p[1]]
 
     t_SEMICOLON = ';'
@@ -122,21 +121,21 @@ class CommandParser(TemporaryBase):
         p[0] = Command(name=p[1], keywords=[Keyword(p[2], p[3])], string=self.string)
         p[0].keywords.extend(p[4])
 
-    def p_raw_command(self, p):
-        'command : NAME_OR_VALUE RAW LINE'
-        p[0] = Command(name=p[1], keywords=[RawKeyword(p[3])], string=self.string)
+    def p_raw_command(self,p):
+        "command : NAME_OR_VALUE RAW LINE"
+        p[0] = Command(name=p[1],keywords=[RawKeyword(p[3])],string=self.string)
 
-    def p_ambiguous_command(self, p):
-        'command : NAME_OR_VALUE NAME_OR_VALUE keywords'
-        p[0] = Command(name=p[1], keywords=[Keyword(p[2])], string=self.string)
+    def p_ambiguous_command(self,p):
+        "command : NAME_OR_VALUE NAME_OR_VALUE keywords"
+        p[0] = Command(name=p[1],keywords=[Keyword(p[2])],string=self.string)
         p[0].keywords.extend(p[3])
 
-    def p_verb_only_command(self, p):
-        'command : NAME_OR_VALUE'
-        p[0] = Command(name=p[1], string=self.string)
+    def p_verb_only_command(self,p):
+        "command : NAME_OR_VALUE"
+        p[0] = Command(name=p[1],string=self.string)
 
-    def p_verb_add_values(self, p):
-        'verb_with_values : verb_with_values COMMA value'
+    def p_verb_add_values(self,p):
+        "verb_with_values : verb_with_values COMMA value"
         p[0] = p[1]
         p[0].append(p[3])
 
@@ -180,7 +179,7 @@ class CommandParser(TemporaryBase):
             t.lexer.begin('RAW')
             return t
         else:
-            return ParserBase.word_token(self, t)
+            return ParserBase.word_token(self,t)
 
     def unwrap(self):
         return self.string

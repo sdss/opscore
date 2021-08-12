@@ -49,12 +49,11 @@ class OpsLogFormatter(logging.Formatter):
            We force "GMT"/UTC/Zulu time, but cannot tell if we are using UTC or TAI.
         """
 
-        dateFmt = '%Y-%m-%d %H:%M:%S'
-        fmt = '%(asctime)s.%(msecs)03dZ %(name)-16s %(levelno)s %(filename)s:%(lineno)d %(message)s'  # noqa
+        dateFmt = "%Y-%m-%d %H:%M:%S"
+        fmt = "%(asctime)s.%(msecs)03dZ %(name)-16s %(levelno)s %(filename)s:%(lineno)d %(message)s"
 
         logging.Formatter.__init__(self, fmt, dateFmt)
         self.converter = time.gmtime
-
 
 class OpsRotatingFileHandler(logging.StreamHandler):
     APOrolloverTime = 24 * 3600 * 0.3
@@ -72,13 +71,13 @@ class OpsRotatingFileHandler(logging.StreamHandler):
          """
 
         logging.StreamHandler.__init__(self)
-        self.stream = None  # StreamHandler opens stderr, which we do not want to close.
+        self.stream = None              # StreamHandler opens stderr, which we do not want to close.
 
         self.dirname = os.path.expandvars(os.path.expanduser(dirname))
         self.basename = basename
         self.formatter = OpsLogFormatter()
 
-        if rolloverTime is None:
+        if rolloverTime == None:
             self.rolloverTime = self.APOrolloverTime
         else:
             self.rolloverTime = rolloverTime
@@ -104,17 +103,15 @@ class OpsRotatingFileHandler(logging.StreamHandler):
         # Get local midnight for the day.
         t = list(time.localtime(now))
         t[3] = t[4] = t[5] = 0
-
-        self.rolloverAt = time.mktime(tuple(t)) + self.rolloverTime
+        self.rolloverAt = time.mktime(t) + self.rolloverTime
 
         # Add a day if we are past today's rolloverTime.
         if now >= self.rolloverAt:
             self.rolloverAt += 24 * 3600
 
-        print('new rollover = %0.2f s from now, at %s\n' %
-              (self.rolloverAt - time.time(), time.localtime(self.rolloverAt)),
-              file=sys.stderr)
-        assert (now < self.rolloverAt)
+        print("new rollover = %0.2f s from now, at %s\n" % (self.rolloverAt - time.time(),
+                                                                           time.localtime(self.rolloverAt)), file=sys.stderr)
+        assert(now < self.rolloverAt)
 
     def emit(self, record):
         """
@@ -129,8 +126,8 @@ class OpsRotatingFileHandler(logging.StreamHandler):
         if self.shouldRollover(record):
             self.doRollover(record=record)
 
-        # logging.StreamHandler.emit(self, record)
-        # return
+        #logging.StreamHandler.emit(self, record)
+        #return
 
         try:
             msg = self.format(record)
@@ -177,7 +174,7 @@ class OpsRotatingFileHandler(logging.StreamHandler):
 
         try:
             os.makedirs(self.dirname, 0o755)
-        except OSError:
+        except OSError as e:
             pass
 
         path = os.path.join(self.dirname, filename)
@@ -190,7 +187,7 @@ class OpsRotatingFileHandler(logging.StreamHandler):
         try:
             self.stream = open(path, 'a+')
         except Exception as e:
-            sys.stderr.write('Failed to rollover to new logfile %s: %s\n' % (path, e))
+            sys.stderr.write("Failed to rollover to new logfile %s: %s\n" % (path, e))
             return
 
         self.filename = path
@@ -207,8 +204,8 @@ class OpsRotatingFileHandler(logging.StreamHandler):
             pass
         try:
             os.symlink(filename, linkname)
-        except Exception:
-            print('Failed to create current.log symlink to %s' % (filename))
+        except Exception as e:
+            print("Failed to create current.log symlink to %s" % (filename))
 
 
 def makeOpsFileHandler(dirname, basename='', rolloverTime=None):
@@ -220,7 +217,8 @@ def makeOpsFileHandler(dirname, basename='', rolloverTime=None):
         basename   ? If set, a prefix to the filenames. ['']
     """
 
-    handler = OpsRotatingFileHandler(dirname=dirname, basename=basename, rolloverTime=rolloverTime)
+    handler = OpsRotatingFileHandler(dirname=dirname, basename=basename,
+                                     rolloverTime=rolloverTime)
     handler.setFormatter(OpsLogFormatter())
 
     return handler
@@ -261,7 +259,6 @@ def setConsoleLevel(level):
         return
 
     consoleHandler.setLevel(level)
-
 
 def setupRootLogger(basedir, level=logging.INFO, hackRollover=False):
     """ (re-)configure the root logger to save all output to a APO-style
@@ -307,7 +304,6 @@ def setupRootLogger(basedir, level=logging.INFO, hackRollover=False):
 
     return rootLogger
 
-
 def main():
     consoleLogger = logging.getLogger()
 
@@ -333,3 +329,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

@@ -1,3 +1,4 @@
+
 """Code to run scripts that can wait for various things without messing up the main event loop
 (and thus starving the rest of your program).
 
@@ -238,7 +239,8 @@ class ScriptRunner(BaseScriptRunner):
                 argList.append('checkFail=%r' % (checkFail, ))
             self.debugPrint('startCmd(%s)' % ', '.join(argList))
 
-            self.showMsg('%s started' % cmdStr)
+            self.showMsg("%s started" % cmdStr)
+
 
             # set up command completion callback
             def endCmd(self=self, cmdVar=cmdVar):
@@ -261,18 +263,17 @@ class ScriptRunner(BaseScriptRunner):
 
         return cmdVar
 
-    def waitCmd(
-            self,
-            actor='',
-            cmdStr='',
-            timeLim=0,
-            callFunc=None,
-            callCodes=keyvar.DoneCodes,
-            timeLimKeyVar=None,
-            timeLimKeyInd=0,
-            abortCmdStr=None,
-            keyVars=None,
-            checkFail=True,
+    def waitCmd(self,
+        actor="",
+        cmdStr = "",
+        timeLim = 0,
+        callFunc=None,
+        callCodes = keyvar.DoneCodes,
+        timeLimKeyVar = None,
+        timeLimKeyInd = 0,
+        abortCmdStr = None,
+        keyVars = None,
+        checkFail = True,
     ):
         """Start a command and wait for it to finish.
         Returns the command variable (an opscore.actor.CmdVar) in sr.value.
@@ -313,21 +314,23 @@ class ScriptRunner(BaseScriptRunner):
         Also the time limit is a lower limit. The command is guaranteed to
         expire no sooner than this but it may take a second longer.
         """
-        self._waitCheck(setWait=False)
+        self._waitCheck(setWait = False)
 
-        self.debugPrint('waitCmd calling startCmd')
+        self.debugPrint("waitCmd calling startCmd")
 
-        cmdVar = self.startCmd(
-            actor=actor,
-            cmdStr=cmdStr,
-            timeLim=timeLim,
-            callFunc=callFunc,
-            callCodes=callCodes,
-            timeLimKeyVar=timeLimKeyVar,
-            timeLimKeyInd=timeLimKeyInd,
-            abortCmdStr=abortCmdStr,
-            keyVars=keyVars,
-            checkFail=False,
+        cmdVar = self.startCmd (
+            actor = actor,
+            cmdStr = cmdStr,
+            timeLim = timeLim,
+            callFunc = callFunc,
+            callCodes = callCodes,
+            timeLimKeyVar = timeLimKeyVar,
+            timeLimKeyInd = timeLimKeyInd,
+            abortCmdStr = abortCmdStr,
+            keyVars = keyVars,
+            checkFail = False,
         )
+
+        self.waitCmdVars(cmdVar, checkFail=checkFail, retVal=cmdVar)
 
         self.waitCmdVars(cmdVar, checkFail=checkFail, retVal=cmdVar)

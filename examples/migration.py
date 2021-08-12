@@ -17,7 +17,7 @@ import opscore.utility.astrotime as astrotime
 
 class KeyVarBase(RO.AddCallback.BaseMixin):
 
-    def __init__(self, keyName, actor, doPrint=False):
+    def __init__(self,keyName,actor,doPrint=False):
         """
         Processes data associated with a keyword.
 
@@ -35,7 +35,7 @@ class KeyVarBase(RO.AddCallback.BaseMixin):
         # lookup this keyword's value types in the dictionary (or raise KeyError)
         self._converterList = kdict[keyName].typedValues
         # initialize our callback mixin
-        RO.AddCallback.BaseMixin.__init__(self, defCallNow=True)
+        RO.AddCallback.BaseMixin.__init__(self, defCallNow = True)
 
     def __repr__(self):
         return '%s(%r, %r, %s)' % \
@@ -77,7 +77,7 @@ class KeyDispatcherBase(object):
         # create a reply message parser
         self.parser = protoParser.ReplyParser()
 
-    def add(self, keyVar):
+    def add(self,keyVar):
         """
         Adds a keyword variable to the list of those that this dispatcher handles.
         """
@@ -86,7 +86,7 @@ class KeyDispatcherBase(object):
         keyList = self.keyVarListDict.setdefault(dictKey, [])
         keyList.append(keyVar)
 
-    def dispatch(self, msgDict):
+    def dispatch(self,msgDict):
         """
         Invokes keyword callbacks based on the supplied message data.
 
@@ -110,20 +110,22 @@ class KeyDispatcherBase(object):
                 except BaseException:
                     traceback.print_exc(file=sys.stderr)
 
-    def doRead(self, msgStr):
+    def doRead(self,msgStr):
         """
         Parses and dispatches a hub message.
         """
         try:
             parsed = self.parser.parse(msgStr)
         except parser.ParseError as e:
-            sys.stderr.write('CouldNotParse; Msg=%r; Text=%r\n' % (msgStr, str(e)))
+            sys.stderr.write("CouldNotParse; Msg=%r; Text=%r\n" % (msgStr,str(e)))
             return
         self.dispatch(parsed)
 
 
 ###################################################################
 # Test drive the classes above with some sample message data
+###################################################################
+## Test drive the classes above with some sample message data
 ###################################################################
 if __name__ == '__main__':
 
@@ -133,9 +135,8 @@ if __name__ == '__main__':
     def spiderHandler(valueList, isCurrent, keyVar):
         pos, vel, tai = valueList
         # convert the TAI timestamp to UTC and print as an ISO date string
-        timestamp = astrotime.AstroTime.fromMJD(tai / 86400.,
-                                                tz=astrotime.TAI).astimezone(astrotime.UTC)
-        print('spiderHandler: got update at', timestamp.isoformat())
+        timestamp = astrotime.AstroTime.fromMJD(tai/86400.,tz=astrotime.TAI).astimezone(astrotime.UTC)
+        print('spiderHandler: got update at',timestamp.isoformat())
         # print the full parsed reply that this keyword was found in
         print(keyVar._msgDict)
 

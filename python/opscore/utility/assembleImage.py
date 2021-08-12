@@ -1,3 +1,4 @@
+
 """Assemble a set of postage stamps images of guide fiber bundles into one image
 
 The postage stamp images are displayed at full scale and in roughly
@@ -421,7 +422,7 @@ class AssembleImage(object):
                 'removeOverlap failed: guide probe plate positions probably invalid')
 
         plateImageArr = numpy.zeros(imageShape, dtype=numpy.float32)
-        plateMaskArr = numpy.zeros(imageShape, dtype=numpy.uint8)
+        plateMaskArr  = numpy.zeros(imageShape, dtype=numpy.uint8)
         for stamp, actPos in zip(stampList, actPosArr):
             stamp.setDecimatedImagePos(actPos, plateImageArr.shape)
             mainRegion = stamp.getDecimatedImageRegion()

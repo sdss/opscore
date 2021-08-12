@@ -32,19 +32,19 @@ class Consumer(object):
 
     def trace(self, what):
         if self.debug:
-            print('%s%r << %r' % (' ' * Consumer.indent, self, what))
+            print('%s%r << %r' % (' '*Consumer.indent,self,what))
             Consumer.indent += 1
 
     def passed(self, what):
         if self.debug:
             Consumer.indent -= 1
-            print('%sPASS >> %r' % (' ' * Consumer.indent, what))
+            print('%sPASS >> %r' % (' '*Consumer.indent,what))
         return True
 
     def failed(self, reason):
         if self.debug:
             Consumer.indent -= 1
-            print('%sFAIL: %s' % (' ' * Consumer.indent, reason))
+            print('%sFAIL: %s' % (' '*Consumer.indent,reason))
         return False
 
     def consume(self, what):
@@ -263,8 +263,8 @@ class KeysManager(object):
         cls.keys[kdict.name] = kdict
 
     @classmethod
-    def getKey(cls, name):
-        for kdict in cls.keys.values():
+    def getKey(cls,name):
+        for kdict in list(cls.keys.values()):
             if name in kdict:
                 return kdict[name]
         raise KeysError('No such registered keyword <%s>' % name)
@@ -332,8 +332,8 @@ class KeysDictionary(object):
         """
         self.name = name
         try:
-            (major, minor) = map(int, version)
-        except (ValueError, TypeError):
+            (major,minor) = list(map(int,version))
+        except (ValueError,TypeError):
             raise KeysDictionaryError(
                 'Invalid version: expected (major,minor) tuple of integers, got %r' % version)
         self.version = version
@@ -434,8 +434,29 @@ class KeysDictionary(object):
             raise KeysDictionaryError('no actorkeys package found')
 
         try:
-            mod = importlib.import_module(f'actorkeys.{dictname}')
-            kdict = getattr(mod, dictname)
+            # open the file corresponding to the requested keys dictionary
+            (dictfile,name,description) = imp.find_module(dictname,keyspath)
+            # create a global symbol table for evaluating the keys dictionary expression
+            symbols = {
+                '__builtins__': __builtins__,
+                'Key': Key,
+                'KeysDictionary': KeysDictionary,
+                'ByName': protoTypes.ByName,
+            }
+            for (name,value) in protoTypes.__dict__.items():
+                if isinstance(value,type) and issubclass(value,
+                    (protoTypes.ValueType,protoTypes.CompoundValueType)):
+                    symbols[name] = value
+            # evaluate the keys dictionary as a python expression
+            filedata = dictfile.read()
+            kdict = eval(filedata,symbols)
+            # check that the dictionary filename and name match
+            if not dictname == kdict.name:
+                raise KeysDictionaryError(
+                    'dictionary filename and name are different: %s, %s'
+                    % (dictname,kdict.name))
+            # do a checksum so that we can detect changes independently of versioning
+            kdict.checksum = hashlib.md5(filedata).hexdigest()
             return kdict
         except ImportError as e:
             raise KeysDictionaryError('no keys dictionary found for %s: %s' % (dictname, str(e)))

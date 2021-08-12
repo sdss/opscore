@@ -17,7 +17,6 @@ from . import pvt
 class ValueTypeError(Exception):
     pass
 
-
 class InvalidValueError(Exception):
     """
     Signals that an invalid value was detected during conversion from a string
@@ -70,9 +69,9 @@ class ValueType(type, Descriptive):
     A metaclass for types that represent an enumerated or numeric value
     """
     _nameSpec = re.compile('[A-Za-z][A-Za-z0-9_]*')
-    _metaKeys = ('reprFmt', 'strFmt', 'invalid', 'units', 'help', 'name')
+    _metaKeys = ('reprFmt','strFmt','invalid','units','help','name')
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls,*args,**kwargs):
         """
         Allocates memory for a new ValueType class
         """
@@ -85,7 +84,7 @@ class ValueType(type, Descriptive):
             if self.reprFmt:
                 return '%s(%s%s)' % (cls.__name__, self.reprFmt % self, units)
             else:
-                return '%s(%s%s)' % (cls.__name__, cls.baseType.__repr__(self), units)
+                return '%s(%s%s)' % (cls.__name__,cls.baseType.__repr__(self),units)
 
         def doStr(self):
             if self.strFmt:
@@ -96,10 +95,10 @@ class ValueType(type, Descriptive):
                 return cls.baseType.__str__(self)
 
         # check for any invalid metadata keys
-        for key in kwargs:
-            if key not in ValueType._metaKeys and (not hasattr(cls, 'customKeys') or
-                                                   key not in cls.customKeys):
-                raise ValueTypeError('invalid metadata key "%s" for %s' % (key, cls.__name__))
+        for key in kwargs.keys():
+            if key not in ValueType._metaKeys and (
+                not hasattr(cls,'customKeys') or key not in cls.customKeys):
+                raise ValueTypeError('invalid metadata key "%s" for %s' % (key,cls.__name__))
 
         # force the invalid string, if present, to be lowercase
         if 'invalid' in kwargs:
@@ -153,9 +152,9 @@ class ValueType(type, Descriptive):
 
             dct['native'] = property(getNative)
         else:
-            print('WARNING: no baseType')
+            print("WARNING: no baseType")
 
-        if hasattr(cls, 'new'):
+        if hasattr(cls,'new'):
             dct['__new__'] = cls.new
         if hasattr(cls, 'init'):
             cls.init(dct, *args, **kwargs)
@@ -193,7 +192,7 @@ class ValueType(type, Descriptive):
             maxRepeat = amount[1]
         else:
             maxRepeat = None
-        return RepeatedValueType(self, minRepeat, maxRepeat)
+        return RepeatedValueType(self,minRepeat,maxRepeat)
 
     def __repr__(self):
         return self.__name__
@@ -263,11 +262,10 @@ class CompoundValueType(Descriptive):
         for index, vtype in enumerate(self.vtypes):
             self.descriptors.append(('Subtype-%d' % index, '-' * 40))
             self.descriptors.extend(vtype.descriptors)
-        self.wrapper = kwargs.get('wrapper', None)
+        self.wrapper = kwargs.get('wrapper',None)
 
     def __repr__(self):
-        return '%s%r' % (self.__class__.__name__, self.vtypes)
-
+        return '%s%r' % (self.__class__.__name__,self.vtypes)
 
 class PVT(CompoundValueType):
     """
@@ -318,8 +316,7 @@ class Float(ValueType):
         # where 3402... is (2 - 2^(-23)) 2^127
         if abs(fvalue) > 3.4028234663852886e+38 and abs(fvalue) != float('inf'):
             raise OverflowError('Invalid literal for Float: %r' % value)
-        return float.__new__(cls, fvalue)
-
+        return float.__new__(cls,fvalue)
 
 class Double(ValueType):
     baseType = float
@@ -332,11 +329,10 @@ class Double(ValueType):
 class Int(ValueType):
     baseType = int
     storage = 'int4'
-
-    def new(cls, value):
-        if isinstance(value, str):
+    def new(cls,value):
+        if isinstance(value,str):
             # base = 0 infers base from optional prefix (see PEP 3127)
-            lvalue = int(cls.validate(value), 0)
+            lvalue = int(cls.validate(value),0)
         else:
             lvalue = int(cls.validate(value))
         if lvalue < -0x7fffffff or lvalue > 0x7fffffff:
@@ -347,14 +343,12 @@ class Int(ValueType):
 class Long(ValueType):
     baseType = int
     storage = 'int8'
-
-    def new(cls, value):
-        if isinstance(value, str):
+    def new(cls,value):
+        if isinstance(value,str):
             # base = 0 infers base from optional prefix (see PEP 3127)
-            return int.__new__(cls, cls.validate(value), 0)
+            return int.__new__(cls,cls.validate(value),0)
         else:
-            return int.__new__(cls, cls.validate(value))
-
+            return int.__new__(cls,cls.validate(value))
 
 class String(ValueType):
     baseType = str
@@ -367,11 +361,10 @@ class String(ValueType):
 class UInt(ValueType):
     baseType = int
     storage = 'int4'
-
-    def new(cls, value):
-        if isinstance(value, str):
+    def new(cls,value):
+        if isinstance(value,str):
             # base = 0 infers base from optional prefix (see PEP 3127)
-            lvalue = int(cls.validate(value), 0)
+            lvalue = int(cls.validate(value),0)
         else:
             lvalue = int(cls.validate(value))
         if lvalue < -0x7fffffff or lvalue > 0xffffffff:
@@ -379,8 +372,7 @@ class UInt(ValueType):
         if lvalue < 0:
             # re-interpret a negative 32-bit value as its bit-equivalent unsigned value
             lvalue = 0x80000000 | (-lvalue)
-        return int.__new__(cls, lvalue)
-
+        return int.__new__(cls,lvalue)
 
 class Hex(UInt):
     """
@@ -390,7 +382,7 @@ class Hex(UInt):
 
     def new(cls, value):
         try:
-            return int.__new__(cls, cls.validate(value), 16)
+            return int.__new__(cls,cls.validate(value),16)
         except TypeError:
             return UInt.new(cls, value)
 
@@ -410,7 +402,7 @@ class Enum(ValueType):
         # False->'False', 1->'1', 0xff->'255'
         strargs = [str(arg) for arg in args]
         dct['enumLabels'] = strargs
-        dct['enumValues'] = dict(zip(args, range(len(strargs))))
+        dct['enumValues'] = dict(list(zip(args,list(range(len(strargs))))))
         # look for optional per-label help text
         labelHelp = kwargs.get('labelHelp', None)
         if labelHelp and not len(labelHelp) == len(strargs):
@@ -463,7 +455,7 @@ class Enum(ValueType):
 # Boolean value type
 class Bool(ValueType):
 
-    baseType = int  # bool cannot be subclassed
+    baseType = int # bool cannot be subclassed
     storage = 'int2'
 
     @classmethod
@@ -485,7 +477,7 @@ class Bool(ValueType):
         if dct['strFmt']:
             print('Bool: ignoring strFmt metadata')
 
-    def new(cls, value):
+    def new(cls,value):
         """
         Initializes a new boolean instance
 
@@ -531,8 +523,8 @@ class Bits(UInt):
             if name:
                 if name == 'native':
                     raise ValueTypeError("'native' is not an allowed bitfield name")
-                specs.append((name, width))
-                fields[name] = (offset, int((1 << width) - 1))
+                specs.append((name,width))
+                fields[name] = (offset,int((1<<width)-1))
             offset += width
             if offset > 32:
                 raise ValueTypeError('total bitfield length > 32')
