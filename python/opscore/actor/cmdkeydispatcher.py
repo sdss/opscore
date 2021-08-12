@@ -241,8 +241,8 @@ class CmdKeyVarDispatcher(KeyVarDispatcher):
         else:
             self.connection = NullConnection()
         self._isConnected = self.connection.isConnected
-        self.userCmdIDGen = RO.Alg.IDGen(1, _CmdNumWrap)
-        self.refreshCmdIDGen = RO.Alg.IDGen(_CmdNumWrap + 1, 2 * _CmdNumWrap)
+        self.userCmdIDGen = opscore.RO.Alg.IDGen(1, _CmdNumWrap)
+        self.refreshCmdIDGen = opscore.RO.Alg.IDGen(_CmdNumWrap + 1, 2 * _CmdNumWrap)
 
         try:
             self.makeReply(dataStr="TestName")

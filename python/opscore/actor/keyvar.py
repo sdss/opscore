@@ -101,7 +101,7 @@ class KeyVar(opscore.RO.AddCallback.BaseMixin):
             # have the model set this to a keys command later if not keys.doCache
             self.refreshActor = None
             self.refreshCmd = None
-        RO.AddCallback.BaseMixin.__init__(self, defCallNow=True)
+        opscore.RO.AddCallback.BaseMixin.__init__(self, defCallNow=True)
 
     def __repr__(self):
         """Return a long str representation of a KeyVar"""
@@ -157,7 +157,7 @@ class KeyVar(opscore.RO.AddCallback.BaseMixin):
 
         Raise IndexError if not 0 <= ind < maxVals
         """
-        RO.MathUtil.checkRange(ind, 0, self.maxVals, "%s ind" % (self,))
+        opscore.RO.MathUtil.checkRange(ind, 0, self.maxVals, "%s ind" % (self,))
 
         if not cnvFunc:
             cnvFunc = lambda x: x
@@ -197,8 +197,8 @@ class KeyVar(opscore.RO.AddCallback.BaseMixin):
         """
 
         endInd = startInd + len(callFuncList) - 1
-        RO.MathUtil.checkRange(startInd, 0, None, "%s startInd" % (self,))
-        RO.MathUtil.checkRange(endInd, None, self.maxVals, "%s end index" % (self,))
+        opscore.RO.MathUtil.checkRange(startInd, 0, None, "%s startInd" % (self,))
+        opscore.RO.MathUtil.checkRange(endInd, None, self.maxVals, "%s end index" % (self,))
 
         if not cnvFunc:
             cnvFunc = lambda x: x

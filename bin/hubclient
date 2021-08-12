@@ -5,34 +5,36 @@
 History:
 2009-07-10 ROwen    Removed an inline conditional statement to be Python 2.4 compatible.
 """
-import re
 import os
 import platform
 import pwd
+import re
 import sys
 import time
-import Tkinter
-import RO.Comm.TCPConnection
-import RO.Wdg
+
+import tkinter
+
+import opscore.RO.Comm.TCPConnection
+import opscore.RO.Wdg
 
 
-class TCPClient(Tkinter.Frame):
+class TCPClient(tkinter.Frame):
     def __init__(self, master, addr, port=None, cmdrName=None):
-        Tkinter.Frame.__init__(self, master)
+        tkinter.Frame.__init__(self, master)
         self.master = master
         self.displayRegexp = None       # regexp must match to display output in window
         self.noDisplayRegexp = None     # regexp must not match to display output in window
 
-        self.logWdg = RO.Wdg.LogWdg(
+        self.logWdg = opscore.RO.Wdg.LogWdg(
             master=self,
             maxLines=1000,
         )
         self.logWdg.grid(row=0, column=0, sticky="nsew")
 
-        self.bottomWdg = Tkinter.Frame(self, background="")
+        self.bottomWdg = tkinter.Frame(self, background="")
         self.bottomWdg.grid(row=1, column=0, sticky="ew")
 
-        self.prefixWdg = RO.Wdg.CmdWdg(
+        self.prefixWdg = opscore.RO.Wdg.CmdWdg(
             master=self.bottomWdg,
             maxCmds=10,
             cmdFunc=self.prefixCmd,
@@ -40,13 +42,13 @@ class TCPClient(Tkinter.Frame):
             width=15
         )
 
-        self.cmdWdg = RO.Wdg.CmdWdg(
+        self.cmdWdg = opscore.RO.Wdg.CmdWdg(
             master=self.bottomWdg,
             maxCmds=100,
             cmdFunc=self.doCmd,
         )
 
-        self.reWdg = RO.Wdg.CmdWdg(
+        self.reWdg = opscore.RO.Wdg.CmdWdg(
             master=self.bottomWdg,
             maxCmds=10,
             cmdFunc=self.doRe,
@@ -57,14 +59,14 @@ class TCPClient(Tkinter.Frame):
         self.prefixWdg.pack(fill="x", side="left")
         self.prefix = None
         self.cmdWdg.pack(fill="x", side="left", expand=True)
-        Tkinter.Label(self.bottomWdg, text=" Filter actors:").pack(side="left")
+        tkinter.Label(self.bottomWdg, text=" Filter actors:").pack(side="left")
         self.reWdg.pack(side="right")
 
         self.cmdrName = cmdrName if cmdrName else \
             "%s.%s" % ("client", pwd.getpwuid(os.getuid()).pw_name)
         self.cmdID = 1
 
-        self.conn = RO.Comm.TCPConnection.TCPConnection(
+        self.conn = opscore.RO.Comm.TCPConnection.TCPConnection(
             host=addr,
             port=port,
             readLines=True,
@@ -168,7 +170,7 @@ if __name__ == "__main__":
     addr = sys.argv[1] if len(sys.argv) > 1 else "hub25m"
     port = sys.argv[2] if len(sys.argv) > 2 else 6093
 
-    root = Tkinter.Tk()
+    root = tkinter.Tk()
     root.geometry("1000x500")
     client = TCPClient(root, addr, port)
     client.setTitle()

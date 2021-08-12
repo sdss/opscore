@@ -9,9 +9,9 @@ e.g. run this test with Twisted trial, to test command timeouts.
 import unittest
 
 try:
-    import RO.Comm.Generic
+    import opscore.RO.Comm.Generic
 
-    RO.Comm.Generic.setFramework("twisted")
+    opscore.RO.Comm.Generic.setFramework("twisted")
 except ImportError:
     # older version of RO
     pass

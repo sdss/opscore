@@ -247,10 +247,10 @@ class TypesTest(unittest.TestCase):
         "PVT type"
         pvtType = types.PVT()
         pvt1 = pvtType.wrapper(1, 2, 3)
-        import RO.PVT
+        import opscore.RO.PVT
 
-        self.assertTrue(isinstance(pvt1, RO.PVT.PVT))
-        pvt2 = RO.PVT.PVT(1, 2, 3)
+        self.assertTrue(isinstance(pvt1, opscore.RO.PVT.PVT))
+        pvt2 = opscore.RO.PVT.PVT(1, 2, 3)
         self.assertEqual(repr(pvt1), repr(pvt2))
 
     def test20(self):

@@ -140,10 +140,10 @@ class KeysTest(unittest.TestCase):
         msg = protoMess.Keyword("pvtMsg", [1, 2, 3, 4])
         self.assertTrue(pvtKey.consume(msg))
         self.assertEqual(len(msg.values), 2)
-        import RO.PVT
+        import opscore.RO.PVT
 
-        self.assertTrue(isinstance(msg.values[0], RO.PVT.PVT))
-        self.assertEqual(repr(msg.values[0]), repr(RO.PVT.PVT(1, 2, 3)))
+        self.assertTrue(isinstance(msg.values[0], opscore.RO.PVT.PVT))
+        self.assertEqual(repr(msg.values[0]), repr(opscore.RO.PVT.PVT(1, 2, 3)))
         self.assertEqual(msg.values[1], 4)
 
     def test12(self):

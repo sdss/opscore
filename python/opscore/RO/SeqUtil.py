@@ -31,9 +31,14 @@ History:
 2010-06-28 ROwen    Modified to require Python 2.4 by assuming set is a builtin type.
 """
 
-import collections as UserString
+try:
+    from UserString import UserString
+except ImportError:
+    from collections import UserString
 
-import opscore.RO.MathUtil
+from six import string_types
+
+import RO.MathUtil
 
 
 def asCollection(item):
@@ -45,7 +50,6 @@ def asCollection(item):
         return item
     return [item]
 
-
 def asList(item):
     """Convert one or more items to a list, returning a copy.
     If item is a Sequence, returns list(item),
@@ -55,7 +59,6 @@ def asList(item):
         return list(item)
     return [item]
 
-
 def asSequence(item):
     """Convert one or more items to a Sequence,
     If item is already a Sequence, returns it unchanged,
@@ -64,7 +67,6 @@ def asSequence(item):
     if isSequence(item):
         return item
     return [item]
-
 
 def asSet(item):
     """Convert one or more items to a set.
@@ -76,16 +78,16 @@ def asSet(item):
         return set(item)
     return set((item,))
 
-
 def flatten(a):
-    """Flatten an arbitrarily nested Sequence of Sequences."""
+    """Flatten an arbitrarily nested Sequence of Sequences.
+    """
     if not isSequence(a):
         raise ValueError("Argument not a sequence: %s" % (a,))
     return _flatten(a)
 
-
 def _flatten(a):
-    """Iterative solver for flatten."""
+    """Iterative solver for flatten.
+    """
     ret = []
     for ai in a:
         if isSequence(ai):
@@ -94,14 +96,12 @@ def _flatten(a):
             ret.append(ai)
     return ret
 
-
 def get(seq, ind, defVal=None):
     """Return seq[ind] if available, else defVal"""
     try:
         return seq[ind]
     except LookupError:
         return defVal
-
 
 def isCollection(item):
     """Return True if the input is Collection, False otherwise.
@@ -113,7 +113,6 @@ def isCollection(item):
         return False
     return not isString(item)
 
-
 def isSequence(item):
     """Return True if the input is Sequence, False otherwise.
     See the definition of Sequence in the module doc string.
@@ -124,20 +123,18 @@ def isSequence(item):
         return False
     return not isString(item)
 
-
 def isString(item):
     """Return True if the input is a string-like sequence.
     Strings include str, unicode and UserString objects.
 
     From Python Cookbook, 2nd ed.
     """
-    return isinstance(item, str) or isinstance(item, UserString)
+    return isinstance(item, string_types) or isinstance(item, UserString)
 
-
-def oneOrNAsList(
+def oneOrNAsList (
     oneOrNVal,
     n,
-    valDescr=None,
+    valDescr = None,
 ):
     """Converts a variable that may be a single item
     or a non-string sequence of n items to a list of n items,
@@ -154,14 +151,10 @@ def oneOrNAsList(
     if isSequence(oneOrNVal):
         if len(oneOrNVal) != n:
             valDescr = valDescr or "oneOrNVal"
-            raise ValueError(
-                "%s has length %d but should be length %d"
-                % (valDescr, len(oneOrNVal), n)
-            )
+            raise ValueError("%s has length %d but should be length %d" % (valDescr, len(oneOrNVal), n))
         return list(oneOrNVal)
     else:
-        return [oneOrNVal] * n
-
+        return [oneOrNVal]*n
 
 def removeDups(aSeq):
     """Remove duplicate entries from a sequence,
@@ -169,17 +162,15 @@ def removeDups(aSeq):
     Preserves the ordering of retained elements.
     """
     tempDict = {}
-
     def isUnique(val):
         if val in tempDict:
             return False
         tempDict[val] = None
         return True
 
-    return [val for val in aSeq if isUnique(val)]
+    return [val  for val in aSeq if isUnique(val)]
 
-
-def matchSequences(a, b, rtol=1.0e-5, atol=opscore.RO.SysConst.FAccuracy):
+def matchSequences(a, b, rtol=1.0e-5, atol=RO.SysConst.FAccuracy):
     """Compares sequences a and b element by element,
     returning a list of indices for non-matching value pairs.
     The test for matching is compareFloats
@@ -187,23 +178,16 @@ def matchSequences(a, b, rtol=1.0e-5, atol=opscore.RO.SysConst.FAccuracy):
     This is essentially the same as numpy.allclose,
     but returns a bit more information.
     """
-    return [
-        ind
-        for ind in range(len(a))
-        if opscore.RO.MathUtil.compareFloats(a[ind], b[ind], rtol, atol) != 0
-    ]
+    return [ind for ind in range(len(a))
+        if RO.MathUtil.compareFloats(a[ind], b[ind], rtol, atol) != 0]
 
 
-if __name__ == "__main__":
-
+if __name__ == '__main__':
     class NewStyleClass(object):
         pass
-
     nsc = NewStyleClass()
-
     class OldStyleClass:
         pass
-
     osc = OldStyleClass()
 
     dataDict = {
@@ -213,8 +197,8 @@ if __name__ == "__main__":
             (False, False),
             (5, False),
             (7.5, False),
-            ("unicode string", False),
-            ("regular string", False),
+            ('unicode string', False),
+            ('regular string', False),
             (UserString("user string"), False),
             (dict(), False),
             (set(), False),
@@ -227,8 +211,8 @@ if __name__ == "__main__":
             (False, False),
             (5, False),
             (7.5, False),
-            ("unicode string", False),
-            ("regular string", False),
+            ('unicode string', False),
+            ('regular string', False),
             (UserString("user string"), False),
             (dict(), True),
             (set(), True),
@@ -241,8 +225,8 @@ if __name__ == "__main__":
             (False, False),
             (5, False),
             (7.5, False),
-            ("unicode string", True),
-            ("regular string", True),
+            ('unicode string', True),
+            ('regular string', True),
             (UserString("user string"), True),
             (dict(), False),
             (set(), False),
@@ -260,5 +244,5 @@ if __name__ == "__main__":
                 print("%s(%r) failed; should be %r" % (funcName, dataItem, expectTrue))
 
     print("testing flatten")
-    f = (((), ("abc",)), "abc", ["a", "b", "c"])
+    f = (((),("abc",)), "abc", ["a", "b", "c"])
     assert flatten(f) == ["abc", "abc", "a", "b", "c"]

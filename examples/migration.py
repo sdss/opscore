@@ -9,13 +9,13 @@ Refer to https://trac.sdss3.org/wiki/Ops/Examples#TUIMigration for details
 
 import sys
 import traceback
-import RO.AddCallback
+import opscore.RO.AddCallback
 import opscore.protocols.keys as protoKeys
 import opscore.protocols.parser as protoParser
 import opscore.utility.astrotime as astrotime
 
 
-class KeyVarBase(RO.AddCallback.BaseMixin):
+class KeyVarBase(opscore.RO.AddCallback.BaseMixin):
     def __init__(self, keyName, actor, doPrint=False):
         """
         Processes data associated with a keyword.
@@ -34,7 +34,7 @@ class KeyVarBase(RO.AddCallback.BaseMixin):
         # lookup this keyword's value types in the dictionary (or raise KeyError)
         self._converterList = kdict[keyName].typedValues
         # initialize our callback mixin
-        RO.AddCallback.BaseMixin.__init__(self, defCallNow=True)
+        opscore.RO.AddCallback.BaseMixin.__init__(self, defCallNow=True)
 
     def __repr__(self):
         return "%s(%r, %r, %s)" % (

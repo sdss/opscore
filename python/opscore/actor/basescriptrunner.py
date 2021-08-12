@@ -177,7 +177,7 @@ class BaseScriptRunner(opscore.RO.AddCallback.BaseMixin):
         # useful constant for script writers
         self.ScriptError = ScriptError
 
-        RO.AddCallback.BaseMixin.__init__(self)
+        opscore.RO.AddCallback.BaseMixin.__init__(self)
 
         self.globals = _Blank()
 
@@ -578,7 +578,7 @@ class BaseScriptRunner(opscore.RO.AddCallback.BaseMixin):
             self._setState(self.Failed, opscore.RO.StringUtil.strFromException(e))
         except Exception as e:
             traceback.print_exc(file=sys.stderr)
-            self._setState(self.Failed, RO.StringUtil.strFromException(e))
+            self._setState(self.Failed, opscore.RO.StringUtil.strFromException(e))
 
     def _printState(self, prefix):
         """Print the state at various times.

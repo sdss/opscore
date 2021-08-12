@@ -1,3 +1,4 @@
+
 """Math utilities by Russell Owen
 
 History:
@@ -24,36 +25,13 @@ History:
 2015-09-24 ROwen    Replace "== None" with "is None" to modernize the code.
 2015-11-03 ROwen    Replace "!= None" with "is not None" to modernize the code.
 """
-
-__all__ = [
-    "sind",
-    "cosd",
-    "tand",
-    "asind",
-    "acosd",
-    "atand",
-    "atan2d",
-    "compareFloats",
-    "checkRange",
-    "nint",
-    "sign",
-    "logEq",
-    "logNE",
-    "rot2D",
-    "rThetaFromXY",
-    "xyFromRTheta",
-    "vecMag",
-    "wrapCtr",
-    "wrapPos",
-]
+__all__ = ["sind", "cosd", "tand", "asind", "acosd", "atand", "atan2d", "compareFloats", "checkRange",
+    "nint", "sign", "logEq", "logNE", "rot2D", "rThetaFromXY", "xyFromRTheta", "vecMag", "wrapCtr", "wrapPos"]
 
 import math
-
 import numpy
-
-import opscore.RO.SysConst
-from opscore.RO.PhysConst import RadPerDeg
-
+from RO.PhysConst import RadPerDeg
+import RO.SysConst
 
 DegPerRad = 1.0 / RadPerDeg
 _TinyFloat = numpy.finfo(float).tiny
@@ -66,43 +44,35 @@ _TinyFloat = numpy.finfo(float).tiny
 # Inf = inf = float("inf")
 # NaN = nan = float("nan")
 
-
 def sind(angDeg):
     """sine of angle, in degrees"""
     return math.sin(RadPerDeg * angDeg)
-
 
 def cosd(angDeg):
     """cosine of angle, in degrees"""
     return math.cos(RadPerDeg * angDeg)
 
-
 def tand(angDeg):
     """tangent of angle, in degrees"""
     return math.tan(RadPerDeg * angDeg)
-
 
 def asind(x):
     """arcsine of x, in degrees"""
     return DegPerRad * math.asin(x)
 
-
 def acosd(x):
     """arccosine of x, in degrees"""
     return DegPerRad * math.acos(x)
-
 
 def atand(x):
     """arctangent of x, in degrees"""
     return DegPerRad * math.atan(x)
 
-
 def atan2d(x, y):
     """arctangent of y/x, in degrees"""
     return DegPerRad * math.atan2(x, y)
 
-
-def compareFloats(a, b, rtol=1.0e-5, atol=opscore.RO.SysConst.FAccuracy):
+def compareFloats(a, b, rtol=1.0e-5, atol=RO.SysConst.FAccuracy):
     """Compares values a and b
     Returns 0 if the values are approximately equals, i.e.:
     - |a - b| < atol + (rtol * |a + b|)
@@ -117,8 +87,7 @@ def compareFloats(a, b, rtol=1.0e-5, atol=opscore.RO.SysConst.FAccuracy):
     """
     if abs(a - b) < (atol + (rtol * abs(float(a + b)))):
         return 0
-    return (a > b) - (a < b)
-
+    return cmp(a, b)
 
 def checkRange(value, minValue, maxValue, valDescr="value"):
     """Checks that value is in range [minValue, maxValue] and raises a ValueError if not.
@@ -131,7 +100,6 @@ def checkRange(value, minValue, maxValue, valDescr="value"):
         raise ValueError("%s too large: %r > %r" % (valDescr, value, maxValue))
     if minValue is not None and value < minValue:
         raise ValueError("%s too small: %r < %r" % (valDescr, value, minValue))
-
 
 def nint(x, n=0):
     """Returns x rounded to the nearast multiple of 10**-n.
@@ -147,8 +115,7 @@ def nint(x, n=0):
     Error Conditions:
     - raises OverflowError if x is too large to express as an integer (after rounding)
     """
-    return int(round(x, min(n, 0)) + 0.5)
-
+    return int (round (x, min(n, 0)) + 0.5)
 
 def sign(x):
     """Returns -1 if x < 0, 1 otherwise
@@ -162,16 +129,13 @@ def sign(x):
     else:
         return 1
 
-
 def logEq(a, b):
     """Returns 1 if the logical value of a equals the logical value of b, 0 otherwise"""
     return (not a) == (not b)
 
-
 def logNE(a, b):
     """Returns 1 if the logical value of does not equal the logical value of b, 0 otherwise"""
     return (not a) != (not b)
-
 
 def rot2D(xyVec, angDeg):
     """Rotates a 2-dimensional vector by a given angle.
@@ -200,14 +164,13 @@ def rot2D(xyVec, angDeg):
     2003-04-01 Converted to Python from TCC cnv_Rot2D
     """
     x, y = xyVec
-    sinAng = sind(angDeg)
-    cosAng = cosd(angDeg)
+    sinAng = sind (angDeg)
+    cosAng = cosd (angDeg)
 
     return (
         cosAng * x - sinAng * y,
         sinAng * x + cosAng * y,
     )
-
 
 def rThetaFromXY(xy):
     """Returns the magnitude and angle of a 2-dim vector.
@@ -226,7 +189,6 @@ def rThetaFromXY(xy):
         theta = math.atan2(xy[1], xy[0]) / RO.PhysConst.RadPerDeg
     return (r, theta)
 
-
 def xyFromRTheta(rTheta):
     """Returns the x and y components of a polar vector"""
     r, theta = rTheta
@@ -235,14 +197,12 @@ def xyFromRTheta(rTheta):
         r * sind(theta),
     )
 
-
 def vecMag(a):
     """Returns the magnitude of vector a"""
     sumSq = 0
     for ai in a:
         sumSq += ai * ai
     return math.sqrt(sumSq)
-
 
 def wrapCtr(angDeg):
     """Returns the angle (in degrees) wrapped into the range (-180, 180]"""
@@ -251,7 +211,6 @@ def wrapCtr(angDeg):
     if ctrAng > 180.0:
         ctrAng -= 360.0
     return ctrAng
-
 
 def wrapPos(angDeg):
     """Returns the angle (in degrees) wrapped into the range [0, 360)"""

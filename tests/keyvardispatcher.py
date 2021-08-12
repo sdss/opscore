@@ -5,14 +5,14 @@ Unit tests for opscore.actor.KeyVarDispatcher
 import unittest
 
 try:
-    import RO.Comm.Generic
+    import opscore.RO.Comm.Generic
 
-    RO.Comm.Generic.setFramework("twisted")
+    opscore.RO.Comm.Generic.setFramework("twisted")
 except ImportError:
     # older version of RO
     pass
 from opscore.actor import Model, KeyVarDispatcher
-from RO.PVT import PVT
+from opscore.RO.PVT import PVT
 
 Model.setDispatcher(KeyVarDispatcher())
 TCCModel = Model("tcc")
