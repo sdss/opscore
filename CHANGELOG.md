@@ -3,6 +3,14 @@
 This document records the main changes to the opscore code.
 
 
+## 3.0.1 (2021-08-12)
+
+### 🔧 Fixed
+
+* Fix internal `RO` imports.
+* Use bytes for EOF delimiters in Twisted subclasses.
+
+
 ## 3.0.0 (2021-08-12)
 
 ### Support
