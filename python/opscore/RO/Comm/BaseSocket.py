@@ -205,7 +205,7 @@ class BaseSocket(Base):
         readCallback = None,
         stateCallback = None,
         name = "",
-        lineTerminator = "\r\n",
+        lineTerminator = b"\r\n",
     ):
         """Construct a BaseSocket
 

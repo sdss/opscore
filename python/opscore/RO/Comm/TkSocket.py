@@ -267,7 +267,7 @@ class TCPSocket(BaseSocket):
         tkSock = None,
         timeLim = None,
         name = "",
-        lineTerminator = "\r\n",
+        lineTerminator = b"\r\n",
     ):
         """Construct a TCPSocket
 

@@ -103,7 +103,7 @@ class TCPConnection(object):
         authReadCallback = None,
         authReadLines = False,
         name = "",
-        lineTerminator = "\r\n",
+        lineTerminator = b"\r\n",
     ):
         """Construct a TCPConnection
 
