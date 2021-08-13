@@ -8,7 +8,7 @@ then that widget can control its own showing or hiding by
 setting the variable True or False, respectively.
 
 History:
-2002-07-30 ROwen    Moved into the RO.Wdg module and renamed from OptionButtonWdg.
+2002-07-30 ROwen    Moved into the opscore.RO.Wdg module and renamed from OptionButtonWdg.
 2002-08-02 ROwen    Added takefocus argument.
 2003-03-12 ROwen    Changed for ROCheckbutton->Checkbutton rename.
 2003-04-18 ROwen    Changed from checkboxes to raised/sunken buttons.
@@ -17,7 +17,7 @@ History:
 2004-05-18 ROwen    Bug fix: helpURL was being ignored.
                     Removed double import of Checkbutton.
 2004-08-11 ROwen    Define __all__ to restrict import.
-2005-06-02 ROwen    Modified to use RO.Wdg.Checkbutton's default padding
+2005-06-02 ROwen    Modified to use opscore.RO.Wdg.Checkbutton's default padding
                     (which is platform-specific to work around cosmetic problems).
 2007-08-09 ROwen    OptionPanelControl: added setBool method.
                     _WdgButton: renamed doClick to _updVisible.
@@ -171,7 +171,7 @@ class OptionPanelControl(tkinter.Frame, CtxMenuMixin):
 
 
 if __name__ == "__main__":
-    from RO.Wdg.PythonTk import PythonTk
+    from opscore.RO.Wdg.PythonTk import PythonTk
     root = PythonTk()
 
     # frame for the set of hideable widgets

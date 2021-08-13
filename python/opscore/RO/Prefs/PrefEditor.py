@@ -39,7 +39,7 @@ History:
                     the edit widgets do it themselves, so it's redundant.
 2004-03-05 ROwen    Modified font pref editor to support non-ascii font names.
 2004-05-18 ROwen    Modified _configCtxMenu to always explicitly return a value.
-                    Modified for updated RO.Wdg.CtxMenu.
+                    Modified for updated opscore.RO.Wdg.CtxMenu.
 2004-09-20 ROwen    Bug fix: changed indicator not shown for any prefs except fonts.
 2004-09-22 ROwen    Added the _ColorButton class to work around a tk bug that caused
                     menubutton text to change color on aqua tk whenever the color picker was used.
@@ -56,7 +56,7 @@ History:
                     - Use PrefVar's internal defaults instead of creating its own
                     - Use a StringVar for the font size, since OptionMenu prefers that.
                     - The options menu button now has text Options.
-2012-07-09 ROwen    Modified to use RO.TkUtil.Timer.
+2012-07-09 ROwen    Modified to use opscore.RO.TkUtil.Timer.
 2012-12-19 ROwen    Added a FontSizePrefVar to the demo.
 2015-11-03 ROwen    Replace "!= None" with "is not None" to modernize the code.
 """
@@ -64,9 +64,9 @@ import sys
 from . import PrefVar
 from six.moves import tkinter
 import six.moves.tkinter_font as tkFont
-import RO.Alg
-import RO.Wdg
-from RO.TkUtil import Timer
+import opscore.RO.Alg
+import opscore.RO.Wdg
+from opscore.RO.TkUtil import Timer
 
 __all__ = ["getPrefEditor"]
 
@@ -213,7 +213,7 @@ class PrefEditor(object):
 
     def _addCtxMenu(self, wdg):
         """Convenience function; adds the usual contextual menu to a widget"""
-        RO.Wdg.addCtxMenu (
+        opscore.RO.Wdg.addCtxMenu (
             wdg = wdg,
             helpURL = self.prefVar.helpURL,
             configFunc = self._configCtxMenu,
@@ -242,7 +242,7 @@ class PrefEditor(object):
             # first generate a list of strings representing the values
             valueList = [self.prefVar.asStr(val) for val in self.prefVar.validValues]
             # now return a menu containing those values
-            wdg = RO.Wdg.OptionMenu(
+            wdg = opscore.RO.Wdg.OptionMenu(
                 master = self.master,
                 var= self.editVar,
                 items = valueList,
@@ -311,7 +311,7 @@ class PrefEditor(object):
         return False
 
 
-class _ColorButton(tkinter.Frame, RO.Wdg.CtxMenuMixin):
+class _ColorButton(tkinter.Frame, opscore.RO.Wdg.CtxMenuMixin):
     """A button whose color can be set (without fussing
     with bitmaps and such).
 
@@ -351,7 +351,7 @@ class _ColorButton(tkinter.Frame, RO.Wdg.CtxMenuMixin):
         )
         self.button.pack(padx = padx, pady = pady)
 
-        RO.Wdg.CtxMenuMixin.__init__(self,
+        opscore.RO.Wdg.CtxMenuMixin.__init__(self,
             helpURL = helpURL,
             configFunc = ctxConfigFunc,
         )
@@ -434,13 +434,13 @@ class BasicPathPrefEditor(PrefEditor):
 class DirectoryPrefEditor(BasicPathPrefEditor):
     """An editor for directories.
     """
-    PathWdgClass = RO.Wdg.DirWdg
+    PathWdgClass = opscore.RO.Wdg.DirWdg
 
 
 class FilePrefEditor(BasicPathPrefEditor):
     """An editor for files.
     """
-    PathWdgClass = RO.Wdg.FileWdg
+    PathWdgClass = opscore.RO.Wdg.FileWdg
 
 
 class SoundPrefEditor(PrefEditor):
@@ -454,7 +454,7 @@ class SoundPrefEditor(PrefEditor):
         - ctxConfigFunc: a function that updates the contextual menu
         """
         wdgFrame = tkinter.Frame(self.master)
-        self.fileWdg = RO.Wdg.FileWdg(
+        self.fileWdg = opscore.RO.Wdg.FileWdg(
             master = wdgFrame,
             defPath = self.getEditValue(),
             callFunc = self._newPath,
@@ -464,7 +464,7 @@ class SoundPrefEditor(PrefEditor):
         self.fileWdg.ctxSetConfigFunc(self._configCtxMenu)
         self.fileWdg.pack(side="left")
 
-        playButton = RO.Wdg.Button(
+        playButton = opscore.RO.Wdg.Button(
             master = wdgFrame,
             text = "Play",
             callFunc = self._doPlay,
@@ -479,7 +479,7 @@ class SoundPrefEditor(PrefEditor):
         soundPath = self.getEditValue()
         if not soundPath:
             return
-        s = RO.Wdg.SoundPlayer(
+        s = opscore.RO.Wdg.SoundPlayer(
             soundPath,
             bellNum = self.prefVar._bellNum,
             bellDelay = self.prefVar._bellDelay,
@@ -536,7 +536,7 @@ class FontPrefEditor(PrefEditor):
             self.varDict[varName] = var
 
         frame = tkinter.Frame(self.master)
-        fontNameWdg = RO.Wdg.OptionMenu(
+        fontNameWdg = opscore.RO.Wdg.OptionMenu(
             master = frame,
             items = fontFamilies,
             var = self.varDict["family"],
@@ -547,7 +547,7 @@ class FontPrefEditor(PrefEditor):
         fontNameWdg.configure(font=self.editFont)
         fontNameWdg.ctxSetConfigFunc(self._configCtxMenu)
 
-        fontSizeWdg = RO.Wdg.OptionMenu(
+        fontSizeWdg = opscore.RO.Wdg.OptionMenu(
             master = frame,
             items = fontSizes,
             var = self.varDict["size"],
@@ -571,7 +571,7 @@ class FontPrefEditor(PrefEditor):
         mnu.add_checkbutton(label="Underline", variable=self.varDict["underline"], onvalue=True, offvalue=False)
         mnu.add_checkbutton(label="Overstrike", variable=self.varDict["overstrike"], onvalue=True, offvalue=False)
         fontOptionWdg["menu"] = mnu
-        RO.Wdg.addCtxMenu(fontOptionWdg,
+        opscore.RO.Wdg.addCtxMenu(fontOptionWdg,
             helpURL = self.prefVar.helpURL,
             configFunc = self._configCtxMenu,
         )
@@ -640,7 +640,7 @@ class FontPrefEditor(PrefEditor):
 
 
 if __name__ == "__main__":
-    from RO.Wdg.PythonTk import PythonTk
+    from opscore.RO.Wdg.PythonTk import PythonTk
     root = PythonTk()
 
     pvList = (

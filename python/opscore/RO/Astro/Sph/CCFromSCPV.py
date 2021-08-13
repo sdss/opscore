@@ -3,8 +3,8 @@
 
 __all__ = ["ccFromSCPV"]
 
-import RO.PhysConst
-import RO.MathUtil
+import opscore.RO.PhysConst
+import opscore.RO.MathUtil
 from .CCFromSC import ccFromSC
 
 # Magic Numbers
@@ -13,8 +13,8 @@ from .CCFromSC import ccFromSC
 _MinParallax = 1.0e-7  # arcsec
 
 # Constants
-_RadPerYear_per_ASPerCy = RO.PhysConst.RadPerDeg / (RO.PhysConst.ArcSecPerDeg * 100.0)
-_AUPerYear_per_KMPerSec = RO.PhysConst.SecPerDay * RO.PhysConst.DayPerYear / RO.PhysConst.KmPerAU
+_RadPerYear_per_ASPerCy = opscore.RO.PhysConst.RadPerDeg / (RO.PhysConst.ArcSecPerDeg * 100.0)
+_AUPerYear_per_KMPerSec = opscore.RO.PhysConst.SecPerDay * opscore.RO.PhysConst.DayPerYear / opscore.RO.PhysConst.KmPerAU
 
 def ccFromSCPV(
     pos,
@@ -67,16 +67,16 @@ def ccFromSCPV(
         radVel = 0.0
 
     # compute distance in au; note that distance (parsecs) = 1/parallax (")
-    distAU = RO.PhysConst.AUPerParsec / parallax
+    distAU = opscore.RO.PhysConst.AUPerParsec / parallax
 
     # compute p
     p = ccFromSC (pos, distAU)
 
     # compute useful quantities
-    sinP0 = RO.MathUtil.sind(pos[0])
-    cosP0 = RO.MathUtil.cosd(pos[0])
-    sinP1 = RO.MathUtil.sind(pos[1])
-    cosP1 = RO.MathUtil.cosd(pos[1])
+    sinP0 = opscore.RO.MathUtil.sind(pos[0])
+    cosP0 = opscore.RO.MathUtil.cosd(pos[0])
+    sinP1 = opscore.RO.MathUtil.sind(pos[1])
+    cosP1 = opscore.RO.MathUtil.cosd(pos[1])
 
     # change units of proper motion from "/cy to au/year
     # (multiply by distance and fix the units)
@@ -97,7 +97,7 @@ def ccFromSCPV(
 
 
 if __name__ == "__main__":
-    import RO.SeqUtil
+    import opscore.RO.SeqUtil
     print("testing ccFromSCPV")
     # test data is formatted as follows:
     # a list of entries, each consisting of:
@@ -182,9 +182,9 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = ccFromSCPV(*testInput)
-        actualFlat = RO.SeqUtil.flatten(actualOutput)
-        expectedFlat = RO.SeqUtil.flatten(expectedOutput)
-        if RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1.0e-14, atol=1.0e-9):
+        actualFlat = opscore.RO.SeqUtil.flatten(actualOutput)
+        expectedFlat = opscore.RO.SeqUtil.flatten(expectedOutput)
+        if opscore.RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1.0e-14, atol=1.0e-9):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)

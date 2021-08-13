@@ -6,7 +6,7 @@ debugging window and then returns root. Optionally reads options
 from a specified options file.
 
 Instead of using an options file, you may wish to have a look
-at the RO.Prefs module. It offers graphical editing of preferences
+at the opscore.RO.Prefs module. It offers graphical editing of preferences
 with live updating.
 
 History:
@@ -14,14 +14,14 @@ History:
     preliminary implementation, in that it doesn't mesh well with user
     setting of the option database, nor is there any other way to read
     in user defaults. Removed "from Tkinter import *".
-2002-07-30 ROwen    Moved into the RO.Wdg module and renamed from ROStdTk.
+2002-07-30 ROwen    Moved into the opscore.RO.Wdg module and renamed from ROStdTk.
 2002-07-31 ROwen    Cleaned out a bunch of obsolete code.
 2003-06-18 ROwen    Modified to test for StandardError instead of Exception
 2004-05-18 ROwen    Stopped importing sys and tkFont since they weren't used.
 2004-06-22 ROwen    Renamed ScriptTk->PythonTk to avoid confusion with ScriptWdg.
                     Modified to use renamed ScriptWindow->PythonWdg module.
 2004-08-11 ROwen    Define __all__ to restrict import.
-2004-09-14 ROwen    Modified import of Bindings to not import RO.Wdg.
+2004-09-14 ROwen    Modified import of Bindings to not import opscore.RO.Wdg.
 2014-09-17 ROwen    Modified to test for Exception instead of StandardError
 """
 __all__ = ['PythonTk']
@@ -36,8 +36,8 @@ class PythonTk (tkinter.Tk):
         """Creates a new application with some standard menus and such
         Returns the root window, just like Tk()
         To use:
-            import RO.Wdg
-            myApp = RO.Wdg.PythonTk()
+            import opscore.RO.Wdg
+            myApp = opscore.RO.Wdg.PythonTk()
             # configure stuff here, e.g. creating new windows, etc.
             myApp.mainloop()
 

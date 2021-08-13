@@ -5,7 +5,7 @@ __all__ = ["azAltFromHADec"]
 
 from .DCFromSC import dcFromSC
 from .SCFromDC import scFromDC
-from RO.Astro import Cnv
+from opscore.RO.Astro import Cnv
 
 def azAltFromHADec(haDec, lat):
     """Converts HA/Dec position to az/alt.

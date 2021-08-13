@@ -29,8 +29,8 @@ from twisted.internet.protocol import Factory, Protocol
 from twisted.internet.endpoints import TCP4ClientEndpoint, TCP4ServerEndpoint
 from twisted.internet import reactor
 from twisted.python import log
-from RO.Comm.BaseSocket import BaseSocket, BaseServer, nullCallback
-from RO.Comm.TwistedTimer import Timer
+from opscore.RO.Comm.BaseSocket import BaseSocket, BaseServer, nullCallback
+from opscore.RO.Comm.TwistedTimer import Timer
 
 class _SocketProtocol(Protocol):
     """Twisted socket protocol for use with these socket classes

@@ -17,7 +17,7 @@ because it's not clear the convenience function exists in older tcl.
 note: I doubt this tcl code can be executed with _tkApp.call --
 at least nothing I tried with call worked.
 
-Loosely based on RO.Wdg.FTPLogWdg.
+Loosely based on opscore.RO.Wdg.FTPLogWdg.
 
 History:
 2005-07-08 ROwen
@@ -33,7 +33,7 @@ History:
                     Added didFail, isAbortable.
                     State constants are now strings, not integers.
 2014-04-01 ROwen    Bug fix: "unknown state" message used an undefined variable.
-2014-09-16 ROwen    Modified to use RO.AddCallback.safeCall2.
+2014-09-16 ROwen    Modified to use opscore.RO.AddCallback.safeCall2.
                     Modified _cleanup to deregister tcl callbacks before cleaning up the connection.
                     Modified to print warnings to stderr instead of stdout.
 2014-09-18 ROwen    Fixed a bug in the unit test.
@@ -51,9 +51,9 @@ import os
 import sys
 import time
 from six.moves import tkinter
-import RO.AddCallback
-import RO.StringUtil
-import RO.TkUtil
+import opscore.RO.AddCallback
+import opscore.RO.StringUtil
+import opscore.RO.TkUtil
 
 _Debug = False
 _DebugExit = False
@@ -218,7 +218,7 @@ class HTTPGet(RO.AddCallback.BaseMixin):
 
         self._tkApp.eval('package require http')
 
-        RO.AddCallback.BaseMixin.__init__(self, stateFunc, callNow=False)
+        opscore.RO.AddCallback.BaseMixin.__init__(self, stateFunc, callNow=False)
         self._doneCallbacks = []
 
         global _ExitObj
@@ -267,8 +267,8 @@ class HTTPGet(RO.AddCallback.BaseMixin):
                 raise RuntimeError("Could not open %r: %s" % (self.toPath, e))
 
             # start http transfer
-            doneCallback = RO.TkUtil.TclFunc(self._httpDoneCallback, debug=_Debug)
-            progressCallback = RO.TkUtil.TclFunc(self._httpProgressCallback, debug=_Debug)
+            doneCallback = opscore.RO.TkUtil.TclFunc(self._httpDoneCallback, debug=_Debug)
+            progressCallback = opscore.RO.TkUtil.TclFunc(self._httpProgressCallback, debug=_Debug)
             self._tclCallbacks = (doneCallback, progressCallback)
             if _Debug:
                 print("HTTPGet: creating http connection")
@@ -281,7 +281,7 @@ class HTTPGet(RO.AddCallback.BaseMixin):
                 '-timeout', self.timeLimMS
             )
         except Exception as e:
-            self._setState(self.Failed, RO.StringUtil.strFromException(e))
+            self._setState(self.Failed, opscore.RO.StringUtil.strFromException(e))
             return
 
         self._setState(self.Running)
@@ -381,7 +381,7 @@ class HTTPGet(RO.AddCallback.BaseMixin):
             # call done callbacks
             # use a copy in case a callback deregisters itself
             for func in self._doneCallbacks[:]:
-                RO.AddCallback.safeCall2(str(self), func, self)
+                opscore.RO.AddCallback.safeCall2(str(self), func, self)
 
             # remove all callbacks
             self._removeAllCallbacks()

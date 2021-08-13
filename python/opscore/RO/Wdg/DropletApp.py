@@ -46,9 +46,9 @@ __all__ = ["DropletApp"]
 import sys
 import traceback
 from six.moves import tkinter
-import RO.OS
-import RO.Constants
-from RO.TkUtil import Timer
+import opscore.RO.OS
+import opscore.RO.Constants
+from opscore.RO.TkUtil import Timer
 from . import LogWdg
 
 class DropletApp(tkinter.Frame):
@@ -121,7 +121,7 @@ class DropletApp(tkinter.Frame):
         if font:
             self.logWdg.text["font"] = font
 
-        if RO.OS.PlatformName == "mac":
+        if opscore.RO.OS.PlatformName == "mac":
             self.tk.createcommand('::tk::mac::OpenDocument', self._macOpenDocument)
 
     def processFile(self, filePath):
@@ -140,7 +140,7 @@ class DropletApp(tkinter.Frame):
             try:
                 self.processFile(filePath)
             except Exception as e:
-                self.logWdg.addOutput("%s failed: %s\n" % (filePath, e), severity=RO.Constants.sevError)
+                self.logWdg.addOutput("%s failed: %s\n" % (filePath, e), severity=opscore.RO.Constants.sevError)
                 if self.printTraceback:
                     traceback.print_exc(file=sys.stderr)
 
@@ -148,7 +148,7 @@ class DropletApp(tkinter.Frame):
         if remFilePathList:
             Timer(0.001, self._processNextFile, remFilePathList)
         elif self.doneMsg:
-            self.logWdg.addOutput(self.doneMsg, severity=RO.Constants.sevNormal)
+            self.logWdg.addOutput(self.doneMsg, severity=opscore.RO.Constants.sevNormal)
 
     def processFileList(self, filePathList):
         """Find and process a list of files
@@ -160,7 +160,7 @@ class DropletApp(tkinter.Frame):
         Includes basic error handling: if an error is raised,
         prints a message to the log window and goes on to the next file.
         """
-        filteredPathList = RO.OS.findFiles(
+        filteredPathList = opscore.RO.OS.findFiles(
             paths = filePathList,
             patterns = self.patterns,
             exclPatterns = self.exclPatterns,

@@ -15,7 +15,7 @@ TkSerial allows nonblocking event-driven operation:
   and a state callback, which is called when the connection state changed.
 
 History:
-2008-03-03 ROwen    First version (adapted from RO.Comm.TkSocket)
+2008-03-03 ROwen    First version (adapted from opscore.RO.Comm.TkSocket)
 2008-03-06 ROwen    Removed timeout argument; renamed eolTranslation to translation;
                     fixed error in translation handling.
 2009-01-23 ROwen    Bug fix: isOpen returned the wrong value.
@@ -32,8 +32,8 @@ __all__ = ["TkSerial", "NullSerial"]
 import sys
 import traceback
 from six.moves import tkinter
-import RO.SeqUtil
-import RO.TkUtil
+import opscore.RO.SeqUtil
+import opscore.RO.TkUtil
 try:
     set
 except NameError:
@@ -360,7 +360,7 @@ class TkSerial(TkBaseSerial):
             typeStr = 'readable'
 
         if callFunc:
-            tclFunc = RO.TkUtil.TclFunc(callFunc)
+            tclFunc = opscore.RO.TkUtil.TclFunc(callFunc)
             tkFuncName = tclFunc.tclFuncName
         else:
             tclFunc = None

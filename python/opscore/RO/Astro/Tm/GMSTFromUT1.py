@@ -4,8 +4,8 @@
 __all__ = ["gmstFromUT1"]
 
 import math
-import RO.PhysConst
-import RO.MathUtil
+import opscore.RO.PhysConst
+import opscore.RO.MathUtil
 
 def gmstFromUT1(ut1):
     """Convert from universal time (MJD)
@@ -34,9 +34,9 @@ def gmstFromUT1(ut1):
     2014-04-25 ROwen    Add from __future__ import division, absolute_import.
     """
     # convert date to Julian centuries since J2000
-    jc= (ut1 - RO.PhysConst.MJDJ2000) / 36525.0
+    jc= (ut1 - opscore.RO.PhysConst.MJDJ2000) / 36525.0
 
-    return RO.MathUtil.wrapPos (
+    return opscore.RO.MathUtil.wrapPos (
         (math.fmod(ut1, 1.0) * 360.0) # fraction of day of UT1, in degrees
          + (24110.54841
             + (8640184.812866
@@ -80,7 +80,7 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = gmstFromUT1(testInput)
-        if RO.MathUtil.compareFloats(actualOutput, expectedOutput, rtol=1e-8):
+        if opscore.RO.MathUtil.compareFloats(actualOutput, expectedOutput, rtol=1e-8):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)

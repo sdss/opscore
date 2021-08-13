@@ -8,9 +8,9 @@ To build a Mac droplet using py2app, assuming the code that does the work is in 
 
 - Write a trivial script that constructs/runs DropletRunner; this is the script
   that you tell setup.py about; it might be called runMainScript.py:
-    import RO.Wdg.DropletRunner
+    import opscore.RO.Wdg.DropletRunner
     import mainScript # so py2app finds it and its dependencies
-    RO.Wdg.DropletRunner.DropletRunner("mainScript.py")
+    opscore.RO.Wdg.DropletRunner.DropletRunner("mainScript.py")
 
 - In the application PList specify the sorts of files that can be dropped, e.g.:
 
@@ -53,7 +53,7 @@ History:
 2011-02-25 ROwen    Tweaked usage documentation.
 2011-08-16 ROwen    Commented out two diagnostic print statements.
 2011-10-11 ROwen    Documented as deprecated.
-2012-07-09 ROwen    Modified to use RO.TkUtil.Timer.
+2012-07-09 ROwen    Modified to use opscore.RO.TkUtil.Timer.
 2015-09-24 ROwen    Replace "== None" with "is None" to modernize the code.
 2015-11-03 ROwen    Replace "!= None" with "is not None" to modernize the code.
 """
@@ -63,9 +63,9 @@ import sys
 import os.path
 import subprocess
 from six.moves import tkinter
-import RO.OS
-import RO.Constants
-from RO.TkUtil import Timer
+import opscore.RO.OS
+import opscore.RO.Constants
+from opscore.RO.TkUtil import Timer
 from . import LogWdg
 
 class DropletRunner(object):
@@ -84,7 +84,7 @@ class DropletRunner(object):
         - scriptPath: path to script to run when files are dropped on the application
         - title: title for log window; if None then generated from scriptPath
         - initialText: initial text to display in log window
-        **keyArgs: all other keyword arguments are sent to the RO.Wdg.LogWdg constructor
+        **keyArgs: all other keyword arguments are sent to the opscore.RO.Wdg.LogWdg constructor
         """
         self.isRunning = False
         self.scriptPath = os.path.abspath(scriptPath)
@@ -98,7 +98,7 @@ class DropletRunner(object):
             title = os.path.splitext(os.path.basename(scriptPath))[0]
         self.tkRoot.title(title)
 
-        if RO.OS.PlatformName == "mac":
+        if opscore.RO.OS.PlatformName == "mac":
             self.tkRoot.createcommand('::tk::mac::OpenDocument', self._macOpenDocument)
             # the second argument is a process ID (approximately) if run as an Applet;
             # the conditional handles operation from the command line
@@ -156,7 +156,7 @@ class DropletRunner(object):
     def _readStdErr(self, *dumArgs):
         """Read and log data from script's stderr
         """
-        self.logWdg.addOutput(self.subProc.stderr.read(), severity=RO.Constants.sevError)
+        self.logWdg.addOutput(self.subProc.stderr.read(), severity=opscore.RO.Constants.sevError)
         if self.subProc.poll() is not None:
             self._cleanup()
 
@@ -172,7 +172,7 @@ class DropletRunner(object):
             if outData:
                 self.logWdg.addOutput(outData)
             if errData:
-                self.logWdg.addOutput(errData, severity=RO.Constants.sevError)
+                self.logWdg.addOutput(errData, severity=opscore.RO.Constants.sevError)
 
 
 if __name__ == "__main__":

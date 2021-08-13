@@ -269,7 +269,7 @@ class NullDBCursor (object):
     """A fake database cursor for testing database code.
 
     This likely does not support the entire database cursor interface,
-    but does support everything used by RO.SQLUtil.
+    but does support everything used by opscore.RO.SQLUtil.
 
     It prints out the SQL commands that would be executed.
     """
@@ -308,16 +308,16 @@ class NullDBConn (object):
 
     Example:
     import MySQLdb
-    import RO.SQLUtil
+    import opscore.RO.SQLUtil
     TestOnly = True
     if TestOnly:
-        connect = RO.SQLUtil.NullDBConn
+        connect = opscore.RO.SQLUtil.NullDBConn
     else:
         connect = MySQLdb.connect
     dbConn = connect(user=..., db=..., ....)
 
     This likely does not support the entire database connection interface,
-    but does support everything used by RO.SQLUtil.
+    but does support everything used by opscore.RO.SQLUtil.
     """
     def __init__(self, user=None, db=None, passwd=None, **kargs):
         self.user = user

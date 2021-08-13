@@ -30,9 +30,9 @@ History:
 __all__ = ["ResizableRect"]
 
 from six.moves import tkinter
-import RO.SeqUtil
-import RO.AddCallback
-from RO.Alg import GenericCallback
+import opscore.RO.SeqUtil
+import opscore.RO.AddCallback
+from opscore.RO.Alg import GenericCallback
 
 Debug = False
 
@@ -64,10 +64,10 @@ class ResizableRect(RO.AddCallback.BaseMixin):
         fill = "white",
         callFunc = None,
     **kargs):
-        RO.AddCallback.BaseMixin.__init__(self)
+        opscore.RO.AddCallback.BaseMixin.__init__(self)
 
         self.cnv = cnv
-        self.grabSize = RO.SeqUtil.oneOrNAsList(grabSize, 2, "grab (inner, outer) size")
+        self.grabSize = opscore.RO.SeqUtil.oneOrNAsList(grabSize, 2, "grab (inner, outer) size")
 
         self.mousePos = [] # x, y coords of button-down
         self.rectCoords = [] # x0, y0, x1, y1 coords of rectangle

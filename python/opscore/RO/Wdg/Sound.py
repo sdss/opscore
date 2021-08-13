@@ -19,7 +19,7 @@ __all__ = ['bell', 'BellPlay', 'SoundPlayer', 'NoPlay']
 import os
 import sys
 from six.moves import tkinter
-import RO.StringUtil
+import opscore.RO.StringUtil
 try:
     import pygame.mixer
     _PyGameAvail = True
@@ -117,7 +117,7 @@ class SoundPlayer(object):
                     self._snd = pygame.mixer.Sound(fileName)
                 except Exception as e:
                     sys.stderr.write("Could not load sound file %r; using beep instead: %s\n" % \
-                        (fileName, RO.StringUtil.strFromException(e),))
+                        (fileName, opscore.RO.StringUtil.strFromException(e),))
 
         if not self._snd:
             self._snd = BellPlay(num=bellNum, delay=bellDelay)

@@ -25,7 +25,7 @@ History:
                     at a small cost in increased risk.
 2003-10-16 ROwen    Output messages to status bar, not stderr.
 2004-05-18 ROwen    Stopped importing sys since it was not being used.
-2005-01-05 ROwen    Changed level to severity; modified to use RO.Constants.
+2005-01-05 ROwen    Changed level to severity; modified to use opscore.RO.Constants.
 2005-08-12 ROwen    Removed unused import of string module.
 2005-09-15 ROwen    Added getCategories and showCategory methods.
                     Renamed internal method selectCategory to _showSelectedCategory.
@@ -40,8 +40,8 @@ __all__ = ["PrefWin", "PrefWdg"]
 from six.moves import tkinter
 from . import PrefVar
 from . import PrefEditor
-import RO.Constants
-import RO.Wdg
+import opscore.RO.Constants
+import opscore.RO.Wdg
 
 class PrefWin(RO.Wdg.Toplevel):
     def __init__(self,
@@ -51,7 +51,7 @@ class PrefWin(RO.Wdg.Toplevel):
         *args,
         **kwargs
     ):
-        RO.Wdg.Toplevel.__init__(self, master, title=title, *args, **kwargs)
+        opscore.RO.Wdg.Toplevel.__init__(self, master, title=title, *args, **kwargs)
         self.prefWdg = PrefWdg(self, prefSet)
         self.prefWdg.pack(fill=tkinter.BOTH, expand=tkinter.YES)
 
@@ -86,7 +86,7 @@ class PrefWdg(tkinter.Frame):
         catListFrame.grid_rowconfigure(0, weight=1)
 
         # create the status widget
-        self.statusBar = RO.Wdg.StatusBar(
+        self.statusBar = opscore.RO.Wdg.StatusBar(
             master = self,
             helpURL = helpURL,
         )
@@ -97,8 +97,8 @@ class PrefWdg(tkinter.Frame):
         buttonList = (
             self._getShowMenu(self.buttonWdg, helpURL=helpURL),
             tkinter.Frame(self.buttonWdg, width=10),
-            RO.Wdg.Button(self.buttonWdg, text="Apply", command=self.applyPrefs, helpURL=helpURL),
-            RO.Wdg.Button(self.buttonWdg, text="Save", command=self.writeToFile, helpURL=helpURL),
+            opscore.RO.Wdg.Button(self.buttonWdg, text="Apply", command=self.applyPrefs, helpURL=helpURL),
+            opscore.RO.Wdg.Button(self.buttonWdg, text="Save", command=self.writeToFile, helpURL=helpURL),
         )
         for button in buttonList:
             button.pack(side="left")
@@ -209,12 +209,12 @@ class PrefWdg(tkinter.Frame):
         except Exception as e:
             self.statusBar.setMsg(
                 msgStr = "Save failed: %s" % (e,),
-                severity = RO.Constants.sevError,
+                severity = opscore.RO.Constants.sevError,
             )
         else:
             self.statusBar.setMsg(
                 msgStr = "Prefs saved to %s" % (self.prefSet.defFileName,),
-                severity = RO.Constants.sevNormal,
+                severity = opscore.RO.Constants.sevNormal,
             )
 
     def unappliedChanges(self):
@@ -235,7 +235,7 @@ class PrefWdg(tkinter.Frame):
             highlightthickness=2,
             text="Show",
         )
-        RO.Wdg.addCtxMenu(mbut, helpURL=helpURL)
+        opscore.RO.Wdg.addCtxMenu(mbut, helpURL=helpURL)
         mnu = tkinter.Menu(mbut, tearoff=0)
         mnu.add_command(label="Current", command=self.showCurrentValue)
         mnu.add_command(label="Initial", command=self.showInitialValue)
@@ -245,7 +245,7 @@ class PrefWdg(tkinter.Frame):
 
 
 if __name__ == "__main__":
-    from RO.Wdg.PythonTk import PythonTk
+    from opscore.RO.Wdg.PythonTk import PythonTk
     root = PythonTk()
 
     defMainWdg = tkinter.Label()

@@ -64,7 +64,7 @@ History:
 2003-05-29 ROwen    Fixed getEnable to return True if the state is "active".
 2003-06-13 ROwen    Fixed StrEntry to accept unicode strings.
 2003-07-09 ROwen    Modified to call back with self instead of value;
-                    modified to use RO.AddCallback;
+                    modified to use opscore.RO.AddCallback;
                     added omitExtraFields to DMSEntry.
 2003-07-16 ROwen    Added UnicodeEntry; made StrEntry reject non-ascii.
 2003-07-24 ROwen    Added default of None (no limit) for minValue and maxValue;
@@ -166,20 +166,20 @@ __all__ = ['StrEntry', 'ASCIIEntry', 'FloatEntry', 'IntEntry', 'DMSEntry']
 #import os
 import re
 from six.moves import tkinter
-import RO.AddCallback
-import RO.CnvUtil
-import RO.SeqUtil
-import RO.StringUtil
-import RO.MathUtil
+import opscore.RO.AddCallback
+import opscore.RO.CnvUtil
+import opscore.RO.SeqUtil
+import opscore.RO.StringUtil
+import opscore.RO.MathUtil
 from . import Bindings
 from .CtxMenu import CtxMenuMixin
 from .IsCurrentMixin import AutoIsCurrentMixin, IsCurrentMixin
 from .SeverityMixin import SeveritySelectMixin
 from six import u
 
-class _BaseEntry (tkinter.Entry, RO.AddCallback.BaseMixin,
+class _BaseEntry (tkinter.Entry, opscore.RO.AddCallback.BaseMixin,
     AutoIsCurrentMixin, IsCurrentMixin, SeveritySelectMixin, CtxMenuMixin):
-    """Base class for RO.Wdg entry widgets.
+    """Base class for opscore.RO.Wdg entry widgets.
 
     Subclasses may wish to override:
     - asStr
@@ -236,7 +236,7 @@ class _BaseEntry (tkinter.Entry, RO.AddCallback.BaseMixin,
     - defIfBlank    setDefault also sets the current value if the current value is blank.
         Forbidden if autoSetDefault is True.
     - isCurrent: is the default value (used as the initial value) current?
-    - severity: one of: RO.Constants.sevNormal (the default), sevWarning or sevError
+    - severity: one of: opscore.RO.Constants.sevNormal (the default), sevWarning or sevError
     - any additional keyword arguments are used to configure the widget; note:
         - the default width is 8
         - text and textvariable are silently ignored (use var instead of textvariable)
@@ -266,7 +266,7 @@ class _BaseEntry (tkinter.Entry, RO.AddCallback.BaseMixin,
         trackDefault = None,
         defIfBlank = True,
         isCurrent = True,
-        severity = RO.Constants.sevNormal,
+        severity = opscore.RO.Constants.sevNormal,
     **kargs):
         self.defValueStr = "" # just create the field for now
         if var is None:
@@ -315,7 +315,7 @@ class _BaseEntry (tkinter.Entry, RO.AddCallback.BaseMixin,
         # use BaseMixin and trigger callbacks manually instead of using TkVarMixin
         # because the value checking may modify the variable,
         # which would cause TkVarMixin to issue multiple callbacks.
-        RO.AddCallback.BaseMixin.__init__(self)
+        opscore.RO.AddCallback.BaseMixin.__init__(self)
 
         # do after adding callback support
         # and before setting default (which triggers a callback)
@@ -358,7 +358,7 @@ class _BaseEntry (tkinter.Entry, RO.AddCallback.BaseMixin,
         """
         if val is None:
             return ""
-        return RO.CnvUtil.asStr(val)
+        return opscore.RO.CnvUtil.asStr(val)
 
     def clear(self):
         self.var.set("")
@@ -564,7 +564,7 @@ class _BaseEntry (tkinter.Entry, RO.AddCallback.BaseMixin,
         - value: native value or formatted string.
             If None, sets the field blank.
         - isCurrent: is value current? (if not, display with bad background color)
-        - severity: the new severity, one of: RO.Constants.sevNormal, sevWarning or sevError;
+        - severity: the new severity, one of: opscore.RO.Constants.sevNormal, sevWarning or sevError;
           if omitted, the severity is left unchanged
         kargs is ignored; it is only present for compatibility with KeyVariable callbacks.
 
@@ -827,7 +827,7 @@ class ASCIIEntry (StrEntry):
         """
         if val is None:
             return ""
-        return RO.CnvUtil.asASCII(val)
+        return opscore.RO.CnvUtil.asASCII(val)
 
     def checkValue(self, val, descr=None):
         """Raise UnicodeDecodeError if the final value "val" is invalid.
@@ -837,7 +837,7 @@ class ASCIIEntry (StrEntry):
             return
 
         # verify data is ASCII
-        RO.CnvUtil.asASCII(val)
+        opscore.RO.CnvUtil.asASCII(val)
 
         # standard Str checks
         StrEntry.checkValue(self, val, descr)
@@ -850,7 +850,7 @@ class ASCIIEntry (StrEntry):
             return
 
         # verify data is ASCII
-        RO.CnvUtil.asASCII(val)
+        opscore.RO.CnvUtil.asASCII(val)
 
         # standard Str checks
         StrEntry.checkPartialValue(self, val, descr)
@@ -1049,7 +1049,7 @@ class _NumEntry (_BaseEntry):
         if self.defValueStr != "":
             # test that default is included in range
             try:
-                RO.MathUtil.checkRange(self.asNum(self.defValueStr), minNum, maxNum)
+                opscore.RO.MathUtil.checkRange(self.asNum(self.defValueStr), minNum, maxNum)
             except ValueError:
                 raise ValueError("%srange [%r, %r] does not include default %r" % \
                     (self._getErrorPrefix(), minNum, maxNum, self.defValueStr))
@@ -1104,7 +1104,7 @@ class _NumEntry (_BaseEntry):
         # handle minus sign, if present
         # this catches a minus sign when first typed in
         # whereas the range check below needs a digit before it can act
-        if RO.SeqUtil.isString(val):
+        if opscore.RO.SeqUtil.isString(val):
             if self.minNum is not None and self.minNum >= 0 and "-" in val:
                 raise ValueError("%s- forbidden; min val = %s" % \
                     (errPrefix, self.minNum))
@@ -1113,7 +1113,7 @@ class _NumEntry (_BaseEntry):
                     (errPrefix, self.maxNum))
 
         # check range
-        RO.MathUtil.checkRange(self.asNum(val), minNum, maxNum, errPrefix)
+        opscore.RO.MathUtil.checkRange(self.asNum(val), minNum, maxNum, errPrefix)
 
 
 class FloatEntry (_NumEntry):
@@ -1160,7 +1160,7 @@ class FloatEntry (_NumEntry):
         Raises ValueError if the string is invalid.
         Does no range checking or default handling!
         """
-        return RO.StringUtil.floatFromStr(strVal, allowExp=self.allowExp)
+        return opscore.RO.StringUtil.floatFromStr(strVal, allowExp=self.allowExp)
 
 
 class IntEntry(_NumEntry):
@@ -1199,7 +1199,7 @@ class IntEntry(_NumEntry):
         Raises ValueError if the string is invalid.
         Does no range checking or default handling!
         """
-        return RO.StringUtil.intFromStr(strVal)
+        return opscore.RO.StringUtil.intFromStr(strVal)
 
 
 class DMSEntry (_NumEntry):
@@ -1300,9 +1300,9 @@ class DMSEntry (_NumEntry):
         Does no range checking or default handling!
         """
         if self.isRelative:
-            return RO.StringUtil.secFromDMSStr(strVal)
+            return opscore.RO.StringUtil.secFromDMSStr(strVal)
         else:
-            return RO.StringUtil.degFromDMSStr(strVal)
+            return opscore.RO.StringUtil.degFromDMSStr(strVal)
 
 #   def set(self, stringValue):
 #       """Set the field from a string; neaten the data and reject bad data.
@@ -1357,7 +1357,7 @@ class DMSEntry (_NumEntry):
 
         # scale the default value; preserve the number of fields and adjust the precision
         if self.defValueStr:
-            nFields, precision = RO.StringUtil.dmsStrFieldsPrec(self.defValueStr)
+            nFields, precision = opscore.RO.StringUtil.dmsStrFieldsPrec(self.defValueStr)
             precision += deltaPrec
             newNumVal = self.numFromStr(self.defValueStr) * scale
             self.set(self.strFromNum(newNumVal, (nFields, precision)))
@@ -1370,7 +1370,7 @@ class DMSEntry (_NumEntry):
             # scale the current value; preserve the number of fields and adjust the precision
             oldValueStr = self.var.get()
             if oldValueStr:
-                nFields, precision = RO.StringUtil.dmsStrFieldsPrec(oldValueStr)
+                nFields, precision = opscore.RO.StringUtil.dmsStrFieldsPrec(oldValueStr)
                 precision += deltaPrec
                 newNumVal = self.numFromStr(oldValueStr) * scale
                 self.set(self.strFromNum(newNumVal, (nFields, precision)))
@@ -1404,14 +1404,14 @@ class DMSEntry (_NumEntry):
 
         try:
             if self.isRelative:
-                return RO.StringUtil.dmsStrFromSec(
+                return opscore.RO.StringUtil.dmsStrFromSec(
                     numVal,
                     nFields = nFields,
                     precision = precision,
                     omitExtraFields = self.omitExtraFields,
                 )
             else:
-                return RO.StringUtil.dmsStrFromDeg(
+                return opscore.RO.StringUtil.dmsStrFromDeg(
                     numVal,
                     nFields = nFields,
                     precision = precision,
@@ -1427,7 +1427,7 @@ class DMSEntry (_NumEntry):
         but format the others.
         """
         currVal = self.var.get()
-        neatValue = RO.StringUtil.neatenDMSStr(currVal)
+        neatValue = opscore.RO.StringUtil.neatenDMSStr(currVal)
         if currVal != neatValue:
             self.var.set(neatValue)
 
@@ -1441,7 +1441,7 @@ class DMSEntry (_NumEntry):
         if not self.unitsVar:
             return
 
-        nFields, precision = RO.StringUtil.dmsStrFieldsPrec(self.var.get())
+        nFields, precision = opscore.RO.StringUtil.dmsStrFieldsPrec(self.var.get())
         if nFields not in (1,2,3):
             # if data is blank or wierd, show for 1 field
             nFields = 1
@@ -1496,7 +1496,7 @@ class DMSEntry (_NumEntry):
                 ind = self.index(tkinter.SEL_FIRST) - 1
             else:
                 ind = self.index("insert") - 1
-            (leftInd, rightInd) = RO.StringUtil.findLeftNumber(currVal, ind)
+            (leftInd, rightInd) = opscore.RO.StringUtil.findLeftNumber(currVal, ind)
             if (leftInd, rightInd) == (None, None):
                 return
             self.selection_range(leftInd, rightInd+1)
@@ -1509,7 +1509,7 @@ class DMSEntry (_NumEntry):
                 ind = self.index(tkinter.SEL_LAST)
             else:
                 ind = self.index("insert")
-            (leftInd, rightInd) = RO.StringUtil.findRightNumber(currVal, ind)
+            (leftInd, rightInd) = opscore.RO.StringUtil.findRightNumber(currVal, ind)
             if (leftInd, rightInd) == (None, None):
                 return
             self.selection_range(leftInd, rightInd+1)
@@ -1519,7 +1519,7 @@ class DMSEntry (_NumEntry):
 
 
 if __name__ == "__main__":
-    from RO.Wdg.PythonTk import PythonTk
+    from opscore.RO.Wdg.PythonTk import PythonTk
     from . import StatusBar
     root = PythonTk()
 

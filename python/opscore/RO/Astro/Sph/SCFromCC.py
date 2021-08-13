@@ -4,8 +4,8 @@
 __all__ = ["scFromCC"]
 
 import math
-import RO.MathUtil
-import RO.SysConst
+import opscore.RO.MathUtil
+import opscore.RO.SysConst
 
 def scFromCC(p):
     """
@@ -39,12 +39,12 @@ def scFromCC(p):
 
     # make sure |p| is large enough
     # one gains margin by testing |p|^2 instead of |p|
-    if magPSq < RO.SysConst.FAccuracy:
+    if magPSq < opscore.RO.SysConst.FAccuracy:
         raise ValueError('|p| too small; p=%r' % (p,))
 
     # check to see if too near the pole
     # one gains margin by testing |pxy|^2 instead of |pxy|
-    if magPxySq < RO.SysConst.FAccuracy:
+    if magPxySq < opscore.RO.SysConst.FAccuracy:
         # too near pole
         atPole = True
         pos1 = 0.0
@@ -56,8 +56,8 @@ def scFromCC(p):
         atPole = False
 
         # compute position (in degrees)
-        pos1 = RO.MathUtil.atan2d (y, x)
-        pos2 = RO.MathUtil.atan2d (z, math.sqrt(magPxySq))
+        pos1 = opscore.RO.MathUtil.atan2d (y, x)
+        pos2 = opscore.RO.MathUtil.atan2d (z, math.sqrt(magPxySq))
 
         # put pos1 into the range [0,360); presently it's in range (-180,180]
         if (pos1 < 0.0):
@@ -67,7 +67,7 @@ def scFromCC(p):
 
 
 if __name__ == "__main__":
-    import RO.SeqUtil
+    import opscore.RO.SeqUtil
     print("testing scFromCC")
     # test data is formatted as follows:
     # a list of entries, each consisting of:
@@ -84,9 +84,9 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = scFromCC(testInput)
-        actualFlat = RO.SeqUtil.flatten(actualOutput)
-        expectedFlat = RO.SeqUtil.flatten(expectedOutput)
-        if RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1.0e-14):
+        actualFlat = opscore.RO.SeqUtil.flatten(actualOutput)
+        expectedFlat = opscore.RO.SeqUtil.flatten(expectedOutput)
+        if opscore.RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1.0e-14):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)

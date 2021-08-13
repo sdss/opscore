@@ -10,17 +10,17 @@ History:
 2002-12-04 ROwen    Swapped helpURL and helpText args.
 2002-12-20 ROwen    Removed kargs from HistoryMenu.__init__; it wasn't being used;
                     thanks to pychecker.
-2003-04-15 ROwen    Modified to use RO.Wdg.CtxMenu 2003-04-15.
+2003-04-15 ROwen    Modified to use opscore.RO.Wdg.CtxMenu 2003-04-15.
 2003-12-05 ROwen    Renamed callback to callFunc for consistency.
 2004-05-18 ROwen    Stopped importing sys since it was not being used.
 2004-08-11 ROwen    Define __all__ to restrict import.
-2004-09-14 ROwen    Test code no longer imports RO.Wdg to avoid circular import.
+2004-09-14 ROwen    Test code no longer imports opscore.RO.Wdg to avoid circular import.
 2015-09-24 ROwen    Replace "== None" with "is None" to modernize the code.
 """
 __all__ = ['HistoryMenu']
 
 from six.moves import tkinter
-import RO.Alg
+import opscore.RO.Alg
 from .CtxMenu import CtxMenuMixin
 
 
@@ -103,7 +103,7 @@ class HistoryMenu (tkinter.Menubutton, CtxMenuMixin):
         self.__menu.insert_command (
             0,
             label = name,
-            command = RO.Alg.GenericCallback(self.__callFunc, name, data),
+            command = opscore.RO.Alg.GenericCallback(self.__callFunc, name, data),
         )
 
     def nItems(self):

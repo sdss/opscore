@@ -7,7 +7,7 @@ This module is now deprecated because the Mac corrections are no longer needed
 as of some Tk version <= 8.4.7. Please use Tkinter.Canvas.
 
 History:
-2002-11-12 ROwen    First version derived from RO.CanvasUtil.py
+2002-11-12 ROwen    First version derived from opscore.RO.CanvasUtil.py
 2002-12-20 ROwen    Removed unused local variable.
 2004-08-11 ROwen    Define __all__ to restrict import.
 2004-10-22 ROwen`   Disabled corrections and now issues a deprecation warning.

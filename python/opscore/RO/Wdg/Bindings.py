@@ -28,7 +28,7 @@ in a Mac-like way is difficult.
                     stdBindings's disabling of <<Paste-Selection>> on Windows.
 
 2005-06-27 ROwen    Removed unused import of sys.
-2005-07-07 ROwen    Modified for moved RO.TkUtil.
+2005-07-07 ROwen    Modified for moved opscore.RO.TkUtil.
 2005-07-14 ROwen    Fixed bug in makeReadOnly: was not trappling button-release-2
                     (which pastes the selection, at least on unix).
 2005-08-05 ROwen    Commented out a diagnostic print statement in stopEvent.
@@ -44,7 +44,7 @@ in a Mac-like way is difficult.
 __all__ = ['makeReadOnly', 'stdBindings', 'stopEvent']
 
 from six.moves import tkinter
-import RO.TkUtil
+import opscore.RO.TkUtil
 
 def doQuit(evt):
     evt.widget.quit()
@@ -57,12 +57,12 @@ def doWithdraw(evt):
 # Note: this list is probably incomplete; Windows and unix
 # may want standard keys for close and quit.
 AppEventDict = {
-    RO.TkUtil.WSysAqua: (
+    opscore.RO.TkUtil.WSysAqua: (
         ("<<Quit>>", "<Command-Key-q>"),
         ("<<Close>>", "<Command-Key-w>"),
         ("<<Select-All>>", "<Command-Key-a>"),
     ),
-    RO.TkUtil.WSysWin: (
+    opscore.RO.TkUtil.WSysWin: (
         ("<<Select-All>>", "<Control-Key-a>"),
     )
 }
@@ -96,7 +96,7 @@ def makeReadOnly(tkWdg):
     # restore other behaviors
     # note: binding specific events avoids introducing
     # events that might cause editing (for example some control keys)
-    winSys = RO.TkUtil.getWindowingSystem()
+    winSys = opscore.RO.TkUtil.getWindowingSystem()
     appEvents = AppEventDict.get(winSys, ())
     for virtualEvent, eventKey in appEvents:
         tkWdg.bind(eventKey, passEvent)
@@ -104,11 +104,11 @@ def makeReadOnly(tkWdg):
 def stdBindings(root, debug=False):
     """Sets up standard key bindings for each platform"""
 
-    btnNums = RO.TkUtil.getButtonNumbers()
-    winSys = RO.TkUtil.getWindowingSystem()
+    btnNums = opscore.RO.TkUtil.getButtonNumbers()
+    winSys = opscore.RO.TkUtil.getWindowingSystem()
 
     # platform-specific bindings
-    if winSys == RO.TkUtil.WSysX11:
+    if winSys == opscore.RO.TkUtil.WSysX11:
         # unix
         if debug:
             print("Unix/x11 key bindings")
@@ -116,7 +116,7 @@ def stdBindings(root, debug=False):
 #         root.event_add("<<CtxMenu>>", "<Control-ButtonPress-2>")
 #         root.event_add("<<CtxMenu>>", "<Control-ButtonPress-3>")
     else:
-        if winSys == RO.TkUtil.WSysAqua:
+        if winSys == opscore.RO.TkUtil.WSysAqua:
             if debug:
                 print("Mac Aqua key bindings")
             root.bind_class("Entry", "<Key-Up>", _entryGoToLeftEdge)

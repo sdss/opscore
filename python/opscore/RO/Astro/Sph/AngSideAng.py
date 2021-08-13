@@ -3,8 +3,8 @@
 
 __all__ = ["angSideAng"]
 
-import RO.MathUtil
-import RO.SysConst
+import opscore.RO.MathUtil
+import opscore.RO.SysConst
 
 def angSideAng(side_aa, ang_B, side_cc):
     """
@@ -75,21 +75,21 @@ def angSideAng(side_aa, ang_B, side_cc):
                         special cases after side_aa and side_cc special cases.
                         Tweaked the documentation to clarify the special cases.
     """
-    sin_h_aa = RO.MathUtil.sind(side_aa)
-    sin_h_cc = RO.MathUtil.sind(side_cc)
-    sin_h_B = RO.MathUtil.sind(ang_B * 0.5)
-    cos_h_B = RO.MathUtil.cosd(ang_B * 0.5)
-    sin_h_aa = RO.MathUtil.sind(side_aa * 0.5)
-    cos_h_aa = RO.MathUtil.cosd(side_aa * 0.5)
-    sin_h_cc = RO.MathUtil.sind(side_cc * 0.5)
-    cos_h_cc = RO.MathUtil.cosd(side_cc * 0.5)
+    sin_h_aa = opscore.RO.MathUtil.sind(side_aa)
+    sin_h_cc = opscore.RO.MathUtil.sind(side_cc)
+    sin_h_B = opscore.RO.MathUtil.sind(ang_B * 0.5)
+    cos_h_B = opscore.RO.MathUtil.cosd(ang_B * 0.5)
+    sin_h_aa = opscore.RO.MathUtil.sind(side_aa * 0.5)
+    cos_h_aa = opscore.RO.MathUtil.cosd(side_aa * 0.5)
+    sin_h_cc = opscore.RO.MathUtil.sind(side_cc * 0.5)
+    cos_h_cc = opscore.RO.MathUtil.cosd(side_cc * 0.5)
 
-    if abs(sin_h_aa) < RO.SysConst.FAccuracy:
+    if abs(sin_h_aa) < opscore.RO.SysConst.FAccuracy:
         # side_aa is nearly zero (modulo 360)
-        if abs(sin_h_cc) < RO.SysConst.FAccuracy:
+        if abs(sin_h_cc) < opscore.RO.SysConst.FAccuracy:
             # side_cc is nearly 0 (modulo 360)
             return (90.0, 0.0, 90.0, True)
-        elif abs(cos_h_cc) < RO.SysConst.FAccuracy:
+        elif abs(cos_h_cc) < opscore.RO.SysConst.FAccuracy:
             # side_cc is nearly 180 (modulo 360)
             return (90.0, 180.0, 90.0, True)
         else:
@@ -97,12 +97,12 @@ def angSideAng(side_aa, ang_B, side_cc):
             ang_A = 0.0
             side_bb = side_cc
             ang_C = 180.0 - ang_B
-    elif abs(cos_h_aa) < RO.SysConst.FAccuracy:
+    elif abs(cos_h_aa) < opscore.RO.SysConst.FAccuracy:
         # side_aa is nearly 180 (modulo 360)
-        if abs(cos_h_cc) < RO.SysConst.FAccuracy:
+        if abs(cos_h_cc) < opscore.RO.SysConst.FAccuracy:
             # side_cc is nearly 180 (modulo 360)
             return (90.0, 0.0, 90.0, True)
-        elif abs(sin_h_cc) < RO.SysConst.FAccuracy:
+        elif abs(sin_h_cc) < opscore.RO.SysConst.FAccuracy:
             # side_cc is nearly 0 (modulo 360)
             return (90.0, 180.0, 90.0, True)
         else:
@@ -110,19 +110,19 @@ def angSideAng(side_aa, ang_B, side_cc):
             ang_A = 180.0
             side_bb = 180.0 - side_cc
             ang_C = ang_B
-    elif abs(sin_h_cc) < RO.SysConst.FAccuracy:
+    elif abs(sin_h_cc) < opscore.RO.SysConst.FAccuracy:
         # side_cc is nearly zero (modulo 360) and side_aa is not
         ang_A = 180.0 - ang_B
         side_bb = side_aa
         ang_C = 0.0
-    elif abs(cos_h_cc) < RO.SysConst.FAccuracy:
+    elif abs(cos_h_cc) < opscore.RO.SysConst.FAccuracy:
         # side_cc is nearly 180 (modulo 360) and side_aa is not
         ang_A = ang_B
         side_bb = 180.0 - side_aa
         ang_C = 180.0
-    elif abs(sin_h_B) < RO.SysConst.FAccuracy:
+    elif abs(sin_h_B) < opscore.RO.SysConst.FAccuracy:
         # B is nearly 0 (modulo 360)
-        if abs(side_aa - side_cc) < RO.SysConst.FAccuracy:
+        if abs(side_aa - side_cc) < opscore.RO.SysConst.FAccuracy:
             # ang_B ~= 0 (modulo 360) and side_aa ~= side_cc (modulo 360); cannot compute ang_A or ang_C:
             return (90.0, 0.0, 90.0, True)
         elif side_cc < side_aa:
@@ -152,13 +152,13 @@ def angSideAng(side_aa, ang_B, side_cc):
 
         #  if numerator and denominator are too small
         #  to accurately determine angle = atan2 (num, den), give up
-        if (((abs (num1) <= RO.SysConst.FAccuracy) and (abs (den1) <= RO.SysConst.FAccuracy))
-            or ((abs (num2) <= RO.SysConst.FAccuracy) and (abs (den2) <= RO.SysConst.FAccuracy))):
+        if (((abs (num1) <= opscore.RO.SysConst.FAccuracy) and (abs (den1) <= opscore.RO.SysConst.FAccuracy))
+            or ((abs (num2) <= opscore.RO.SysConst.FAccuracy) and (abs (den2) <= opscore.RO.SysConst.FAccuracy))):
             raise RuntimeError("Bug: can't compute ang_A and C with side_aa=%s, ang_B=%s, side_cc=%s" % (side_aa, ang_B, side_cc))
 
         #  compute (a +/- c) / 2, and use to compute angles a and c
-        h_sum_AC = RO.MathUtil.atan2d (num1, den1)
-        h_diff_AC = RO.MathUtil.atan2d (num2, den2)
+        h_sum_AC = opscore.RO.MathUtil.atan2d (num1, den1)
+        h_diff_AC = opscore.RO.MathUtil.atan2d (num2, den2)
 
 #         print "sin_h_B, cos_h_B =", sin_h_B, cos_h_B
 #         print "sin_h_aa, cos_h_aa =", sin_h_aa, cos_h_aa
@@ -175,8 +175,8 @@ def angSideAng(side_aa, ang_B, side_cc):
         #  (one is for bb - aa, one for bb + aa)
         # -
         #  preliminaries
-        sin_h_A = RO.MathUtil.sind(ang_A * 0.5)
-        cos_h_A = RO.MathUtil.cosd(ang_A * 0.5)
+        sin_h_A = opscore.RO.MathUtil.sind(ang_A * 0.5)
+        cos_h_A = opscore.RO.MathUtil.cosd(ang_A * 0.5)
         sin_h_sum_BA  = sin_h_B * cos_h_A + cos_h_B * sin_h_A
         sin_h_diff_BA = sin_h_B * cos_h_A - cos_h_B * sin_h_A
         cos_h_sum_BA  = cos_h_B * cos_h_A - sin_h_B * sin_h_A
@@ -193,16 +193,16 @@ def angSideAng(side_aa, ang_B, side_cc):
         #  compute side bb
         if abs (num3) + abs (den3) > abs (num4) + abs (den4):
             #  use Napier's analogy for bb - aa
-            side_bb = 2.0 * RO.MathUtil.atan2d (num3, den3) + side_aa
+            side_bb = 2.0 * opscore.RO.MathUtil.atan2d (num3, den3) + side_aa
         else:
-            side_bb = 2.0 * RO.MathUtil.atan2d (num4, den4) - side_aa
-        side_bb = RO.MathUtil.wrapPos (side_bb)
+            side_bb = 2.0 * opscore.RO.MathUtil.atan2d (num4, den4) - side_aa
+        side_bb = opscore.RO.MathUtil.wrapPos (side_bb)
 
-    return (RO.MathUtil.wrapPos(ang_A), side_bb, RO.MathUtil.wrapPos(ang_C), False)
+    return (RO.MathUtil.wrapPos(ang_A), side_bb, opscore.RO.MathUtil.wrapPos(ang_C), False)
 
 
 if __name__ == "__main__":
-    import RO.SeqUtil
+    import opscore.RO.SeqUtil
     print("testing angSideAng")
 
     Eps = 1.0e-15
@@ -279,7 +279,7 @@ if __name__ == "__main__":
     side_aa = 90.0
     for side_cc in (1.0e-12, 1.0e-10):
         for ang_B in (23, 90, 180 - Eps, 180, 180 + Eps, 256, 359):
-            expRes = (180.0 - ang_B, side_aa + (side_cc * RO.MathUtil.cosd(ang_B)), 0.0)
+            expRes = (180.0 - ang_B, side_aa + (side_cc * opscore.RO.MathUtil.cosd(ang_B)), 0.0)
             testData.append(((side_aa, ang_B, side_cc), expRes))
 
     # a fairly small but >> Eps, B varies, c = 90
@@ -287,7 +287,7 @@ if __name__ == "__main__":
     side_cc = 90.0
     for side_aa in (1.0e-12, 1.0e-10):
         for ang_B in (23, 90, 180 - Eps, 180, 180 + Eps, 256, 359):
-            expRes = (0.0, side_cc + (side_aa * RO.MathUtil.cosd(ang_B)), 180.0 - ang_B)
+            expRes = (0.0, side_cc + (side_aa * opscore.RO.MathUtil.cosd(ang_B)), 180.0 - ang_B)
             testData.append(((side_aa, ang_B, side_cc), expRes))
 
     # B small, a = any not small, c = any not small:
@@ -312,9 +312,9 @@ if __name__ == "__main__":
     ang_B = 90.0
     for side_aa in (1.0, 20.0, 45.0, 90, 110.0, 179.0):
         for side_cc in (1.0, 20.0, 45.0, 90.0, 110.0, 179.0):
-            ang_A = RO.MathUtil.atan2d(RO.MathUtil.tand(side_aa), RO.MathUtil.sind(side_cc))
-            ang_C = RO.MathUtil.atan2d(RO.MathUtil.tand(side_cc), RO.MathUtil.sind(side_aa))
-            side_bb = RO.MathUtil.atan2d(RO.MathUtil.tand(side_aa), RO.MathUtil.sind(ang_A) * RO.MathUtil.cosd(side_cc))
+            ang_A = opscore.RO.MathUtil.atan2d(RO.MathUtil.tand(side_aa), opscore.RO.MathUtil.sind(side_cc))
+            ang_C = opscore.RO.MathUtil.atan2d(RO.MathUtil.tand(side_cc), opscore.RO.MathUtil.sind(side_aa))
+            side_bb = opscore.RO.MathUtil.atan2d(RO.MathUtil.tand(side_aa), opscore.RO.MathUtil.sind(ang_A) * opscore.RO.MathUtil.cosd(side_cc))
             # these tweaks handle other quadrants; they're based on what works, so are somewhat suspect
             if side_bb < 0:
                 side_bb = - side_bb
@@ -337,9 +337,9 @@ if __name__ == "__main__":
 
     def processOutput(outputVec):
         return (
-            RO.MathUtil.sind(outputVec[0]), RO.MathUtil.cosd(outputVec[0]),
+            opscore.RO.MathUtil.sind(outputVec[0]), opscore.RO.MathUtil.cosd(outputVec[0]),
             outputVec[1],
-            RO.MathUtil.sind(outputVec[2]), RO.MathUtil.cosd(outputVec[2]),
+            opscore.RO.MathUtil.sind(outputVec[2]), opscore.RO.MathUtil.cosd(outputVec[2]),
             outputVec[3],
         )
 
@@ -351,7 +351,7 @@ if __name__ == "__main__":
         # to handle angles comparing things like 359.999... to 0, compare sin and cos of ang_A and ang_C:
         procExpected = processOutput(expectedOutput)
         procActual = processOutput(actualOutput)
-        if RO.SeqUtil.matchSequences(procExpected, procActual, rtol=1.0e-10, atol=1.0e-10):
+        if opscore.RO.SeqUtil.matchSequences(procExpected, procActual, rtol=1.0e-10, atol=1.0e-10):
             print("failed on input:", testInput)
             print("expected output:", expectedOutput)
             print("actual output:", actualOutput)

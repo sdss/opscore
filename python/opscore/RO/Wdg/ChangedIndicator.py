@@ -4,9 +4,9 @@ have been set to nondefault values.
 
 History:
 2003-04-14 ROwen
-2003-04-15 ROwen    Modified to use RO.Wdg.CtxMenu 2003-04-15.
+2003-04-15 ROwen    Modified to use opscore.RO.Wdg.CtxMenu 2003-04-15.
 2003-04-24 ROwen    Modified to use addCallback if available.
-2003-07-07 ROwen    Modified to use RO.MathUtil.asList.
+2003-07-07 ROwen    Modified to use opscore.RO.MathUtil.asList.
 2003-11-07 ROwen    Modified to not create a StringVar unless it'll be used.
 2003-11-18 ROwen    Modified to use SeqUtil instead of MathUtil.
 2004-08-11 ROwen    Define __all__ to restrict import.
@@ -16,7 +16,7 @@ History:
 __all__ = ['ChangedIndicator']
 
 from six.moves import tkinter
-import RO.SeqUtil
+import opscore.RO.SeqUtil
 from .CtxMenu import CtxMenuMixin
 
 class ChangedIndicator (tkinter.Label, CtxMenuMixin):
@@ -67,7 +67,7 @@ class ChangedIndicator (tkinter.Label, CtxMenuMixin):
         if wdgOrSet is None:
             return
 
-        wdgSet = RO.SeqUtil.asList(wdgOrSet)
+        wdgSet = opscore.RO.SeqUtil.asList(wdgOrSet)
 
         self.wdgSet += wdgSet
 

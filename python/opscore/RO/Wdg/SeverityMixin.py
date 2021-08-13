@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """Adjust widget foreground color as a function of severity,
-meaning one of the RO.Constant.sev constants:
+meaning one of the opscore.RO.Constant.sev constants:
 sevNormal
 sevWarning
 sevError
@@ -17,11 +17,11 @@ See also: IsCurrentMixin.
 History:
 2005-01-05 ROwen
 2005-06-08 ROwen    Changed SeverityMixin to a new-style class.
-2006-10-24 ROwen    Added support for RO.Constants.sevDebug.
+2006-10-24 ROwen    Added support for opscore.RO.Constants.sevDebug.
 """
 __all__ = ["SeverityMixin", "SeverityActiveMixin", "SeveritySelectMixin"]
 
-import RO.Constants
+import opscore.RO.Constants
 from . import WdgPrefs
 
 class SeverityMixin(object):
@@ -29,12 +29,12 @@ class SeverityMixin(object):
     and adjusts foreground color based on severity.
 
     Valid severitys are:
-    - RO.Constants.sevDebug
-    - RO.Constants.sevNormal
-    - RO.Constants.sevWarning
-    - RO.Constants.sevError
+    - opscore.RO.Constants.sevDebug
+    - opscore.RO.Constants.sevNormal
+    - opscore.RO.Constants.sevWarning
+    - opscore.RO.Constants.sevError
 
-    Uses these RO.Wdg.WdgPref preferences:
+    Uses these opscore.RO.Wdg.WdgPref preferences:
     - "Debug Color"
     - "Foreground Color"
     - "Warning Color"
@@ -44,15 +44,15 @@ class SeverityMixin(object):
     self._severity
     self._severityPrefDict
     """
-    def __init__ (self, severity = RO.Constants.sevNormal):
-        self._severity = RO.Constants.sevNormal
+    def __init__ (self, severity = opscore.RO.Constants.sevNormal):
+        self._severity = opscore.RO.Constants.sevNormal
         self._severityPrefDict = {} # set when first needed
 
-        if severity != RO.Constants.sevNormal:
+        if severity != opscore.RO.Constants.sevNormal:
             self.setSeverity(severity)
 
     def getSeverity(self):
-        """Return current severity, one of: RO.Constants.sevNormal, sevWarning or sevError.
+        """Return current severity, one of: opscore.RO.Constants.sevNormal, sevWarning or sevError.
         """
         return self._severity
 
@@ -60,7 +60,7 @@ class SeverityMixin(object):
         """Update severity information.
 
         Raise ValueError if severity is not one of
-        RO.Constants.sevDebug, sevNormal, sevWarning or sevError.
+        opscore.RO.Constants.sevDebug, sevNormal, sevWarning or sevError.
         """
         if self._severity != severity:
             if severity not in self._severityPrefDict:
@@ -71,7 +71,7 @@ class SeverityMixin(object):
                     # then test severity again
                     self._severityPrefDict = WdgPrefs.getSevPrefDict()
                     for iterseverity, pref in self._severityPrefDict.items():
-                        if iterseverity == RO.Constants.sevNormal:
+                        if iterseverity == opscore.RO.Constants.sevNormal:
                             # normal foreground color is already automatically updated
                             continue
                         pref.addCallback(self._updateSeverityColor, callNow=False)
@@ -142,9 +142,9 @@ if __name__ == "__main__":
 
     def setSeverity(*args):
         severityStr = severityVar.get()
-        severity = {"Normal": RO.Constants.sevNormal,
-            "Warning": RO.Constants.sevWarning,
-            "Error": RO.Constants.sevError,
+        severity = {"Normal": opscore.RO.Constants.sevNormal,
+            "Warning": opscore.RO.Constants.sevWarning,
+            "Error": opscore.RO.Constants.sevError,
         }.get(severityStr)
         print("Set severity to %s = %r" % (severityStr, severity))
         for wdg in wdgSet:

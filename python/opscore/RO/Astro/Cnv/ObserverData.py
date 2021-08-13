@@ -8,8 +8,8 @@ __all__ = ["ObserverData"]
 
 import math
 import numpy
-import RO.PhysConst
-from RO.Astro import llv
+import opscore.RO.PhysConst
+from opscore.RO.Astro import llv
 
 class ObserverData(object):
     """Observatory-specific (or observer-specific) data.
@@ -33,12 +33,12 @@ class ObserverData(object):
         """
         self.longitude, self.latitude, self.elevation = longitude, latitude, elevation
 
-        sidRate = 2.0 * math.pi * RO.PhysConst.SidPerSol / RO.PhysConst.SecPerDay
+        sidRate = 2.0 * math.pi * opscore.RO.PhysConst.SidPerSol / opscore.RO.PhysConst.SecPerDay
 
-        polarDist, zDist = llv.geoc (self.latitude * RO.PhysConst.RadPerDeg, self.elevation * 1000.0)
+        polarDist, zDist = llv.geoc (self.latitude * opscore.RO.PhysConst.RadPerDeg, self.elevation * 1000.0)
         #  |diurnal aberration vector|
         #  = speed of rot. of observatory / speed of light
-        self.diurAbVecMag = polarDist * sidRate / RO.PhysConst.VLight
+        self.diurAbVecMag = polarDist * sidRate / opscore.RO.PhysConst.VLight
         # position of observer
         self.p = numpy.array((polarDist, 0.0, zDist))
 

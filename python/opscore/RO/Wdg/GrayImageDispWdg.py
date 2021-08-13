@@ -69,7 +69,7 @@ History:
                     only the last annotation was saved for redraw.
 2005-02-04 ROwen    Modified annotations to use imPos instead of cnvPos
                     Added removeAnnotation.
-2005-02-10 ROwen    Improved scrolling (by not using RO.Wdg.ScrolledWdg).
+2005-02-10 ROwen    Improved scrolling (by not using opscore.RO.Wdg.ScrolledWdg).
                     Zoom now attempts to preserve the center.
                     Added an experimental arcsinh scale function.
 2005-02-11 ROwen    Removed Log (use ArcSinh instead) and Square
@@ -101,7 +101,7 @@ History:
                     showArr now accepts None as an array (meaning clear the display).
 2005-05-13 ROwen    Improved the memory debug code.
 2005-05-24 ROwen    Added helpURL argument.
-                    Modified to not import RO.Wdg (to avoid circular import).
+                    Modified to not import opscore.RO.Wdg (to avoid circular import).
 2005-06-08 ROwen    Changed Annotation to a new style class.
 2005-06-16 ROwen    Bug fix: button order was wrong on x11.
 2005-06-17 ROwen    Bug fix: could not display images that were all
@@ -119,7 +119,7 @@ History:
 2005-07-06 ROwen    Bug fix: scrollbars were wrong if a new image
                     was displayed at the same size as the old one.
                     Bug fix: scrolling could change the zoom.
-2005-07-07 ROwen    Modified for moved RO.TkUtil.
+2005-07-07 ROwen    Modified for moved opscore.RO.TkUtil.
 2005-08-02 ROwen    Modified for moved bitmaps.
 2005-09-12 ROwen    Modified to stop event propagation for mouse button events.
                     This should fix PR 209: gcam messages getting into paste buffer.
@@ -160,7 +160,7 @@ History:
 2011-07-27 ROwen    Removed doRescale argument from redisplay because it was causing bugs.
                     Simplified the code for reusing scaledArr.
 2011-08-29 ROwen    Bug fix: display was incorrect unless data array was 32-bit float.
-2012-07-09 ROwen    Modified to use RO.TkUtil.Timer.
+2012-07-09 ROwen    Modified to use opscore.RO.TkUtil.Timer.
 2012-11-13 ROwen    Stop using Checkbutton indicatoron=False because it is no longer supported on MacOS X.
 2013-09-05 ROwen    Change "import Image" to "from PIL import Image" for compatibility with Pillow.
 2014-08-19 ROwen    Bug fix: Annotation.draw would fail if isImSize true and holeRad specified.
@@ -184,11 +184,11 @@ except ImportError:
     import numpy.core.ma as ma
 import os.path
 from PIL import Image, ImageTk
-import RO.AddCallback
-import RO.CanvasUtil
-import RO.Constants
-import RO.SeqUtil
-import RO.TkUtil
+import opscore.RO.AddCallback
+import opscore.RO.CanvasUtil
+import opscore.RO.Constants
+import opscore.RO.SeqUtil
+import opscore.RO.TkUtil
 from . import Entry
 from .Label import StrLabel, FloatLabel
 from . import OptionMenu
@@ -205,10 +205,10 @@ _ModeZoom = "zoom"
 
 _DebugMem = False  # print messages when memory recovered?
 
-ann_Circle = RO.CanvasUtil.ctrCircle
-ann_Plus = RO.CanvasUtil.ctrPlus
-ann_X = RO.CanvasUtil.ctrX
-ann_Line = RO.CanvasUtil.radialLine
+ann_Circle = opscore.RO.CanvasUtil.ctrCircle
+ann_Plus = opscore.RO.CanvasUtil.ctrPlus
+ann_X = opscore.RO.CanvasUtil.ctrX
+ann_Line = opscore.RO.CanvasUtil.radialLine
 
 def ann_Text(cnv, xpos, ypos, rad, text, anchor="c", **kargs):
     """Draws a centered circle on the specified canvas.
@@ -225,7 +225,7 @@ def ann_Text(cnv, xpos, ypos, rad, text, anchor="c", **kargs):
     cnv.create_text(xpos, ypos, text=text, anchor=anchor, **kargs)
 
 def getBitmapDict():
-    bitmapDir = RO.OS.getResourceDir(RO, "Bitmaps")
+    bitmapDir = opscore.RO.OS.getResourceDir(RO, "Bitmaps")
     modeDict = {
         _ModeNormal: "crosshair",
         _ModeLevels: "contrast",
@@ -377,7 +377,7 @@ class Annotation(object):
         if not tags:
             tags = ()
         else:
-            tags = RO.SeqUtil.asSequence(tags)
+            tags = opscore.RO.SeqUtil.asSequence(tags)
         self.tags = (self.idTag, _AnnTag) + tuple(tags)
         self.kargs = kargs
         self.kargs["tags"] = self.tags
@@ -413,7 +413,7 @@ class Annotation(object):
         """
         self.gim.cnv.delete(self.idTag)
 
-class GrayImageWdg(tkinter.Frame, RO.AddCallback.BaseMixin):
+class GrayImageWdg(tkinter.Frame, opscore.RO.AddCallback.BaseMixin):
     """Display a grayscale image.
 
     Inputs:
@@ -440,7 +440,7 @@ class GrayImageWdg(tkinter.Frame, RO.AddCallback.BaseMixin):
         defRange = "99.9%",
     **kargs):
         tkinter.Frame.__init__(self, master, **kargs)
-        RO.AddCallback.BaseMixin.__init__(self)
+        opscore.RO.AddCallback.BaseMixin.__init__(self)
         if defRange not in self._RangeMenuItems:
             raise RuntimeError("invalid defRange")
 
@@ -466,7 +466,7 @@ class GrayImageWdg(tkinter.Frame, RO.AddCallback.BaseMixin):
         self.frameShape = (width, height) # shape of area in which image can be displayed
 
         if maskInfo:
-            maskInfo = RO.SeqUtil.asSequence(maskInfo)
+            maskInfo = opscore.RO.SeqUtil.asSequence(maskInfo)
         else:
             maskInfo = ()
         self.maskInfo = maskInfo
@@ -478,7 +478,7 @@ class GrayImageWdg(tkinter.Frame, RO.AddCallback.BaseMixin):
         self.dispMinLevel = 0.0
         self.dispMaxLevel = 256.0
 
-        self._dragLevelTimer = RO.TkUtil.Timer()
+        self._dragLevelTimer = opscore.RO.TkUtil.Timer()
 
         # fields for drag-to-act
         self.dragStart = None
@@ -560,7 +560,7 @@ class GrayImageWdg(tkinter.Frame, RO.AddCallback.BaseMixin):
 
         if self.maskInfo:
             for mInfo in self.maskInfo:
-                maskWdg = RO.Wdg.Checkbutton(
+                maskWdg = opscore.RO.Wdg.Checkbutton(
                     master = toolFrame,
                     text = mInfo.btext,
                     defValue = mInfo.doShow,
@@ -639,7 +639,7 @@ class GrayImageWdg(tkinter.Frame, RO.AddCallback.BaseMixin):
             self.scrollFrame,
             orient="horizontal",
             width = 10,
-            command = RO.Alg.GenericCallback(self.doScrollBar, 1),
+            command = opscore.RO.Alg.GenericCallback(self.doScrollBar, 1),
         )
         self.hsb.grid(row=1, column=0, sticky="ew")
         self._hscrollbar = self.hsb
@@ -649,7 +649,7 @@ class GrayImageWdg(tkinter.Frame, RO.AddCallback.BaseMixin):
             self.scrollFrame,
             orient="vertical",
             width = 10,
-            command = RO.Alg.GenericCallback(self.doScrollBar, 0),
+            command = opscore.RO.Alg.GenericCallback(self.doScrollBar, 0),
         )
         self.vsb.grid(row=0, column=1, sticky="ns")
         self.vsb.set(0.0, 1.0)
@@ -680,7 +680,7 @@ class GrayImageWdg(tkinter.Frame, RO.AddCallback.BaseMixin):
         self.vsb.bind("<Configure>", self._updFrameShape)
 
         # compute middle and right button numbers
-        lb, mb, rb = RO.TkUtil.getButtonNumbers()
+        lb, mb, rb = opscore.RO.TkUtil.getButtonNumbers()
 
         # bind mouse-button events to various modes and actions
         modeButNumList = (
@@ -700,7 +700,7 @@ class GrayImageWdg(tkinter.Frame, RO.AddCallback.BaseMixin):
                 if btnNum != lb:
                     # stop event propogation for middle and right buttons
                     # (in case this is causing improper copy or paste)
-                    func = RO.TkUtil.EvtNoProp(func)
+                    func = opscore.RO.TkUtil.EvtNoProp(func)
                 fullEvtName = evtName % (btnNum,)
                 self.cnv.bind(fullEvtName, func)
 
@@ -1153,7 +1153,7 @@ class GrayImageWdg(tkinter.Frame, RO.AddCallback.BaseMixin):
             for ann in self.annDict.values():
                 ann.draw()
         except MemoryError:
-            self.showMsg("Insufficient Memory!", severity=RO.Constants.sevError)
+            self.showMsg("Insufficient Memory!", severity=opscore.RO.Constants.sevError)
 
         self._doCallbacks()
 
@@ -1294,9 +1294,9 @@ class GrayImageWdg(tkinter.Frame, RO.AddCallback.BaseMixin):
                 # new image is same size as old one; preserve scroll and zoom
                 self.redisplay()
         except MemoryError:
-            self.showMsg("Insufficient Memory!", severity=RO.Constants.sevError)
+            self.showMsg("Insufficient Memory!", severity=opscore.RO.Constants.sevError)
 
-    def showMsg(self, msgStr, severity=RO.Constants.sevNormal):
+    def showMsg(self, msgStr, severity=opscore.RO.Constants.sevNormal):
         """Show a text message instead of an image.
         Typically used to display warnings or errors.
         """
@@ -1508,7 +1508,7 @@ if __name__ == "__main__":
         import astropy.io.fits as pyfits
     except ImportError:
         import pyfits
-    import RO.DS9
+    import opscore.RO.DS9
     from . import PythonTk
     from . import StatusBar
 
@@ -1567,7 +1567,7 @@ if __name__ == "__main__":
 
     testFrame.showArr(imArr, mask=mask)
 
-    #ds9 = RO.DS9.DS9Win()
+    #ds9 = opscore.RO.DS9.DS9Win()
     #ds9.showArray(imArr)
 
     root.mainloop()

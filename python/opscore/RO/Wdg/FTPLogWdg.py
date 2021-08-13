@@ -31,9 +31,9 @@ History:
                     - Aborting connections were counted as running
                       and thus blocked new connections from starting.
 2004-05-04 ROwen    Improved the test code.
-2004-08-11 ROwen    Use modified RO.Wdg state constants with st_ prefix.
+2004-08-11 ROwen    Use modified opscore.RO.Wdg state constants with st_ prefix.
                     Define __all__ to restrict import.
-2004-09-03 ROwen    Modified for RO.Wdg.st_... -> RO.Constants.st_...
+2004-09-03 ROwen    Modified for opscore.RO.Wdg.st_... -> opscore.RO.Constants.st_...
 2004-11-17 ROwen    Overhauled to use FTPGet instead of FTPGet.
                     Thus the getFile method has all new arguments.
 2005-01-05 ROwen    Changed display state to severity
@@ -45,7 +45,7 @@ History:
                     Slowed down update rate to avoid hogging CPU.
 2005-06-14 ROwen    Rewritten for new FTPGet that no longer supports callbacks.
 2011-06-16 ROwen    Ditched obsolete "except (SystemExit, KeyboardInterrupt): raise" code
-2012-07-09 ROwen    Modified to use RO.TkUtil.Timer.
+2012-07-09 ROwen    Modified to use opscore.RO.TkUtil.Timer.
 2012-08-01 ROwen    Updated for changes to FTPGet.
 2015-09-24 ROwen    Replace "== None" with "is None" to modernize the code.
 2015-11-03 ROwen    Replace "!= None" with "is not None" to modernize the code.
@@ -58,12 +58,12 @@ import traceback
 import weakref
 from . import Bindings
 from six.moves import tkinter
-import RO.AddCallback
-import RO.Constants
-import RO.MathUtil
-from RO.TkUtil import Timer
-from RO.Comm.FTPGet import FTPGet
-import RO.Wdg
+import opscore.RO.AddCallback
+import opscore.RO.Constants
+import opscore.RO.MathUtil
+from opscore.RO.TkUtil import Timer
+from opscore.RO.Comm.FTPGet import FTPGet
+import opscore.RO.Wdg
 
 
 _StatusInterval = 0.200 # time between status checks (sec)
@@ -159,9 +159,9 @@ class FTPLogWdg(tkinter.Frame):
 
         detFrame = tkinter.Frame(self)
 
-        gr = RO.Wdg.Gridder(detFrame, sticky="ew")
+        gr = opscore.RO.Wdg.Gridder(detFrame, sticky="ew")
 
-        self.fromWdg = RO.Wdg.StrEntry(
+        self.fromWdg = opscore.RO.Wdg.StrEntry(
             master = detFrame,
             readOnly = True,
             helpURL = helpURL and helpURL + "#From",
@@ -169,7 +169,7 @@ class FTPLogWdg(tkinter.Frame):
         )
         gr.gridWdg("From", self.fromWdg, colSpan=3)
 
-        self.toWdg = RO.Wdg.StrEntry(
+        self.toWdg = opscore.RO.Wdg.StrEntry(
             master = detFrame,
             readOnly = True,
             helpURL = helpURL and helpURL + "#To",
@@ -177,13 +177,13 @@ class FTPLogWdg(tkinter.Frame):
         )
         gr.gridWdg("To", self.toWdg, colSpan=2)
 
-        self.stateWdg = RO.Wdg.StrEntry(
+        self.stateWdg = opscore.RO.Wdg.StrEntry(
             master = detFrame,
             readOnly = True,
             helpURL = helpURL and helpURL + "#State",
             borderwidth = 0,
         )
-        self.abortWdg = RO.Wdg.Button(
+        self.abortWdg = opscore.RO.Wdg.Button(
             master = detFrame,
             text = "Abort",
             command = self._abort,
@@ -228,14 +228,14 @@ class FTPLogWdg(tkinter.Frame):
         - createDir: if True, creates any required directories;
             otherwise raises ValueError
         - callFunc: called whenever more data is read or the state changes;
-            receives one argument: an RO.Comm.FTPGet.FTPGet object.
+            receives one argument: an opscore.RO.Comm.FTPGet.FTPGet object.
         - dispStr   a string to display while downloading the file;
                     if omitted, an ftp URL (with no username/password) is created
         - username  the usual; *NOT SECURE*
         - password  the usual; *NOT SECURE*
         """
 #       print "getFile(%r, %r, %r)" % (host, fromPath, toPath)
-        stateLabel = RO.Wdg.StrLabel(self, anchor="w", width=FTPGet.StateStrMaxLen)
+        stateLabel = opscore.RO.Wdg.StrLabel(self, anchor="w", width=FTPGet.StateStrMaxLen)
 
         ftpGet = FTPGet(
             host = host,
@@ -397,9 +397,9 @@ class FTPLogWdg(tkinter.Frame):
         else:
             # display state
             if state == ftpGet.Failed:
-                severity = RO.Constants.sevError
+                severity = opscore.RO.Constants.sevError
             else:
-                severity = RO.Constants.sevNormal
+                severity = opscore.RO.Constants.sevNormal
             stateLabel.set(state, severity=severity)
 
     def _updDetailStatus(self):
@@ -424,7 +424,7 @@ class FTPLogWdg(tkinter.Frame):
                 self.abortWdg.grid_remove()
 
         stateStr = currState
-        severity = RO.Constants.sevNormal
+        severity = opscore.RO.Constants.sevNormal
         if currState == ftpGet.Running:
             if ftpGet.totBytes:
                 stateStr = "read %s of %s bytes" % (ftpGet.readBytes, ftpGet.totBytes)
@@ -433,9 +433,9 @@ class FTPLogWdg(tkinter.Frame):
         else:
             if currState == ftpGet.Failed:
                 stateStr = "Failed: %s" % (ftpGet.getException())
-                severity = RO.Constants.sevError
+                severity = opscore.RO.Constants.sevError
             elif currState in (ftpGet.Aborting, ftpGet.Aborted):
-                severity = RO.Constants.sevWarning
+                severity = opscore.RO.Constants.sevWarning
 
         self.stateWdg.set(stateStr, severity=severity)
         self.fromWdg.set(ftpGet.dispStr)

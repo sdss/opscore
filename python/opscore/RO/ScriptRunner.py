@@ -34,7 +34,7 @@ Code comments:
 
 History:
 2004-08-12 ROwen
-2004-09-10 ROwen    Modified for RO.Wdg.Constants->RO.Constants.
+2004-09-10 ROwen    Modified for opscore.RO.Wdg.Constants->RO.Constants.
                     Bug fix: _WaitMS cancel used afterID instead of self.afterID.
                     Bug fix: test for resume while wait callback pending was broken,
                     leading to false "You forgot the 'yield'" errors.
@@ -80,7 +80,7 @@ History:
                     Modified _WaitCmdVars to not try to register callbacks on commands that are finished,
                     and to not try to remove callbacks from CmdVars that are done.
 2012-07-09 ROwen    Made ScriptRunner argument "master" optional and moved later in argument list.
-                    Modified to use RO.Comm.Generic.Timer.
+                    Modified to use opscore.RO.Comm.Generic.Timer.
 2014-03-14 ROwen    Changed default abortCmdStr from None to "".
 2014-04-29 ROwen    Bug fix: pause followed by resume lost the value returned by whatever was being paused.
 2014-07-21 ROwen    Added waitPause and waitSec.
@@ -94,12 +94,12 @@ import sys
 import threading
 from six.moves import queue
 import traceback
-import RO.AddCallback
-import RO.Constants
-import RO.KeyVariable
-import RO.SeqUtil
-import RO.StringUtil
-from RO.Comm.Generic import Timer
+import opscore.RO.AddCallback
+import opscore.RO.Constants
+import opscore.RO.KeyVariable
+import opscore.RO.SeqUtil
+import opscore.RO.StringUtil
+from opscore.RO.Comm.Generic import Timer
 
 # state constants
 Ready = 2
@@ -228,7 +228,7 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
         # useful constant for script writers
         self.ScriptError = ScriptError
 
-        RO.AddCallback.BaseMixin.__init__(self)
+        opscore.RO.AddCallback.BaseMixin.__init__(self)
 
         self.globals = _Blank()
 
@@ -305,7 +305,7 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
 
     def getState(self):
         """Return the current state as a numeric value.
-        See the state constants defined in RO.ScriptRunner.
+        See the state constants defined in opscore.RO.ScriptRunner.
         See also getFullState.
         """
         return self._state
@@ -454,7 +454,7 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
             self.debugPrint("getKeyVar(%s); returning %r" % (", ".join(argList), retVal))
         return retVal
 
-    def showMsg(self, msg, severity=RO.Constants.sevNormal):
+    def showMsg(self, msg, severity=opscore.RO.Constants.sevNormal):
         """Display a message--on the status bar, if available,
         else sys.stdout.
 
@@ -462,7 +462,7 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
 
         Inputs:
         - msg: string to display, without a final \n
-        - severity: one of RO.Constants.sevNormal (default), sevWarning or sevError
+        - severity: one of opscore.RO.Constants.sevNormal (default), sevWarning or sevError
         """
         if self._statusBar:
             self._statusBar.setMsg(msg, severity)
@@ -475,7 +475,7 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
         cmdStr = "",
         timeLim = 0,
         callFunc = None,
-        callTypes = RO.KeyVariable.DoneTypes,
+        callTypes = opscore.RO.KeyVariable.DoneTypes,
         timeLimKeyword = None,
         abortCmdStr = "",
         keyVars = None,
@@ -489,7 +489,7 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
 
         Do not use yield because it does not wait for anything.
         """
-        cmdVar = RO.KeyVariable.CmdVar(
+        cmdVar = opscore.RO.KeyVariable.CmdVar(
             actor=actor,
             cmdStr = cmdStr,
             timeLim = timeLim,
@@ -502,7 +502,7 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
         if checkFail:
             cmdVar.addCallback(
                 callFunc = self._cmdFailCallback,
-                callTypes = RO.KeyVariable.FailTypes,
+                callTypes = opscore.RO.KeyVariable.FailTypes,
             )
         if self.debug:
             argList = ["actor=%r, cmdStr=%r" % (actor, cmdStr)]
@@ -510,7 +510,7 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
                 argList.append("timeLim=%s" % (timeLim,))
             if callFunc is not None:
                 argList.append("callFunc=%r" % (callFunc,))
-            if callTypes != RO.KeyVariable.DoneTypes:
+            if callTypes != opscore.RO.KeyVariable.DoneTypes:
                 argList.append("callTypes=%r" % (callTypes,))
             if timeLimKeyword is not None:
                 argList.append("timeLimKeyword=%r" % (timeLimKeyword,))
@@ -549,7 +549,7 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
         cmdStr = "",
         timeLim = 0,
         callFunc=None,
-        callTypes = RO.KeyVariable.DoneTypes,
+        callTypes = opscore.RO.KeyVariable.DoneTypes,
         timeLimKeyword = None,
         abortCmdStr = "",
         keyVars = None,
@@ -567,7 +567,7 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
         - callFunc: a function to call when the command changes state;
             see below for details.
         - callTypes: the message types for which to call the callback;
-            a string of one or more choices; see RO.KeyVariable.TypeDict for the choices;
+            a string of one or more choices; see opscore.RO.KeyVariable.TypeDict for the choices;
             useful constants include DoneTypes (command finished or failed)
             and AllTypes (all message types, thus any reply).
             Not case sensitive (the string you supply will be lowercased).
@@ -583,10 +583,10 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
 
         Callback arguments:
             msgType: the message type, a character (e.g. "i", "w" or ":");
-                see RO.KeyVariable.TypeDict for the various types.
+                see opscore.RO.KeyVariable.TypeDict for the various types.
             msgDict: the entire message dictionary
             cmdVar (by name): the key command object
-                see RO.KeyVariable.CmdVar for details
+                see opscore.RO.KeyVariable.CmdVar for details
 
         Note: timeLim and timeLimKeyword work together as follows:
         - The initial time limit for the command is timeLim
@@ -596,7 +596,7 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
         Also the time limit is a lower limit. The command is guaranteed to
         expire no sooner than this but it may take a second longer.
         """
-        if isinstance(actor, RO.KeyVariable.CmdVar):
+        if isinstance(actor, opscore.RO.KeyVariable.CmdVar):
             raise RuntimeError("waitCmd error: actor must be a string; did you mean to call waitCmdVars? actor=%s" % (actor,))
         self._waitCheck(setWait = False)
 
@@ -686,7 +686,7 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
 
         _WaitMS(self, sec * 1000)
 
-    def waitPause(self, msgStr="Paused", severity=RO.Constants.sevNormal):
+    def waitPause(self, msgStr="Paused", severity=opscore.RO.Constants.sevNormal):
         """Pause execution and wait
 
         A no-op if not running
@@ -728,8 +728,8 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
         """Use as a callback for when an asynchronous command fails.
         """
 #       print "ScriptRunner._cmdFailCallback(%r, %r, %r)" % (msgType, msgDict, cmdVar)
-        if not msgType in RO.KeyVariable.FailTypes:
-            errMsg = "Bug! RO.ScriptRunner._cmdFail(%r, %r, %r) called for non-failed command" % (msgType, msgDict, cmdVar)
+        if not msgType in opscore.RO.KeyVariable.FailTypes:
+            errMsg = "Bug! opscore.RO.ScriptRunner._cmdFail(%r, %r, %r) called for non-failed command" % (msgType, msgDict, cmdVar)
             raise RuntimeError(errMsg)
         MaxLen = 10
         if len(cmdVar.cmdStr) > MaxLen:
@@ -807,11 +807,11 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
             self.__del__()
             sys.exit(0)
         except ScriptError as e:
-            self._setState(Failed, RO.StringUtil.strFromException(e))
+            self._setState(Failed, opscore.RO.StringUtil.strFromException(e))
         except Exception as e:
             traceback.print_exc(file=sys.stderr)
             self._printFullState()
-            self._setState(Failed, RO.StringUtil.strFromException(e))
+            self._setState(Failed, opscore.RO.StringUtil.strFromException(e))
 
     def _printState(self, prefix):
         """Print the state at various times.
@@ -828,7 +828,7 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
             (self.name, self._state, self._iterID, self._waiting, self._userWaitID, self.value))
         sys.stderr.write("self._iterStack=%r\n" % (self._iterStack,))
 
-    def _showCmdMsg(self, msg, severity=RO.Constants.sevNormal):
+    def _showCmdMsg(self, msg, severity=opscore.RO.Constants.sevNormal):
         """Display a message--on the command status bar, if available,
         else sys.stdout.
 
@@ -836,7 +836,7 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
 
         Inputs:
         - msg: string to display, without a final \n
-        - severity: one of RO.Constants.sevNormal (default), sevWarning or sevError
+        - severity: one of opscore.RO.Constants.sevNormal (default), sevWarning or sevError
         """
         if self._cmdStatusBar:
             self._cmdStatusBar.setMsg(msg, severity)
@@ -1003,7 +1003,7 @@ class _WaitCmdVars(_WaitBase):
     - retVal: the value to return at the end (in scriptRunner.value)
     """
     def __init__(self, scriptRunner, cmdVars, checkFail=True, retVal=None):
-        self.cmdVars = RO.SeqUtil.asSequence(cmdVars)
+        self.cmdVars = opscore.RO.SeqUtil.asSequence(cmdVars)
         self.checkFail = bool(checkFail)
         self.retVal = retVal
         self.addedCallback = False
@@ -1199,12 +1199,12 @@ class _WaitThread(_WaitBase):
 
 if __name__ == "__main__":
     from six.moves import tkinter
-    import RO.KeyDispatcher
+    import opscore.RO.KeyDispatcher
     import time
 
     root = tkinter.Tk()
 
-    dispatcher = RO.KeyDispatcher.KeyDispatcher()
+    dispatcher = opscore.RO.KeyDispatcher.KeyDispatcher()
 
     scriptList = []
 

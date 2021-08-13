@@ -89,7 +89,7 @@ class SetDict(ListDict):
 
 
 if __name__ == "__main__":
-    import RO.StringUtil
+    import opscore.RO.StringUtil
 
     ad = ListDict()
     ad["a"] = "foo a"

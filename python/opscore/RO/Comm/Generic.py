@@ -19,10 +19,10 @@ Here are some examples:
 from six.moves import tkinter
 root = Tkinter.Tk()
 
-import RO.Comm.Generic
+import opscore.RO.Comm.Generic
 RO.Comm.Generic.setFramework("tk")
 #...
-#...code that uses RO.Comm.Generic here
+#...code that uses opscore.RO.Comm.Generic here
 #...
 root.mainloop()
 
@@ -32,10 +32,10 @@ root.mainloop()
 # ...
 from twisted.internet import reactor
 
-import RO.Comm.Generic
+import opscore.RO.Comm.Generic
 RO.Comm.Generic.setFramework("twisted")
 # ...
-# ...code that uses RO.Comm.Generic here
+# ...code that uses opscore.RO.Comm.Generic here
 #...
 reactor.run()
 
@@ -47,10 +47,10 @@ root = Tkinter.Tk()
 twisted.internet.tksupport.install(root)
 from twisted.internet import reactor
 
-import RO.Comm.Generic
+import opscore.RO.Comm.Generic
 RO.Comm.Generic.setFramework("twisted")
 # ...
-# ...code that uses RO.Comm.Generic here
+# ...code that uses opscore.RO.Comm.Generic here
 #...
 reactor.run()
 
@@ -60,7 +60,7 @@ History:
 __all__ = ["setFramework", "getFramework", "getFrameworkSet", "TCPSocket", "TCPSocket", "Timer", "WaitForTCPServer"]
 
 import time
-from RO.AddCallback import safeCall2
+from opscore.RO.AddCallback import safeCall2
 
 _Framework = None
 
@@ -80,11 +80,11 @@ def setFramework(framework):
         raise ValueError("framework=%r; must be one of %s" % (frameworkList,))
 
     if framework == "tk":
-        from RO.Comm.TkSocket import TCPSocket, TCPServer
-        from RO.TkUtil import Timer
+        from opscore.RO.Comm.TkSocket import TCPSocket, TCPServer
+        from opscore.RO.TkUtil import Timer
     elif framework == "twisted":
-        from RO.Comm.TwistedSocket import TCPSocket, TCPServer
-        from RO.Comm.TwistedTimer import Timer
+        from opscore.RO.Comm.TwistedSocket import TCPSocket, TCPServer
+        from opscore.RO.Comm.TwistedTimer import Timer
     else:
         raise ValueError("Bug! Unrecognized framework=%r" % (framework,))
     _Framework = framework

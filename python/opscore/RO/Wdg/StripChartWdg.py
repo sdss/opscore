@@ -69,7 +69,7 @@ History:
 2010-12-29 ROwen    Document useful arguments for addLine.
 2012-05-31 ROwen    Add a clear method to StripChartWdg and _Line.
 2012-06-04 ROwen    Reduce CPU usage by doing less work if not visible (not mapped).
-2012-07-09 ROwen    Modified to use RO.TkUtil.Timer.
+2012-07-09 ROwen    Modified to use opscore.RO.TkUtil.Timer.
 2012-09-18 ROwen    Explicitly import matplotlib.dates to avoid a problem with matplotlib 1.2.0rc1
 2015-09-24 ROwen    Replace "== None" with "is None" to modernize the code.
 2015-11-03 ROwen    Replace "!= None" with "is not None" to modernize the code.
@@ -85,7 +85,7 @@ from six.moves import tkinter
 import matplotlib
 import matplotlib.dates
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from RO.TkUtil import Timer
+from opscore.RO.TkUtil import Timer
 
 class StripChartWdg(tkinter.Frame):
     """A widget to changing values in real time as a strip chart
@@ -483,7 +483,7 @@ class TimeConverter(object):
 
 
 if __name__ == "__main__":
-    import RO.Alg
+    import opscore.RO.Alg
     root = tkinter.Tk()
     stripChart = StripChartWdg(
         master = root,
@@ -510,9 +510,9 @@ if __name__ == "__main__":
     stripChart.xaxis.set_major_locator(matplotlib.dates.SecondLocator(bysecond=list(range(0,60,10))))
 
     varDict = {
-        countsLine: RO.Alg.ConstrainedGaussianRandomWalk(1, 0.2, 0, 2.8),
-        walk1Line:  RO.Alg.RandomWalk.GaussianRandomWalk(0, 2),
-        walk2Line: RO.Alg.RandomWalk.GaussianRandomWalk(0, 2),
+        countsLine: opscore.RO.Alg.ConstrainedGaussianRandomWalk(1, 0.2, 0, 2.8),
+        walk1Line:  opscore.RO.Alg.RandomWalk.GaussianRandomWalk(0, 2),
+        walk2Line: opscore.RO.Alg.RandomWalk.GaussianRandomWalk(0, 2),
     }
     def addRandomValues(line, interval=0.1):
         """Add random values to the specified strip chart line

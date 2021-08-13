@@ -22,8 +22,8 @@ History:
 2005-08-12 ROwen    Removed unused import of string module.
 2015-09-24 ROwen    Replace "== None" with "is None" to modernize the code.
 """
-import RO.Astro.Tm
-import RO.StringUtil
+import opscore.RO.Astro.Tm
+import opscore.RO.StringUtil
 
 ICRS = "ICRS"
 FK5 = "FK5"
@@ -65,7 +65,7 @@ class _CoordSysConst(object):
             self._eqUnitsStr = "h:m:s"
         else:
             self._eqDegPerDisp = 1.0
-            self._eqUnitsStr = RO.StringUtil.DMSStr
+            self._eqUnitsStr = opscore.RO.StringUtil.DMSStr
 
         self._posLabels = tuple(posLabels)
         self._datePrefix = datePrefix
@@ -94,9 +94,9 @@ class _CoordSysConst(object):
         if self._defDate:
             return self._defDate
         if self._dateIsYears:
-            return RO.Astro.Tm.epJFromMJD(RO.Astro.Tm.utcFromPySec())
+            return opscore.RO.Astro.Tm.epJFromMJD(RO.Astro.Tm.utcFromPySec())
         else:
-            return RO.Astro.Tm.utcFromPySec()
+            return opscore.RO.Astro.Tm.utcFromPySec()
 
     def defaultDate(self):
         """Returns the default date, or None if none.
@@ -148,8 +148,8 @@ class _CoordSysConst(object):
         in traditional units (deg:':" or h:m:s for pos1, deg:':" for pos2)
         """
         return (
-            RO.StringUtil.degFromDMSStr(pos1Str) * self._eqDegPerDisp,
-            RO.StringUtil.degFromDMSStr(pos2Str),
+            opscore.RO.StringUtil.degFromDMSStr(pos1Str) * self._eqDegPerDisp,
+            opscore.RO.StringUtil.degFromDMSStr(pos2Str),
         )
 
     def __eq__(self, other):

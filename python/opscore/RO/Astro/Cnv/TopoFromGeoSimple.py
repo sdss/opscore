@@ -7,7 +7,7 @@ History:
 """
 __all__ = ["topoFromGeoSimple"]
 
-import RO.MathUtil
+import opscore.RO.MathUtil
 from .AzAltFromHADec import azAltFromHADec
 
 # needs test code
@@ -32,8 +32,8 @@ def topoFromGeoSimple(appGeoP, last, lat):
     increasing azAlt[x] is south-ish
     increasing azAlt[y] is east
     """
-    sinLAST = RO.MathUtil.sind (last)
-    cosLAST = RO.MathUtil.cosd (last)
+    sinLAST = opscore.RO.MathUtil.sind (last)
+    cosLAST = opscore.RO.MathUtil.cosd (last)
 
     # rotate position and offset to (-HA)/Dec (still cartesian, of course)
     posA = (

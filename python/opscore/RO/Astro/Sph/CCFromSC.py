@@ -8,7 +8,7 @@ History
 __all__ = ["ccFromSC"]
 
 import numpy
-import RO.MathUtil
+import opscore.RO.MathUtil
 
 def ccFromSC(pos, magP):
     """
@@ -24,13 +24,13 @@ def ccFromSC(pos, magP):
     - p(3)      cartesian position (same units as magP), a numpy.array
     """
     return numpy.array((
-        RO.MathUtil.cosd (pos[1]) * RO.MathUtil.cosd (pos[0]),
-        RO.MathUtil.cosd (pos[1]) * RO.MathUtil.sind (pos[0]),
-        RO.MathUtil.sind (pos[1]),
+        opscore.RO.MathUtil.cosd (pos[1]) * opscore.RO.MathUtil.cosd (pos[0]),
+        opscore.RO.MathUtil.cosd (pos[1]) * opscore.RO.MathUtil.sind (pos[0]),
+        opscore.RO.MathUtil.sind (pos[1]),
     )) * magP
 
 if __name__ == "__main__":
-    import RO.SeqUtil
+    import opscore.RO.SeqUtil
     print("testing ccFromSC")
     # test data is formatted as follows:
     # a list of entries, each consisting of:
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = ccFromSC(*testInput)
-        if RO.SeqUtil.matchSequences(actualOutput, expectedOutput, rtol=1.0e-14):
+        if opscore.RO.SeqUtil.matchSequences(actualOutput, expectedOutput, rtol=1.0e-14):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)

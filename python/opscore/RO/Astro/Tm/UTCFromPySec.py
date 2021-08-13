@@ -8,7 +8,7 @@ History:
 __all__ = ["setClockError", "getClockError", "getCurrPySec", "utcFromPySec", "pySecFromUTC"]
 
 import time
-import RO.PhysConst
+import opscore.RO.PhysConst
 
 # Python time tuple for J2000: 2000-01-01 12:00:00 (a Saturday)
 _TimeTupleJ2000 = (2000, 1, 1, 12, 0, 0, 5, 1, 0)
@@ -62,7 +62,7 @@ def utcFromPySec(pySec = None):
     # that on some computer systems it varies with daylights savings time
     pySecJ2000 = time.mktime(_TimeTupleJ2000) - time.timezone
 
-    return RO.PhysConst.MJDJ2000 + ((pySec - pySecJ2000) / RO.PhysConst.SecPerDay)
+    return opscore.RO.PhysConst.MJDJ2000 + ((pySec - pySecJ2000) / opscore.RO.PhysConst.SecPerDay)
 
 def pySecFromUTC(utcDays):
     """Returns the python time corresponding to the supplied UTC (MJD).
@@ -71,4 +71,4 @@ def pySecFromUTC(utcDays):
 
     pySecJ2000 = time.mktime(_TimeTupleJ2000) - time.timezone
 
-    return ((utcDays - RO.PhysConst.MJDJ2000) * RO.PhysConst.SecPerDay) + pySecJ2000
+    return ((utcDays - opscore.RO.PhysConst.MJDJ2000) * opscore.RO.PhysConst.SecPerDay) + pySecJ2000

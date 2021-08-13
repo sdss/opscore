@@ -9,8 +9,8 @@ History:
 __all__ = ["icrsFromGeo"]
 
 import numpy
-import RO.MathUtil
-from RO.Astro import llv
+import opscore.RO.MathUtil
+from opscore.RO.Astro import llv
 
 # Magic Numbers
 # if the number of iterations exceeds "_MaxIter" before converging,
@@ -64,7 +64,7 @@ def icrsFromGeo(appGeoP, agData):
     "The Astronomical Almanac" for 1978, U.S. Naval Observatory
     """
     # compute constants needed to check iteration
-    approxMagP = RO.MathUtil.vecMag(appGeoP)
+    approxMagP = opscore.RO.MathUtil.vecMag(appGeoP)
     allowedErr = _Accuracy * approxMagP
 
     # correct position for nutation and precession
@@ -95,7 +95,7 @@ def icrsFromGeo(appGeoP, agData):
 
 
 if __name__ == "__main__":
-    import RO.SeqUtil
+    import opscore.RO.SeqUtil
     from .AppGeoData import AppGeoData
     print("testing icrsFromGeo")
     # test data is formatted as follows:
@@ -124,11 +124,9 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = icrsFromGeo(*testInput)
-        expectedFlat = RO.SeqUtil.flatten(expectedOutput)
-        actualFlat = RO.SeqUtil.flatten(actualOutput)
-        if RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1.0e-9):
+        expectedFlat = opscore.RO.SeqUtil.flatten(expectedOutput)
+        actualFlat = opscore.RO.SeqUtil.flatten(actualOutput)
+        if opscore.RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1.0e-9):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)
-
-

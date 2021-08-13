@@ -50,7 +50,7 @@ def geoc(lat, ht):
 
 
 if __name__ == "__main__":
-    import RO.SeqUtil
+    import opscore.RO.SeqUtil
     print("testing geoc")
     # testData is a list of duples consisting of:
     # - input data
@@ -64,8 +64,7 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = geoc(*testInput)
-        if RO.SeqUtil.matchSequences(actualOutput, expectedOutput, rtol = 1.e-10):
+        if opscore.RO.SeqUtil.matchSequences(actualOutput, expectedOutput, rtol = 1.e-10):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)
-

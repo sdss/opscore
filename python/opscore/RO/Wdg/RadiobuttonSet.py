@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """Creates a set of Tkinter Radiobuttons that have help, default handling
-and other niceties. The set can be used in an RO.Wdg input container
+and other niceties. The set can be used in an opscore.RO.Wdg input container
 (and it implements just enough of the Tkinter standard widget interface
 to make this possible).
 
@@ -10,7 +10,7 @@ To do:
 
 History:
 2003-03-26 ROwen
-2003-04-15 ROwen    Modified to use RO.Wdg.CtxMenu 2003-04-15.
+2003-04-15 ROwen    Modified to use opscore.RO.Wdg.CtxMenu 2003-04-15.
 2003-06-12 ROwen    Fixed handling of helpText.
 2003-07-10 ROwen    Added getEnable.
 2003-10-16 ROwen    Mod. getEnable to return True if any button enabled.
@@ -21,10 +21,10 @@ History:
                     defIfDisabled to defIfBlank.
                     Added callback support.
 2004-08-06 ROwen    Bug fix: was checking values against textList not valueList.
-                    Bug fix: did not import RO.AddCallback.
+                    Bug fix: did not import opscore.RO.AddCallback.
 2004-08-11 ROwen    Define __all__ to restrict import.
 2004-09-14 ROwen    Bug fix: was mis-importing Radiobutton.
-2004-12-13 ROwen    Renamed doEnable to setEnable for modified RO.InputCont.
+2004-12-13 ROwen    Renamed doEnable to setEnable for modified opscore.RO.InputCont.
 2005-03-03 ROwen    Added support for bitmaps (PRELIMINARY -- UNTESTED!)
 2006-03-23 ROwen    Added "side" argument to pack the widgets.
                     Added isDefault method.
@@ -39,18 +39,18 @@ History:
                     (the fix will need modification if this bug is also present on Aqua Tk 8.6)
                     Fixed and enhanced the demo code.
 2012-11-30 ROwen    Removed __getitem__ and __len__ methods because they confuse InputCont.
-                    Moved fix for Aqua Tk 8.5 width bug to RO.Wdg.Radiobutton.
+                    Moved fix for Aqua Tk 8.5 width bug to opscore.RO.Wdg.Radiobutton.
 2015-09-24 ROwen    Replace "== None" with "is None" to modernize the code.
 2015-11-03 ROwen    Replace "!= None" with "is not None" to modernize the code.
 """
 __all__ = ['RadiobuttonSet']
 
 from six.moves import tkinter
-import RO.AddCallback
-import RO.Alg
-import RO.SeqUtil
-import RO.StringUtil
-import RO.TkUtil
+import opscore.RO.AddCallback
+import opscore.RO.Alg
+import opscore.RO.SeqUtil
+import opscore.RO.StringUtil
+import opscore.RO.TkUtil
 from .Button import Radiobutton
 from .IsCurrentMixin import AutoIsCurrentMixin, IsCurrentActiveMixin
 
@@ -149,15 +149,15 @@ class RadiobuttonSet (RO.AddCallback.TkVarMixin,
         self._var = var
         self._defIfBlank = defIfBlank
 
-        self._matchItem = RO.Alg.MatchList(
+        self._matchItem = opscore.RO.Alg.MatchList(
             valueList = valueList,
             abbrevOK = abbrevOK,
             ignoreCase = ignoreCase,
         )
-        RO.AddCallback.TkVarMixin.__init__(self, self._var)
+        opscore.RO.AddCallback.TkVarMixin.__init__(self, self._var)
 
-        helpTextList = RO.SeqUtil.oneOrNAsList(helpText, nButtons, "helpText list")
-        helpURLList = RO.SeqUtil.oneOrNAsList(helpURL, nButtons, "helpURL list")
+        helpTextList = opscore.RO.SeqUtil.oneOrNAsList(helpText, nButtons, "helpText list")
+        helpURLList = opscore.RO.SeqUtil.oneOrNAsList(helpURL, nButtons, "helpURL list")
         self.wdgSet = []
         for ii in range(nButtons):
             wdg = Radiobutton(
@@ -213,7 +213,7 @@ class RadiobuttonSet (RO.AddCallback.TkVarMixin,
             value = self._matchItem.getUniqueMatch(value)
         except ValueError as e:
             if doCheck:
-                raise ValueError("invalid %s: %s" % (descr, RO.StringUtil.strFromException(e)))
+                raise ValueError("invalid %s: %s" % (descr, opscore.RO.StringUtil.strFromException(e)))
         return value
 
     def getDefault(self):
@@ -306,7 +306,7 @@ class RadiobuttonSet (RO.AddCallback.TkVarMixin,
                 wdg.configure(state="disabled")
 
     def winfo_ismapped(self):
-        """Needed by RO.InputCont
+        """Needed by opscore.RO.InputCont
         """
         return self.wdgSet[0].winfo_ismapped()
 

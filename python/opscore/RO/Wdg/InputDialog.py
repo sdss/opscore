@@ -8,7 +8,7 @@ Warning: do not allow a menu to be posted in your dialog box under aqua Tk (on M
 This is due to tk bug 1101854 <https://sourceforge.net/tracker/?func=detail&atid=112997&aid=1101854&group_id=12997>
 
 History:
-2002-07-30 ROwen    Moved to the RO.Wdg module and renamed.
+2002-07-30 ROwen    Moved to the opscore.RO.Wdg module and renamed.
 2003-04-24 ROwen    Removed "from Tkinter import *".
 2004-05-18 ROwen    Stopped importing os; it wasn't used.
 2004-08-11 ROwen    Define __all__ to restrict import.
@@ -16,7 +16,7 @@ History:
                     The buttons method now receives the button's master as an argument.
                     Buttons now have their own frame so you can pack or grid them as you prefer.
                     The buttons method is now called before the body method. Also, the default buttons
-                    (OK and Cancel) are now RO.Wdg.Buttons. These changes allow one to add help text
+                    (OK and Cancel) are now opscore.RO.Wdg.Buttons. These changes allow one to add help text
                     to the default buttons in the body method (by setting their helpText attribute).
                     Modified to restore original focus and to generally work more like
                     the example in Welch's Practical Programming in Tcl and Tk.

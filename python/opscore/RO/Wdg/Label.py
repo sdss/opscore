@@ -19,7 +19,7 @@ History:
                     it is always read from the option database when the state changes.
 2002-03-14 ROwen    Modified to handle isValid argument;
                     modified get to return isValid in the tuple; fixed get to return a value instead of None.
-2002-03-18 ROwen    Repackaged as part of larger RO.Wdg package.
+2002-03-18 ROwen    Repackaged as part of larger opscore.RO.Wdg package.
 2002-11-15 ROwen    Added use of CtxMenuMixin.
 2002-11-26 ROwen    Added support for helpURL.
 2002-12-04 ROwen    Swapped helpURL and helpText args.
@@ -29,7 +29,7 @@ History:
 2003-03-05 ROwen    Removed all isValid handling; invalid values have value None
 2003-03-06 ROwen    Fixed default precision for FloatLabel (was None, which caused errors).
 2003-03-17 ROwen    Fixed StrLabels to handle unicode.
-2003-04-15 ROwen    Modified to use RO.Wdg.CtxMenu 2003-04-15.
+2003-04-15 ROwen    Modified to use opscore.RO.Wdg.CtxMenu 2003-04-15.
 2003-06-17 ROwen    Modified to be in current state by default (so can be used as a general label);
                     overhauled setting of state and improved lazy subscription to state colors.
 2003-06-18 ROwen    Modified to pass SystemExit and KeyboardInterrupt when
@@ -39,7 +39,7 @@ History:
 2004-08-11 ROwen    Modified to use Constants and WdgPrefs.
                     Use modified state constants with sev prefix.
                     Define __all__ to restrict import.
-2004-09-03 ROwen    Modified for RO.Wdg.sev... -> RO.Constants.sev...
+2004-09-03 ROwen    Modified for opscore.RO.Wdg.sev... -> opscore.RO.Constants.sev...
 2004-09-14 ROwen    Bug fix: isCurrent was ignored for most classes.
 2004-11-16 ROwen    Changed _setState method to setState.
 2004-12-29 ROwen    Modified to use IsCurrentMixin and SeverityMixin.
@@ -47,7 +47,7 @@ History:
                     Changed _setIsCurrent method to setIsCurrent.
 2005-01-05 ROwen    Changed message state to severity, set/getState to set/getSeverity.
 2011-06-16 ROwen    Ditched obsolete "except (SystemExit, KeyboardInterrupt): raise" code.
-2012-07-09 ROwen    Modified test code to user RO.TkUtil.Timer.
+2012-07-09 ROwen    Modified test code to user opscore.RO.TkUtil.Timer.
 2015-09-24 ROwen    Replace "== None" with "is None" to modernize the code.
 2015-11-03 ROwen    Replace "!= None" with "is not None" to modernize the code.
 2015-11-05 ROwen    Stop using dangerous bare "except:".
@@ -56,9 +56,9 @@ __all__ = ['Label', 'BoolLabel', 'StrLabel', 'IntLabel', 'FloatLabel', 'DMSLabel
 
 import sys
 from six.moves import tkinter
-import RO.Constants
-import RO.MathUtil
-import RO.StringUtil
+import opscore.RO.Constants
+import opscore.RO.MathUtil
+import opscore.RO.StringUtil
 from .CtxMenu import CtxMenuMixin
 from .SeverityMixin import SeverityMixin
 from .IsCurrentMixin import IsCurrentMixin
@@ -74,7 +74,7 @@ class Label(tkinter.Label, CtxMenuMixin, IsCurrentMixin, SeverityMixin):
     - helpText  short text for hot help
     - helpURL   URL for on-line help
     - isCurrent is value current?
-    - severity  one of RO.Constants.sevNormal, sevWarning or sevError
+    - severity  one of opscore.RO.Constants.sevNormal, sevWarning or sevError
     - **kargs: all other keyword arguments go to Tkinter.Label;
         the defaults are anchor="e", justify="right"
 
@@ -93,7 +93,7 @@ class Label(tkinter.Label, CtxMenuMixin, IsCurrentMixin, SeverityMixin):
         helpText = None,
         helpURL = None,
         isCurrent = True,
-        severity = RO.Constants.sevNormal,
+        severity = opscore.RO.Constants.sevNormal,
     **kargs):
         kargs.setdefault("anchor", "e")
         kargs.setdefault("justify", "right")
@@ -150,7 +150,7 @@ class Label(tkinter.Label, CtxMenuMixin, IsCurrentMixin, SeverityMixin):
         Inputs:
         - value: the new value
         - isCurrent: is value current (if not, display with bad background color)
-        - severity: the new severity, one of: RO.Constants.sevNormal, sevWarning or sevError;
+        - severity: the new severity, one of: opscore.RO.Constants.sevNormal, sevWarning or sevError;
           if omitted, the severity is left unchanged
         kargs is ignored; it is only present for compatibility with KeyVariable callbacks.
 
@@ -341,21 +341,21 @@ class DMSLabel(Label):
     def formatFunc(self, value):
         if self.cvtDegToHrs and value is not None:
             value = value / 15.0
-        return RO.StringUtil.dmsStrFromDeg (
+        return opscore.RO.StringUtil.dmsStrFromDeg (
             value,
             precision = self.precision,
             nFields = self.nFields,
         )
 
     def setCvtDegToHrs(self, cvtDegToHrs):
-        if RO.MathUtil.logNE(self.cvtDegToHrs, cvtDegToHrs):
+        if opscore.RO.MathUtil.logNE(self.cvtDegToHrs, cvtDegToHrs):
             self.cvtDegToHrs = cvtDegToHrs
             self._updateText()
 
 
 if __name__ == "__main__":
     from . import PythonTk
-    from RO.TkUtil import Timer
+    from opscore.RO.TkUtil import Timer
     root = PythonTk.PythonTk()
 
     wdgSet = (

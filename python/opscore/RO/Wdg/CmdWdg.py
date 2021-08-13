@@ -11,7 +11,7 @@ History:
 2002-11-15 ROwen    Fixed the example by specifying an initial window geometry
                     and updated the comments to explain why this is necessary
 2002-12-05 ROwen    Added support for URL-based help
-2003-03-07 ROwen    Changed RO.Wdg.StringEntry to RO.Wdg.StrEntry.
+2003-03-07 ROwen    Changed opscore.RO.Wdg.StringEntry to opscore.RO.Wdg.StrEntry.
 2003-04-15 ROwen    Removed unused import of CtxMenu.
 2004-05-18 ROwen    Bug fix: didn't set self.cmdText if no helpURL.
                     Stopped importing sys since it was not being used.
@@ -144,7 +144,7 @@ class CmdWdg (Entry.StrEntry):
 
 
 if __name__ == "__main__":
-    from RO.Wdg.PythonTk import PythonTk
+    from opscore.RO.Wdg.PythonTk import PythonTk
     root = PythonTk()
 
     FailCmd = 'fail'

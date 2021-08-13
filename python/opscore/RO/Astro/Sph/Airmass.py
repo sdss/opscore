@@ -3,7 +3,7 @@
 
 __all__ = ["airmass"]
 
-import RO.MathUtil
+import opscore.RO.MathUtil
 
 # constants
 _MinAlt = 3.0
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = airmass(testInput)
-        if RO.MathUtil.compareFloats(actualOutput, expectedOutput, rtol=1.0e-14):
+        if opscore.RO.MathUtil.compareFloats(actualOutput, expectedOutput, rtol=1.0e-14):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)

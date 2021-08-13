@@ -10,7 +10,7 @@ __all__ = ["etrms"]
 
 import math
 import numpy
-import RO.PhysConst
+import opscore.RO.PhysConst
 
 def etrms(bep):
     """
@@ -58,7 +58,7 @@ def etrms(bep):
 
 
 if __name__ == "__main__":
-    import RO.SeqUtil
+    import opscore.RO.SeqUtil
     print("testing etrms")
     # test data is formatted as follows:
     # a list of entries, each consisting of:
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = etrms(testInput)
-        if RO.SeqUtil.matchSequences(actualOutput, expectedOutput, rtol=1e-15):
+        if opscore.RO.SeqUtil.matchSequences(actualOutput, expectedOutput, rtol=1e-15):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)

@@ -8,7 +8,7 @@ P.T.Wallace   Starlink   10 July 1994
 """
 __all__ = ["prec"]
 
-import RO.PhysConst
+import opscore.RO.PhysConst
 from .euler import euler
 
 def prec(begEpoch, endEpoch):

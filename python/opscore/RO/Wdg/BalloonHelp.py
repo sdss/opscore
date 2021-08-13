@@ -10,13 +10,13 @@ History:
 2004-08-11 ROwen    Define __all__ to restrict import.
 2012-07-10 ROwen    Improve the behavior: the help doesn't flicker if the mouse is moved within a control.
                     Added isShowing property.
-                    Modified to use RO.TkUtil.Timer.
+                    Modified to use opscore.RO.TkUtil.Timer.
                     Removed use of update_idletasks.
 """
 __all__ = ['enableBalloonHelp']
 
 from six.moves import tkinter
-from RO.TkUtil import Timer
+from opscore.RO.TkUtil import Timer
 
 _HelpObj = None
 

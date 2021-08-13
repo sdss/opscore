@@ -8,9 +8,9 @@ History:
 __all__ = ["fk4FromICRS"]
 
 import numpy
-import RO.PhysConst
-import RO.MathUtil
-from RO.Astro import llv
+import opscore.RO.PhysConst
+import opscore.RO.MathUtil
+from opscore.RO.Astro import llv
 
 # Constants
 # mi is the J2000-to-B1950 conversion matrix.
@@ -86,14 +86,14 @@ def fk4FromICRS(icrsP, icrsV, fk4Epoch):
     #  we don't bother to add variation in e-terms to the velocity.
     fk4P = meanFK4P.copy()
     for iterNum in range(3):
-        magP = RO.MathUtil.vecMag(fk4P)
+        magP = opscore.RO.MathUtil.vecMag(fk4P)
         fk4P = meanFK4P + eTerms * magP
 
     return (fk4P, fk4V)
 
 
 if __name__ == "__main__":
-    import RO.SeqUtil
+    import opscore.RO.SeqUtil
     print("testing fk4FromICRS")
     # test data is formatted as follows:
     # a list of entries, each consisting of:
@@ -148,9 +148,9 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = fk4FromICRS(*testInput)
-        expectedFlat = RO.SeqUtil.flatten(expectedOutput)
-        actualFlat = RO.SeqUtil.flatten(actualOutput)
-        if RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1.0e-14):
+        expectedFlat = opscore.RO.SeqUtil.flatten(expectedOutput)
+        actualFlat = opscore.RO.SeqUtil.flatten(actualOutput)
+        if opscore.RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1.0e-14):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)

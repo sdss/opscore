@@ -10,7 +10,7 @@ __all__ = ["angSep"]
 
 import math
 import numpy
-import RO.MathUtil
+import opscore.RO.MathUtil
 from .DCFromSC import dcFromSC
 
 def angSep(posA, posB):
@@ -46,13 +46,13 @@ def angSep(posA, posB):
     diffMagSqQuarter = numpy.sum((vecA - vecB)**2) * 0.25
 
     # compute the angle
-    return 2.0 * RO.MathUtil.atan2d (
+    return 2.0 * opscore.RO.MathUtil.atan2d (
         math.sqrt(diffMagSqQuarter),
         math.sqrt(max(0.0, 1.0-diffMagSqQuarter))
     )
 
 if __name__ == "__main__":
-    import RO.PhysConst
+    import opscore.RO.PhysConst
     print("testing angSep")
     # testData is a list of duples consisting of:
     # - input data
@@ -69,12 +69,11 @@ if __name__ == "__main__":
         (((0.000001, 0.000001), (0, 0)), 1.414213562372977E-006),
     )
     for testInput, expectedOutput in testData:
-        testInput = [(x[0] / RO.PhysConst.RadPerDeg, x[1] / RO.PhysConst.RadPerDeg) for x in testInput]
-        expectedOutput = expectedOutput / RO.PhysConst.RadPerDeg
+        testInput = [(x[0] / opscore.RO.PhysConst.RadPerDeg, x[1] / opscore.RO.PhysConst.RadPerDeg) for x in testInput]
+        expectedOutput = expectedOutput / opscore.RO.PhysConst.RadPerDeg
         # print "(%r, %r)" % (testInput, expectedOutput)
         actualOutput = angSep(*testInput)
-        if 0 != RO.MathUtil.compareFloats(actualOutput, expectedOutput, rtol=1e-14):
+        if 0 != opscore.RO.MathUtil.compareFloats(actualOutput, expectedOutput, rtol=1e-14):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)
-

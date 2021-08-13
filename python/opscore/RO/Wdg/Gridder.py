@@ -8,7 +8,7 @@ History:
 2003-04-01 ROwen    Modified to copy helpURL to label, enable and units widgets
 2003-04-14 ROwen    Added EnableGridder and ChangedGridder;
                     removed enable functionality from Gridder.
-2003-04-15 ROwen    Modified to use RO.Wdg.CtxMenu 2003-04-15.
+2003-04-15 ROwen    Modified to use opscore.RO.Wdg.CtxMenu 2003-04-15.
 2003-04-24 ROwen    Added startNewCol; mod. gridWdg so row=-1 means same column;
                     replaced setNextPos with setNextRow, setDefCol;
                     changed def of nextCol and added getMaxNextCol.
@@ -16,14 +16,14 @@ History:
                     added support for show/hide by category;
                     changed row=-1 to not mess with the column.
 2003-08-11 ROwen    Added addShowHideControl, allGridded, isAllGridded;
-                    created widgets are RO.Wdg.StrLabel instead of Tkinter.Label
+                    created widgets are opscore.RO.Wdg.StrLabel instead of Tkinter.Label
 2003-11-18 ROwen    Modified to use SeqUtil instead of MathUtil.
 2004-05-18 ROwen    Removed doEnable arg from Gridder; it was ignored.
                     Removed enable arg from _GridSet; it was ignored.
 2004-08-11 ROwen    Renamed BaseGridSet->_BaseGridSet and GridSet->_GridSet.
                     Define __all__ to restrict import.
 2004-09-14 ROwen    Bug fix: addShowHideWdg and gridWdg were mis-handling cat=list.
-                    Stopped importing RO.Wdg to avoid circular import.
+                    Stopped importing opscore.RO.Wdg to avoid circular import.
 2005-06-08 ROwen    Changed Gridder to a new style class.
 2005-06-16 ROwen    Removed an unused variable.
 2006-10-31 ROwen    Added support adding help text and URL to created widgets.
@@ -39,8 +39,8 @@ History:
 __all__ = ['Gridder']
 
 from six.moves import tkinter
-import RO.Alg
-import RO.SeqUtil
+import opscore.RO.Alg
+import opscore.RO.SeqUtil
 from . import Label
 
 class Gridder(object):
@@ -71,8 +71,8 @@ class Gridder(object):
         # - _showHideCatDict keys are categories and values are True (show) or False (hide)
         #   only widgets for which all categories are True are shown
         # - _showHideControlDict keys are categories and values are
-        #   RO.Wdg.Checkbutton controls that call _showHideWdgCallback when toggled
-        self._showHideWdgDict = RO.Alg.SetDict()
+        #   opscore.RO.Wdg.Checkbutton controls that call _showHideWdgCallback when toggled
+        self._showHideWdgDict = opscore.RO.Alg.SetDict()
         self._showHideCatDict = {}
         self._showHideControlDict = {}
 
@@ -87,7 +87,7 @@ class Gridder(object):
 
         Inputs:
         cat: category
-        ctrl: one RO.Wdg.Checkbutton control (sequence not allowed)
+        ctrl: one opscore.RO.Wdg.Checkbutton control (sequence not allowed)
         doCallback: apply control (else wait until _showHideCallback called)
 
         Error Conditions:
@@ -122,10 +122,10 @@ class Gridder(object):
         - wdg   one or more widgets; if any widget is None then it is ignored
         """
         # add widgets to _showHideWdgDict
-        wdgSet = RO.SeqUtil.asSequence(wdg)
+        wdgSet = opscore.RO.SeqUtil.asSequence(wdg)
         for wdg in wdgSet:
             if wdg:
-                self._showHideWdgDict.addList(wdg, RO.SeqUtil.asList(cat))
+                self._showHideWdgDict.addList(wdg, opscore.RO.SeqUtil.asList(cat))
 
         # add category to _showHideCatDict (if not already present)
         self._showHideCatDict.setdefault(cat, False)
@@ -170,7 +170,7 @@ class Gridder(object):
           but space is handled differently in the two cases:
           - If a widget is None then the appropriate number of empty columns are used for it
           - If a widget is False then no columns are used for it
-        - If a label or units widget is "" then an empty RO.Wdg.StrLabel is gridded (which you can then
+        - If a label or units widget is "" then an empty opscore.RO.Wdg.StrLabel is gridded (which you can then
           set as you desire).
         """
         basicKArgs = self._basicKArgs(**kargs)
@@ -358,7 +358,7 @@ class _BaseGridSet:
         - None: nothing is gridded but the column advances by colSpan
         - False: nothing is gridded and the column does not advance
         """
-        wdgSet = RO.SeqUtil.asSequence(wdg)
+        wdgSet = opscore.RO.SeqUtil.asSequence(wdg)
 
         for wdg in wdgSet:
             if wdg:
@@ -375,8 +375,8 @@ class _BaseGridSet:
     def _makeWdg(self, wdgInfo):
         """Returns a widget depending on wdgInfo:
         - None or False: returns None or False
-        - a string: returns an RO.Wdg.StrVariable with text=wdgInfo
-        - a Tkinter Variable: returns an RO.Wdg.StrVariable with textvariable=wdgInfo
+        - a string: returns an opscore.RO.Wdg.StrVariable with text=wdgInfo
+        - a Tkinter Variable: returns an opscore.RO.Wdg.StrVariable with textvariable=wdgInfo
         - a Tkinter Widget: returns wdgInfo unaltered
         """
         if wdgInfo in (None, False):
@@ -409,7 +409,7 @@ class _BaseGridSet:
         if True not in (self.helpText, self.helpURL):
             return
 
-        firstWdg = RO.SeqUtil.asSequence(dataWdg)[0]
+        firstWdg = opscore.RO.SeqUtil.asSequence(dataWdg)[0]
         if self.helpText is True:
             self.helpText = getattr(firstWdg, "helpText", None)
         if self.helpURL is True:

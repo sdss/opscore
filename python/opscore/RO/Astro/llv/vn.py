@@ -9,8 +9,8 @@ P.T.Wallace Starlink    November 1984
 __all__ = ["vn"]
 
 import numpy
-import RO.MathUtil
-import RO.SysConst
+import opscore.RO.MathUtil
+import opscore.RO.SysConst
 
 def vn(vec):
     """
@@ -28,9 +28,9 @@ def vn(vec):
     """
     vec = numpy.asarray(vec, dtype=float)
 
-    vecMag = RO.MathUtil.vecMag(vec)
+    vecMag = opscore.RO.MathUtil.vecMag(vec)
 
-    if vecMag < RO.SysConst.FSmallNum:
+    if vecMag < opscore.RO.SysConst.FSmallNum:
         # this odd construct is a silly way of
         # returning the correct number of zeros
         return (vec * 0.0, 0.0)
@@ -39,7 +39,7 @@ def vn(vec):
 
 
 if __name__ == "__main__":
-    import RO.SeqUtil
+    import opscore.RO.SeqUtil
     print("testing vn")
     # test data is formatted as follows:
     # a list of entries, each consisting of:
@@ -53,9 +53,9 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = vn(testInput)
-        actualFlat = RO.SeqUtil.flatten(actualOutput)
-        expectedFlat = RO.SeqUtil.flatten(expectedOutput)
-        if RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1e-15):
+        actualFlat = opscore.RO.SeqUtil.flatten(actualOutput)
+        expectedFlat = opscore.RO.SeqUtil.flatten(expectedOutput)
+        if opscore.RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1e-15):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)

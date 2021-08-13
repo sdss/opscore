@@ -12,9 +12,9 @@ __all__ = ["topoFromObs"]
 
 from math import sqrt
 import numpy
-import RO.SysConst
-import RO.PhysConst
-import RO.MathUtil
+import opscore.RO.SysConst
+import opscore.RO.PhysConst
+import opscore.RO.MathUtil
 
 # Constants
 #  For zdu > _MaxZDU the correction is computed at _MaxZDU.
@@ -67,8 +67,8 @@ def topoFromObs(obsP, refCo):
     rmag = rxysq + (rz * rz)
 
     #  test input vector
-    if rxysq * RO.SysConst.FAccuracy <= RO.SysConst.FSmallNum:
-        if rmag * RO.SysConst.FAccuracy <= RO.SysConst.FSmallNum:
+    if rxysq * opscore.RO.SysConst.FAccuracy <= opscore.RO.SysConst.FSmallNum:
+        if rmag * opscore.RO.SysConst.FAccuracy <= opscore.RO.SysConst.FSmallNum:
             #  |R| is too small to use -- probably a bug in the calling software
             raise ValueError('obsP %r too small' % obsP)
         #  at zenith; set output = input
@@ -76,7 +76,7 @@ def topoFromObs(obsP, refCo):
     else:
 
         #  refracted zenith distance
-        zdr = RO.MathUtil.atan2d (rxymag, rz)
+        zdr = opscore.RO.MathUtil.atan2d (rxymag, rz)
 
         #  Compute the refraction correction. Compute it at the refracted zenith distance,
         #  unless that zd is too large, in which case compute the correction at the
@@ -86,7 +86,7 @@ def topoFromObs(obsP, refCo):
             #  don't even bother to try computing the standard correction
             tooLow = 1
         else:
-            tanzd = RO.MathUtil.tand (zdr)
+            tanzd = opscore.RO.MathUtil.tand (zdr)
             zdu = zdr + (refA * tanzd) + (refB * tanzd**3)
             if zdu > _MaxZDU:
                 tooLow = 1
@@ -99,21 +99,21 @@ def topoFromObs(obsP, refCo):
             zduIter = _MaxZDU
             for iterNum in range(2):
                 zdrIter = zduIter + zdr_u
-                coszd = RO.MathUtil.cosd (zdrIter)
-                tanzd = RO.MathUtil.tand (zdrIter)
+                coszd = opscore.RO.MathUtil.cosd (zdrIter)
+                tanzd = opscore.RO.MathUtil.tand (zdrIter)
                 zdr_u -= ((zdr_u + refA * tanzd + refB * tanzd**3) /  \
                     (1.0 + (RO.PhysConst.RadPerDeg * (refA + 3.0 * refB * tanzd**2) / coszd**2)))
                 zdu = zdr - zdr_u
 
         #  compute unrefracted position as a cartesian vector
-        uz = rxymag * RO.MathUtil.tand (90.0 - zdu)
+        uz = rxymag * opscore.RO.MathUtil.tand (90.0 - zdu)
         appTopoP = numpy.array((rx, ry, uz))
 
     return (appTopoP, tooLow)
 
 
 if __name__ == "__main__":
-    import RO.SeqUtil
+    import opscore.RO.SeqUtil
     print("testing topoFromObs")
     # test data is formatted as follows:
     # a list of entries, each consisting of:
@@ -143,9 +143,9 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = topoFromObs(*testInput)
-        actualFlat = RO.SeqUtil.flatten(actualOutput)
-        expectedFlat = RO.SeqUtil.flatten(expectedOutput)
-        if RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1.0e-14):
+        actualFlat = opscore.RO.SeqUtil.flatten(actualOutput)
+        expectedFlat = opscore.RO.SeqUtil.flatten(expectedOutput)
+        if opscore.RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1.0e-14):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)

@@ -84,7 +84,7 @@ History:
                       instead writeLine always appends \r\n and readLine breaks on any of \r\n, \n or \r.
                     - Removed BaseServer; use TCPServer instead.
                     - Modified to use base classes from the BaseSocket module.
-                    - Modified example code to use RO.TkUtil.Timer.
+                    - Modified example code to use opscore.RO.TkUtil.Timer.
                     - Improved the behavior of readLine and writeLine when binary=True.
 2013-12-23 ROwen    Added timeLim argument to TkSocket.__init__.
 2014-04-10 ROwen    TCPSocket: improved the error message if writing while not connected.
@@ -96,8 +96,8 @@ import re
 import sys
 import traceback
 from six.moves import tkinter
-import RO.TkUtil
-from RO.Comm.BaseSocket import BaseSocket, BaseServer, nullCallback
+import opscore.RO.TkUtil
+from opscore.RO.Comm.BaseSocket import BaseSocket, BaseServer, nullCallback
 
 class _TkSocketWrapper(object):
     """Convenience wrapper around a Tk socket
@@ -118,7 +118,7 @@ class _TkSocketWrapper(object):
         self._tkSocket = None
         # dictionary of typeStr:tclFunc, where:
         # typeStr is one of "readable" or "writable"
-        # tclFunc is a tcl-wrapped function, an instance of RO.TkUtil.TclFunc
+        # tclFunc is a tcl-wrapped function, an instance of opscore.RO.TkUtil.TclFunc
         self._callbackDict = dict()
         self._readVar = tkinter.StringVar()
         self._tk = self._readVar._tk
@@ -198,7 +198,7 @@ class _TkSocketWrapper(object):
             typeStr = 'readable'
 
         if callFunc:
-            tclFunc = RO.TkUtil.TclFunc(callFunc)
+            tclFunc = opscore.RO.TkUtil.TclFunc(callFunc)
             tkFuncName = tclFunc.tclFuncName
         else:
             tclFunc = None
@@ -282,7 +282,7 @@ class TCPSocket(BaseSocket):
         """
         self._host = host
         self._port = port
-        self._connectTimer = RO.TkUtil.Timer()
+        self._connectTimer = opscore.RO.TkUtil.Timer()
         self.__buffer = ""
         BaseSocket.__init__(self,
             readCallback = readCallback,
@@ -333,7 +333,7 @@ class TCPSocket(BaseSocket):
         #print "%s.read(nChar=%r) returning %r; remaining buffer=%r" % (self, nChar, data, self.__buffer)
 
         if self.__buffer and self._readCallback:
-            RO.TkUtil.Timer(0.000001, self._readCallback, self)
+            opscore.RO.TkUtil.Timer(0.000001, self._readCallback, self)
         return data
 
     def readLine(self, default=None):
@@ -356,7 +356,7 @@ class TCPSocket(BaseSocket):
         #print "%s.readLine(default=%r) returning %r; remaining buffer=%r" % (self, default, res[0], self.__buffer)
 
         if self.__buffer and self._readCallback:
-            RO.TkUtil.Timer(0.000001, self._readCallback, self)
+            opscore.RO.TkUtil.Timer(0.000001, self._readCallback, self)
         return res[0]
 
     def write(self, data):
@@ -493,7 +493,7 @@ class TCPServer(BaseServer):
             name = name,
         )
 
-        self._tkNewConn = RO.TkUtil.TclFunc(self._newConnection)
+        self._tkNewConn = opscore.RO.TkUtil.TclFunc(self._newConnection)
         sockArgs = (
             '-server', self._tkNewConn.tclFuncName,
             port,
@@ -551,7 +551,7 @@ if __name__ == "__main__":
     """
     root = tkinter.Tk()
     root.withdraw()
-    from RO.TkUtil import Timer
+    from opscore.RO.TkUtil import Timer
 
     port = 2150
     binary = True

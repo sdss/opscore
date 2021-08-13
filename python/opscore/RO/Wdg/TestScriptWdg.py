@@ -9,14 +9,14 @@ while the script runs (a very good idea when offering widgets).
 History:
 2004-06-30 Rowen
 """
-import RO.Wdg
+import opscore.RO.Wdg
 
 def init(sr):
     """Run once when the script runner window is created.
     """
-    gr = RO.Wdg.Gridder(sr.master)
+    gr = opscore.RO.Wdg.Gridder(sr.master)
 
-    niterWdg = RO.Wdg.IntEntry(
+    niterWdg = opscore.RO.Wdg.IntEntry(
         sr.master,
         minValue = 0,
         maxValue = 99,
@@ -25,7 +25,7 @@ def init(sr):
     )
     gr.gridWdg("# Iter", niterWdg)
 
-    delayWdg = RO.Wdg.FloatEntry(
+    delayWdg = opscore.RO.Wdg.FloatEntry(
         sr.master,
         minValue = 0,
         maxValue = 99,

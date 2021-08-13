@@ -10,7 +10,7 @@ Requirements:
   rewrite the underlying socket library TkSocket to remove this restriction)
 
 History:
-2002-11-22 R Owen: first version with history. Moved to RO.Comm
+2002-11-22 R Owen: first version with history. Moved to opscore.RO.Comm
     and modified to use TkSocket sockets. This fixed a pitfall
     (it was not safe to close the socket if a read handler
     was present) and socket writes are done in a background thread
@@ -24,13 +24,13 @@ History:
 2003-07-18 ROwen    Renamed subroutine to function, for consistency with other code;
     improved doc strings (including adding a doc string to NullConnection).
 2003-10-10 ROwen    Modified to use new TCPConnection.
-2005-01-12 ROwen    Modified for new RO.Wdg.ModalDialogBase.
+2005-01-12 ROwen    Modified for new opscore.RO.Wdg.ModalDialogBase.
 2014-09-18 ROwen    Bug fix: some states needed self. prefix.
 """
 __all__ = ["VMSTelnet"]
 
 import sys
-import RO.Wdg
+import opscore.RO.Wdg
 from .TCPConnection import TCPConnection
 
 class VMSTelnet(TCPConnection):
@@ -110,9 +110,9 @@ class VMSTelnet(TCPConnection):
         class PasswordDialog(RO.Wdg.ModalDialogBase):
             def body(self, master):
 
-                RO.Wdg.StrLabel(master, text="Password:").grid(row=0, column=0)
+                opscore.RO.Wdg.StrLabel(master, text="Password:").grid(row=0, column=0)
 
-                self.pwdEntry = RO.Wdg.StrEntry(master, show="*")
+                self.pwdEntry = opscore.RO.Wdg.StrEntry(master, show="*")
                 self.pwdEntry.grid(row=0, column=1)
                 return self.pwdEntry # initial focus
 

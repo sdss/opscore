@@ -4,10 +4,10 @@
 A widget showing a set of options as checkbuttons.
 
 To Do:
-- Allow use of RO.InputCont.BoolOmitCont insted of BoolNegCont.
+- Allow use of opscore.RO.InputCont.BoolOmitCont insted of BoolNegCont.
 
 History:
-2002-07-30 ROwen    Moved to the RO.Wdg module and renamed from OptionWdg.
+2002-07-30 ROwen    Moved to the opscore.RO.Wdg module and renamed from OptionWdg.
 2002-08-23 ROwen    Changed defIfDisabled to defIfHidden since Entry
     widgets still show values even if disabled (returning the default
     when a different value was visible would be a big mistake).
@@ -17,25 +17,25 @@ History:
     bug fix: helpText was not optional for options.
 2003-03-12 ROwen    Changed for ROCheckbutton->Checkbutton rename.
 2003-03-14 ROwen    Changed to use InputCont modified BasicSetFmt.
-2003-04-15 ROwen    Modified to use RO.Wdg.CtxMenu 2003-04-15;
+2003-04-15 ROwen    Modified to use opscore.RO.Wdg.CtxMenu 2003-04-15;
                     removed clearHelpText, defHelpText.
-2003-07-09 ROwen    Modified to use overhauled RO.InputCont.
-2003-08-08 ROwen    Modified to track a change in RO.InputCont.
+2003-07-09 ROwen    Modified to use overhauled opscore.RO.InputCont.
+2003-08-08 ROwen    Modified to track a change in opscore.RO.InputCont.
 2004-05-18 ROwen    Eliminated negStr argument because it wasn't being used.
-                    Stopped importing string, sys, RO.StringUtil and CtxMenu
+                    Stopped importing string, sys, opscore.RO.StringUtil and CtxMenu
                     since they weren't used.
 2004-08-11 ROwen    Define __all__ to restrict import.
 2004-09-14 ROwen    Modified to use helpURLPrefix as help url for header.
                     Bug fix: was incorrectly importing Button.
                     Bug fix: test code enable button was broken.
-2004-12-13 ROwen    Renamed doEnable to setEnable for modified RO.InputCont.
+2004-12-13 ROwen    Renamed doEnable to setEnable for modified opscore.RO.InputCont.
 2005-06-03 ROwen    Fixed one indentation quirk (space tab -> tab).
 2015-09-24 ROwen    Replace "== None" with "is None" to modernize the code.
 2015-11-05 ROwen    Changed ==/!= True/False to is/is not True/False to modernize the code.
 """
 __all__ = ['OptionButtons']
 
-import RO.InputCont
+import opscore.RO.InputCont
 from . import Button
 from . import Checkbutton
 from . import InputContFrame
@@ -85,9 +85,9 @@ class OptionButtons(InputContFrame):
         - setDefIfAbsent: if True: setValueDict sets all widgets to their default value if name is absent
             and setValueDict and setValueList set individual widgets to their default value
             if they are missing from the value list.
-        - formatFunc: the format function; takes one input, an RO.InputCont.BoolNegCont
+        - formatFunc: the format function; takes one input, an opscore.RO.InputCont.BoolNegCont
             containing all of the option checkboxes, and returns a string
-            The default format is RO.InputCont.BasicFmt.
+            The default format is opscore.RO.InputCont.BasicFmt.
         **kargs: keyword arguments for Frame
         """
         InputContFrame.__init__(self, master, **kargs)
@@ -104,7 +104,7 @@ class OptionButtons(InputContFrame):
             ).pack(side="top", anchor="w")
 
         if formatFunc is None:
-            formatFunc = RO.InputCont.BasicFmt()
+            formatFunc = opscore.RO.InputCont.BasicFmt()
 
         # create option checkboxes
         # and a list of input containers for them
@@ -138,7 +138,7 @@ class OptionButtons(InputContFrame):
 
         # create input container
         self.inputCont = (
-            RO.InputCont.BoolNegCont (
+            opscore.RO.InputCont.BoolNegCont (
                 name = name,
                 wdgs = wdgList,
                 wdgNames = wdgNames,

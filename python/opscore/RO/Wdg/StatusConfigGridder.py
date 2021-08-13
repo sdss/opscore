@@ -7,10 +7,10 @@ History:
                     to eliminate two unused args (colSpan and sticky).
 2004-08-11 ROwen    Renamed StatusConfigGridSet->_StatusConfigGridSet.
                     Define __all__ to restrict import.
-2004-09-14 ROwen    Stopped importing RO.Wdg to avoid circular imports.
+2004-09-14 ROwen    Stopped importing opscore.RO.Wdg to avoid circular imports.
 2004-11-29 ROwen    Modified to include ConfigCat as a class constant.
 2005-01-05 ROwen    Got rid of the changed widget; use autoIsCurrent mode
-                    in RO.Wdg widgets to indicate "changed", instead.
+                    in opscore.RO.Wdg widgets to indicate "changed", instead.
 2005-05-26 ROwen    Bug fix: gridWdg mis-set nextCol if cfgWdg False or None.
                     Improved error message for units and cfgUnits being the same widget.
 2006-04-27 ROwen    Removed ignored clearMenu and defMenu arguments (thanks pychecker!).
@@ -26,7 +26,7 @@ History:
 """
 __all__ = ['StatusConfigGridder']
 
-from RO.Wdg.Gridder import Gridder, _BaseGridSet
+from opscore.RO.Wdg.Gridder import Gridder, _BaseGridSet
 
 ConfigCat = "config"
 
@@ -96,7 +96,7 @@ class StatusConfigGridder(Gridder):
           but space is handled differently in the two cases:
           - If a widget is None then the appropriate number of empty columns are used for it
           - If a widget is False then no columns are used for it
-        - If a label or units widget is "" then an empty RO.Wdg.StrLabel is gridded (which you can then
+        - If a label or units widget is "" then an empty opscore.RO.Wdg.StrLabel is gridded (which you can then
           set as you desire).
         """
         basicArgs = self._basicKArgs(**kargs)

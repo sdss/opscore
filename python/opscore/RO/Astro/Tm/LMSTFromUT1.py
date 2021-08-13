@@ -2,7 +2,7 @@
 
 __all__ = ["lmstFromUT1"]
 
-import RO.MathUtil
+import opscore.RO.MathUtil
 from .GMSTFromUT1 import gmstFromUT1
 
 def lmstFromUT1(ut1, longitude):
@@ -23,4 +23,4 @@ def lmstFromUT1(ut1, longitude):
     gmst = gmstFromUT1(ut1)
 
     # find local mean sideral time, in degrees, in range [0, 360)
-    return RO.MathUtil.wrapPos(gmst + longitude)   # degrees
+    return opscore.RO.MathUtil.wrapPos(gmst + longitude)   # degrees

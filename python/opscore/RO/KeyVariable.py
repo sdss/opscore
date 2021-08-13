@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """KeyVar and its cousins are used monitor data from the keyword dispatcher.
-Keyword data may trigger callbacks or automatically update RO.Wdg widgets.
+Keyword data may trigger callbacks or automatically update opscore.RO.Wdg widgets.
 
 CmdVar is used to issue commands via the keyword dispatcher and monitor replies.
 
@@ -12,7 +12,7 @@ KeyVar.set must not raise an exception; it should print warnings and errors to s
 History:
 2001-01-10 R Owen: mod. FloatCnv to stop using nan (since python on Mac OS X doesn't support it);
     FloatCnv can now only detect the string version of "NaN".
-2002-01-25 R Owen: Mod. to use the new RO.Wdg.getWdgBG function to determine
+2002-01-25 R Owen: Mod. to use the new opscore.RO.Wdg.getWdgBG function to determine
     background colors for good and bad vlues. Mod. to use SetWidgetText class,
     which reduces the complexity of the addWdgText, etc.
 2002-02-05 R Owen: Mod. Intcnv to accept "NaN" for integers.
@@ -23,7 +23,7 @@ History:
     - added addValueListCallback, which is like the old addCallback
     The two callbacks that receive isValid may now get non-None values when isValid false
 2002-05-02 R Owen: added an isRefresh field to KeyCmd. (It may be smarter to just
-    let the RO.KeyDispatcher handle this knowledge by itself. We'll see.)
+    let the opscore.RO.KeyDispatcher handle this knowledge by itself. We'll see.)
 2002-05-29 R Owen: modified KeyCommand to accept timeLimKeyword and to compute self.maxEndTime
 2002-06-11 R Owen: added a substitution dictionary to StringCnv.
 2003-03-05 ROwen    Got rid of the whole idea of isValid; this simplifies get and callbacks;
@@ -31,7 +31,7 @@ History:
 2003-04-10 ROwen    Modified FloatCnv and IntCnv to work with unicode strings.
 2003-04-28 ROwen    Modified converter functions to use __call__ instead of cnv.
 2003-05-08 ROwen    Corrected the test suite (was crashing on too few values);
-                    moved all conversion functions to RO.CnvUtil
+                    moved all conversion functions to opscore.RO.CnvUtil
                     and removed use of typeName attribute in cnv functions.
 2003-06-09 ROwen    Bug fix: inconsistent use of self.msgDict and self._msgDict.
 2003-06-11 ROwen    Removed keyword argument from set.
@@ -51,7 +51,7 @@ History:
 2003-11-21 ROwen    Overhauled handling of nval to permit varying-length KeyVars
                     and to auto-computate nval by default.
                     Modified to use SeqUtil instead of MathUtil.
-2003-12-05 ROwen    Modified for RO.Wdg.Entry changes.
+2003-12-05 ROwen    Modified for opscore.RO.Wdg.Entry changes.
 2003-12-17 ROwen    Added KeyVarFactory.
                     Modified KeyVar to support the actor "keys", via new keyword refreshKeys
                     and new attribute refreshInfo. Keys is used to refresh values from a cache,
@@ -81,7 +81,7 @@ History:
                     - setNotCurrent()-induced callbacks are now protected (if a callback
                       fails a traceback is printed and the others are called)
                     - added __str__, which includes no type info
-                    - added removeCallback method (via inheriting from RO.AddCallback.BaseMixin)
+                    - added removeCallback method (via inheriting from opscore.RO.AddCallback.BaseMixin)
                     Added constant FailTypes.
 2004-08-13 ROwen    Modified CmdVar.abort to make it only call the dispatcher
                     if command not already done.
@@ -97,7 +97,7 @@ History:
                     (to allow garbage collection).
 2005-06-16 ROwen    Added getSeverity method to KeyVar and CmdVar.
                     Modified TypeDict; 2nd element of each value is now severity
-                    (one of RO.Constants.sev...) instead of a logger category.
+                    (one of opscore.RO.Constants.sev...) instead of a logger category.
 2005-06-24 ROwen    Added getCmdrCmdID method to KeyVar.
                     Changed CmdVar.replies to CmdVar.lastReply.
 2006-03-06 ROwen    KeyVar now emulates a normal sequence for read-only access to its values,
@@ -119,7 +119,7 @@ History:
                     - Remove the time limit keyVar callback, if present
                     - Use best effort to remove callbacks (do not raise an exception)
 2012-07-09 ROwen    Removed unused import in demo section.
-2012-07-18 ROwen    Modified to use RO.Comm.Generic.Timer.
+2012-07-18 ROwen    Modified to use opscore.RO.Comm.Generic.Timer.
 2012-11-29 ROwen    In CmdVar cast actor, cmdStr and abortCmdStr to str to avoid unicode.
 2014-03-14 ROwen    Bug fix: abortCmdStr was cast to str even if it was None: changed default to "",
                     but also test for None for backwards compability.
@@ -134,33 +134,33 @@ __all__ = ["TypeDict", "AllTypes", "DoneTypes", "FailTypes", "KeyVar", "PVTKeyVa
 import sys
 import time
 import traceback
-import RO.AddCallback
-import RO.Alg
-import RO.CnvUtil
-import RO.Constants
-import RO.LangUtil
-import RO.PVT
-import RO.StringUtil
-import RO.SeqUtil
-import RO.Comm.Generic
-if RO.Comm.Generic.getFramework() is None:
-    print("Warning: RO.Comm.Generic framework not set; setting to tk")
-    RO.Comm.Generic.setFramework("tk")
-from RO.Comm.Generic import Timer
+import opscore.RO.AddCallback
+import opscore.RO.Alg
+import opscore.RO.CnvUtil
+import opscore.RO.Constants
+import opscore.RO.LangUtil
+import opscore.RO.PVT
+import opscore.RO.StringUtil
+import opscore.RO.SeqUtil
+import opscore.RO.Comm.Generic
+if opscore.RO.Comm.Generic.getFramework() is None:
+    print("Warning: opscore.RO.Comm.Generic framework not set; setting to tk")
+    opscore.RO.Comm.Generic.setFramework("tk")
+from opscore.RO.Comm.Generic import Timer
 
 # TypeDict translates message type characters to message categories
 # entries are: (meaning, category), where:
 # meaning is used for messages displaying what's going on
 # category is coarser and is used for filtering by category
 TypeDict = {
-    "!":("fatal error", RO.Constants.sevError), # a process dies
-    "e":("error", RO.Constants.sevError),  # error, but command is not done
-    "f":("failed", RO.Constants.sevError), # command failed
-    "w":("warning", RO.Constants.sevWarning),
-    "i":("information", RO.Constants.sevNormal), # the initial state
-    "d":("debug", RO.Constants.sevDebug),
-    ">":("queued", RO.Constants.sevNormal),
-    ":":("finished", RO.Constants.sevNormal),
+    "!":("fatal error", opscore.RO.Constants.sevError), # a process dies
+    "e":("error", opscore.RO.Constants.sevError),  # error, but command is not done
+    "f":("failed", opscore.RO.Constants.sevError), # command failed
+    "w":("warning", opscore.RO.Constants.sevWarning),
+    "i":("information", opscore.RO.Constants.sevNormal), # the initial state
+    "d":("debug", opscore.RO.Constants.sevDebug),
+    ">":("queued", opscore.RO.Constants.sevNormal),
+    ":":("finished", opscore.RO.Constants.sevNormal),
 }
 # all message types
 AllTypes = "".join(list(TypeDict.keys()))
@@ -212,7 +212,7 @@ class KeyVar(RO.AddCallback.BaseMixin):
     def __init__(self,
         keyword,
         nval = None,
-        converters = RO.CnvUtil.nullCnv,
+        converters = opscore.RO.CnvUtil.nullCnv,
         actor = "",
         description = "",
         refreshCmd = None,
@@ -228,13 +228,13 @@ class KeyVar(RO.AddCallback.BaseMixin):
             self.cnvDescr = "" # temporary value for error messages
 
         # set and check self._converterList, self.minNVal and self.maxNVal
-        self._converterList = RO.SeqUtil.asList(converters)
+        self._converterList = opscore.RO.SeqUtil.asList(converters)
         if nval is None:
             # auto-compute
             self.minNVal = self.maxNVal = len(self._converterList)
         else:
             try:
-                self.minNVal, self.maxNVal = RO.SeqUtil.oneOrNAsList(nval, 2, "nval")
+                self.minNVal, self.maxNVal = opscore.RO.SeqUtil.oneOrNAsList(nval, 2, "nval")
                 assert isinstance(self.minNVal, int)
                 assert self.minNVal >= 0
                 if self.maxNVal is not None:
@@ -243,7 +243,7 @@ class KeyVar(RO.AddCallback.BaseMixin):
             except (ValueError, TypeError, AssertionError):
                 raise ValueError("invalid nval = %r for %s" % (nval, self))
 
-            if RO.SeqUtil.isSequence(converters) and self.maxNVal is not None and len(converters) > self.maxNVal:
+            if opscore.RO.SeqUtil.isSequence(converters) and self.maxNVal is not None and len(converters) > self.maxNVal:
                 raise ValueError("Too many converters (%d > %d=max) for %s" %
                     (len(converters), self.maxNVal, self))
 
@@ -268,7 +268,7 @@ class KeyVar(RO.AddCallback.BaseMixin):
         if not self.cnvDescr:
             if self.maxNVal == 0:
                 cnvDescr = "0"
-            elif RO.SeqUtil.isSequence(converters):
+            elif opscore.RO.SeqUtil.isSequence(converters):
                 cnvNameList = [RO.LangUtil.funcName(cnv) for cnv in converters]
                 cnvNameStr = ", ".join(cnvNameList)
                 if not (self.minNVal == self.maxNVal == len(cnvNameList)):
@@ -276,7 +276,7 @@ class KeyVar(RO.AddCallback.BaseMixin):
                     cnvNameStr += "..."
                 cnvDescr = "%s, (%s)" % (nvalDescr(), cnvNameStr)
             else:
-                cnvDescr = "%s, %s" % (nvalDescr(), RO.LangUtil.funcName(converters))
+                cnvDescr = "%s, %s" % (nvalDescr(), opscore.RO.LangUtil.funcName(converters))
             self.cnvDescr = cnvDescr
 
 
@@ -291,10 +291,10 @@ class KeyVar(RO.AddCallback.BaseMixin):
         self._refreshKeyCmd = None  # most recent command used to refresh
         self._valueList = []
 
-        RO.AddCallback.BaseMixin.__init__(self, defCallNow = True)
+        opscore.RO.AddCallback.BaseMixin.__init__(self, defCallNow = True)
 
         # handle defaults
-        if RO.SeqUtil.isSequence(defValues):
+        if opscore.RO.SeqUtil.isSequence(defValues):
             self._defValues = defValues
         else:
             if self.maxNVal is not None:
@@ -336,7 +336,7 @@ class KeyVar(RO.AddCallback.BaseMixin):
         """Adds a dictionary whose specified item is to be set to the DMS representation of the data"""
         def setFunc (value, isCurrent, keyVar, dict=dict, item=item, precision=precision):
             if value is not None:
-                dict[item] = RO.StringUtil.dmsStrFromDeg(value, nFields, precision)
+                dict[item] = opscore.RO.StringUtil.dmsStrFromDeg(value, nFields, precision)
             else:
                 dict[item] = None
         self.addIndexedCallback (setFunc, ind)
@@ -361,7 +361,7 @@ class KeyVar(RO.AddCallback.BaseMixin):
         if self.maxNVal == 0:
             raise ValueError("%s has 0 values; addIndexedCallback prohibited" % (self,))
         try:
-            RO.MathUtil.checkRange(ind+1, 1, self.maxNVal)
+            opscore.RO.MathUtil.checkRange(ind+1, 1, self.maxNVal)
         except ValueError:
             raise ValueError("invalid ind=%r for %s" % (ind, self,))
 
@@ -374,7 +374,7 @@ class KeyVar(RO.AddCallback.BaseMixin):
         self.addCallback(fullCallFunc, callNow)
 
     def addROWdg (self, wdg, ind=0, setDefault=False):
-        """Adds an RO.Wdg; these format their own data via the set
+        """Adds an opscore.RO.Wdg; these format their own data via the set
         or setDefault function (depending on setDefault).
         Typically one uses set for a display widget
         and setDefault for an Entry widget
@@ -385,7 +385,7 @@ class KeyVar(RO.AddCallback.BaseMixin):
             self.addIndexedCallback (wdg.set, ind)
 
     def addROWdgSet (self, wdgSet, setDefault=False):
-        """Adds a set of RO.Wdg wigets
+        """Adds a set of opscore.RO.Wdg wigets
 
         There may be fewer widgets than values, but not more widgets.
 
@@ -448,10 +448,10 @@ class KeyVar(RO.AddCallback.BaseMixin):
 
     def getSeverity(self):
         """Return severity of most recent message,
-        or RO.Constants.sevNormal if no messages received.
+        or opscore.RO.Constants.sevNormal if no messages received.
         """
         if not self.lastType:
-            return RO.Constants.sevNormal
+            return opscore.RO.Constants.sevNormal
         return TypeDict[self.lastType][1]
 
     def hasRefreshCmd(self):
@@ -617,8 +617,8 @@ class PVTKeyVar(KeyVar):
         KeyVar.__init__(self,
             keyword = keyword,
             nval = naxes,
-            converters = RO.CnvUtil.asFloat,
-            defValues = RO.PVT.PVT(),
+            converters = opscore.RO.CnvUtil.asFloat,
+            defValues = opscore.RO.PVT.PVT(),
         **kargs)
 
         self._hasVel = False
@@ -642,11 +642,11 @@ class PVTKeyVar(KeyVar):
         self.addCallback(fullCallFunc, callNow)
 
     def addROWdg (self, wdg, ind=0):
-        """Adds an RO.Wdg; these format their own data via the set function"""
+        """Adds an opscore.RO.Wdg; these format their own data via the set function"""
         self.addPosCallback (wdg.set, ind)
 
     def addROWdgSet (self, wdgSet):
-        """Adds a set of RO.Wdg wigets that are set to the current position.
+        """Adds a set of opscore.RO.Wdg wigets that are set to the current position.
 
         There may be fewer widgets than values, but not more widgets.
 
@@ -686,22 +686,22 @@ class PVTKeyVar(KeyVar):
         try:
             startInd = ind * 3
             rawValue = valueList[startInd:startInd+3]
-            pvt = RO.PVT.PVT(*rawValue)
+            pvt = opscore.RO.PVT.PVT(*rawValue)
             if pvt.vel not in (0.0, None):
                 self._hasVel = True
             return pvt
         except (ValueError, TypeError):
             # value could not be converted
             sys.stderr.write("invalid value %r at index %d for %s\n" % (rawValue, ind, self))
-            return RO.PVT.PVT()
+            return opscore.RO.PVT.PVT()
         except IndexError:
             # value does not exist (or converter does not exist, but that's much less likely)
             # a message should already have been printed
-            return RO.PVT.PVT()
+            return opscore.RO.PVT.PVT()
         except Exception as e:
             # unknown error; this should not happen
             sys.stderr.write("could not convert %r at index %d for %s: %s\n" % (rawValue, ind, self, e))
-            return RO.PVT.PVT()
+            return opscore.RO.PVT.PVT()
 
     def _countValues(self, valueList):
         """Check length of valueList and return the number of values there should be after conversion.
@@ -844,10 +844,10 @@ class CmdVar(object):
 
     def getSeverity(self):
         """Return severity of most recent message,
-        or RO.Constants.sevNormal if no messages received.
+        or opscore.RO.Constants.sevNormal if no messages received.
         """
         if not self.lastType:
-            return RO.Constants.sevNormal
+            return opscore.RO.Constants.sevNormal
         return TypeDict[self.lastType][1]
 
     def getKeyVarData(self, keyVar):
@@ -1028,8 +1028,8 @@ class KeyVarFactory(object):
         # _actorKeyVarsRefreshDict is for use by setKeysRefreshCmd
         # entries are actor:list of keyVars that are not local
         # and don't have an explicit refresh command
-        self._actorKeyVarsRefreshDict = RO.Alg.ListDict()
-        self._actorOptKeywordsRefreshDict = RO.Alg.ListDict()
+        self._actorKeyVarsRefreshDict = opscore.RO.Alg.ListDict()
+        self._actorOptKeywordsRefreshDict = opscore.RO.Alg.ListDict()
 
     def __call__(self,
         keyword,
@@ -1107,15 +1107,15 @@ class KeyVarFactory(object):
             for keyVar in keyVars:
                 keyVar.refreshActor = "keys"
                 keyVar.refreshCmd = refreshCmd
-        self._actorKeyVarsRefreshDict = RO.Alg.ListDict()
-        self._actorOptKeywordsRefreshDict = RO.Alg.ListDict()
+        self._actorKeyVarsRefreshDict = opscore.RO.Alg.ListDict()
+        self._actorOptKeywordsRefreshDict = opscore.RO.Alg.ListDict()
 
 
 if __name__ == "__main__":
     from six.moves import tkinter
     doBasic = True
     doFmt = True
-    import RO.Astro.Tm
+    import opscore.RO.Astro.Tm
 
     root = tkinter.Tk()
 
@@ -1125,9 +1125,9 @@ if __name__ == "__main__":
             KeyVar("Str0-?",       nval=(0,None), converters=str, doPrint=True),
             KeyVar("Empty",        nval=0, doPrint=True),
             KeyVar("Str",          converters=str, doPrint=True),
-            KeyVar("Int",          converters=RO.CnvUtil.asInt, doPrint=True),
-            KeyVar("Float",        converters=RO.CnvUtil.asFloat, doPrint=True),
-            KeyVar("Bool",         converters=RO.CnvUtil.asBool, doPrint=True),
+            KeyVar("Int",          converters=opscore.RO.CnvUtil.asInt, doPrint=True),
+            KeyVar("Float",        converters=opscore.RO.CnvUtil.asFloat, doPrint=True),
+            KeyVar("Bool",         converters=opscore.RO.CnvUtil.asBool, doPrint=True),
             KeyVar("IntStr",       converters=(RO.CnvUtil.asInt, str), doPrint=True),
             KeyVar("Str1-2",       nval=(1,2), converters=str, doPrint=True),
             KeyVar("Str2",         nval=2, converters=str, doPrint=True),
@@ -1156,7 +1156,7 @@ if __name__ == "__main__":
 
     if doFmt:
         print("\nrunning format test")
-        afl = KeyVar("FloatVar", 1, RO.CnvUtil.asFloat)
+        afl = KeyVar("FloatVar", 1, opscore.RO.CnvUtil.asFloat)
         fmtSet = ("%.2f", "%10.5f", "%.0f")
         dictList = []
         for fmtStr in fmtSet:
@@ -1190,7 +1190,7 @@ if __name__ == "__main__":
         print("%s pos = %s" % (pvt, pvt.getPos()))
     pvtVar = PVTKeyVar("PVT")
     pvtVar.addCallback(pvtCallback)
-    currTAI = RO.Astro.Tm.TAI.taiFromPySec()
+    currTAI = opscore.RO.Astro.Tm.TAI.taiFromPySec()
     pvtVar.set((1.0, 0.1, currTAI))
 
     root.mainloop()

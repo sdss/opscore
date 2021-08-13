@@ -27,13 +27,13 @@ __all__ = ["DirWdg", "FileWdg"]
 
 import os
 from six.moves import tkinter
-import RO.AddCallback
-import RO.Constants
+import opscore.RO.AddCallback
+import opscore.RO.Constants
 from .CtxMenu import CtxMenuMixin
 from .SeverityMixin import SeverityActiveMixin
 from six import u
 
-class BasePathWdg (tkinter.Button, RO.AddCallback.BaseMixin, CtxMenuMixin,
+class BasePathWdg (tkinter.Button, opscore.RO.AddCallback.BaseMixin, CtxMenuMixin,
     SeverityActiveMixin):
     def __init__(self,
         master,
@@ -41,7 +41,7 @@ class BasePathWdg (tkinter.Button, RO.AddCallback.BaseMixin, CtxMenuMixin,
         fileTypes = None,
         maxChar = 30,
         callFunc = None,
-        severity = RO.Constants.sevNormal,
+        severity = opscore.RO.Constants.sevNormal,
         helpText = None,
         helpURL = None,
     **kargs):
@@ -56,7 +56,7 @@ class BasePathWdg (tkinter.Button, RO.AddCallback.BaseMixin, CtxMenuMixin,
         - callFunc  callback function; the function receives one argument: self.
                     It is called whenever the value changes (manually or via
                     the associated variable being set).
-        - severity  initial severity; one of RO.Constants.sevNormal, sevWarning or sevError
+        - severity  initial severity; one of opscore.RO.Constants.sevNormal, sevWarning or sevError
         - helpText  text for hot help
         - helpURL   URL for longer help
         - all remaining keyword arguments are used to configure the Tkinter Button;
@@ -76,7 +76,7 @@ class BasePathWdg (tkinter.Button, RO.AddCallback.BaseMixin, CtxMenuMixin,
             command = self._doChoose,
         **kargs)
 
-        RO.AddCallback.BaseMixin.__init__(self)
+        opscore.RO.AddCallback.BaseMixin.__init__(self)
 
         CtxMenuMixin.__init__(self,
             helpURL = helpURL,
@@ -229,7 +229,7 @@ class DirWdg(BasePathWdg):
         **kargs)
         if newPath:
             # handle case of newPath being a weird Tcl object
-            newPath = RO.CnvUtil.asStr(newPath)
+            newPath = opscore.RO.CnvUtil.asStr(newPath)
             self.setPath(newPath)
 
     def checkPath(self, path):
@@ -274,7 +274,7 @@ class FileWdg(BasePathWdg):
         **kargs)
         if newPath:
             # handle case of newPath being a weird Tcl object
-            newPath = RO.CnvUtil.asStr(newPath)
+            newPath = opscore.RO.CnvUtil.asStr(newPath)
             self.setPath(newPath)
 
     def _initPath(self, defPath):
@@ -304,7 +304,7 @@ class FileWdg(BasePathWdg):
 
 
 if __name__ == "__main__":
-    from RO.Wdg.PythonTk import PythonTk
+    from opscore.RO.Wdg.PythonTk import PythonTk
     root = PythonTk()
 
     modFile = __file__

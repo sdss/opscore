@@ -4,12 +4,12 @@
 __all__ = ["scFromCCPV"]
 
 import math
-import RO.PhysConst
+import opscore.RO.PhysConst
 from .SCFromCC import scFromCC
 
 # Constants
-_ASPerCy_Per_RadPerYear = 100.0 * RO.PhysConst.ArcSecPerDeg / RO.PhysConst.RadPerDeg
-_KMPerSec_Per_AUPerYear = RO.PhysConst.KmPerAU / (RO.PhysConst.DayPerYear * RO.PhysConst.SecPerDay)
+_ASPerCy_Per_RadPerYear = 100.0 * opscore.RO.PhysConst.ArcSecPerDeg / opscore.RO.PhysConst.RadPerDeg
+_KMPerSec_Per_AUPerYear = opscore.RO.PhysConst.KmPerAU / (RO.PhysConst.DayPerYear * opscore.RO.PhysConst.SecPerDay)
 
 def scFromCCPV(p, v):
     """
@@ -53,7 +53,7 @@ def scFromCCPV(p, v):
     #  compute parallax; note that arcsec = 1 / parsec;
     #  the division is safe because magP must have some reasonable
     #  minimum value, else scFromCC would have raised an exception
-    parallax = RO.PhysConst.AUPerParsec / magP
+    parallax = opscore.RO.PhysConst.AUPerParsec / magP
 
     #  compute radial velocity in (au/year) and convert to (km/s)
     radVel = float ((x * vX) + (y * vY) + (z * vZ)) / magP
@@ -89,7 +89,7 @@ def scFromCCPV(p, v):
 
 
 if __name__ == "__main__":
-    import RO.SeqUtil
+    import opscore.RO.SeqUtil
     print("testing scFromCCPV")
     # test data is formatted as follows:
     # a list of entries, each consisting of:
@@ -208,9 +208,9 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = scFromCCPV(*testInput)
-        actualFlat = RO.SeqUtil.flatten(actualOutput)
-        expectedFlat = RO.SeqUtil.flatten(expectedOutput)
-        if RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1.0e-10, atol=1.0e-10):
+        actualFlat = opscore.RO.SeqUtil.flatten(actualOutput)
+        expectedFlat = opscore.RO.SeqUtil.flatten(expectedOutput)
+        if opscore.RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1.0e-10, atol=1.0e-10):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)

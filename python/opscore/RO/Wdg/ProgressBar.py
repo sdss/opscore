@@ -6,7 +6,7 @@ Includes a countdown timer RemainingTime.
 
 History:
 2002-03-15 ROwen    Added a start method to TimeBar.
-2002-07-30 ROwen    Moved into the RO.Wdg module.
+2002-07-30 ROwen    Moved into the opscore.RO.Wdg module.
 2002-12-20 ROwen    Changed bd to borderwidth for clarity.
 2003-07-25 ROwen    ProgressbBar: added barBorder, helpText, helpURL;
                     can now be resized while in use;
@@ -17,21 +17,21 @@ History:
                     with Tkinter.Frame.configure.
 2004-08-11 ROwen    Fixed some import errors.
                     Define __all__ to restrict import.
-2004-09-14 ROwen    Modified test code to not import RO.Wdg.
+2004-09-14 ROwen    Modified test code to not import opscore.RO.Wdg.
 2005-08-03 ROwen    Modified to handle max=min gracefully instead of raising an exception.
                     Added doc strings to many methods.
 2006-03-06 ROwen    Added setUnknown method. To support this, many parameters
                     now can take two values for (known, unknown) state.
                     Added barStipple argument.
-2012-07-10 ROwen    Modified to use RO.TkUtil.Timer.
+2012-07-10 ROwen    Modified to use opscore.RO.TkUtil.Timer.
                     Removed use of update_idletasks.
 2015-09-24 ROwen    Replace "== None" with "is None" to modernize the code.
 """
 __all__ = ['ProgressBar', 'TimeBar']
 
 import time
-import RO.SeqUtil
-from RO.TkUtil import Timer
+import opscore.RO.SeqUtil
+from opscore.RO.TkUtil import Timer
 from six.moves import tkinter
 from . import Button
 from . import Entry
@@ -106,7 +106,7 @@ class ProgressBar (tkinter.Frame):
 
         # basics
         self.constrainValue = constrainValue
-        self.valueFormat = RO.SeqUtil.oneOrNAsList(valueFormat, 2)
+        self.valueFormat = opscore.RO.SeqUtil.oneOrNAsList(valueFormat, 2)
         self.isHorizontal = isHorizontal
         self.knownInd = 0 # 0 for known, 1 for unknown value
         self.fullBarLength = barLength
@@ -117,8 +117,8 @@ class ProgressBar (tkinter.Frame):
                 self.barThick = 10
         else:
             self.barThick = barThick
-        self.barFill = RO.SeqUtil.oneOrNAsList(barFill, 2)
-        self.barStipple = RO.SeqUtil.oneOrNAsList(barStipple, 2)
+        self.barFill = opscore.RO.SeqUtil.oneOrNAsList(barFill, 2)
+        self.barStipple = opscore.RO.SeqUtil.oneOrNAsList(barStipple, 2)
         self.barBorder = barBorder
         self.hideBarCoords = (-1, -1 - self.barBorder) * 2
         self.helpText = helpText

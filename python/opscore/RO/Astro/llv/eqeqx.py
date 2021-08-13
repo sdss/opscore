@@ -4,10 +4,10 @@
 __all__ = ["eqeqx"]
 
 import math
-import RO.PhysConst
+import opscore.RO.PhysConst
 from .nutc import nutc
 
-_ArcSecPerRev = RO.PhysConst.ArcSecPerDeg * 360.0
+_ArcSecPerRev = opscore.RO.PhysConst.ArcSecPerDeg * 360.0
 
 def eqeqx(tdb):
     """The equation of the equinoxes (IAU 1994).
@@ -31,7 +31,7 @@ def eqeqx(tdb):
 
     # Longitude of the mean ascending node of the lunar orbit on the
     # ecliptic, measured from the mean equinox of date
-    om=RO.PhysConst.RadPerArcSec*(450160.280+(-5.0*_ArcSecPerRev-482890.539  \
+    om=opscore.RO.PhysConst.RadPerArcSec*(450160.280+(-5.0*_ArcSecPerRev-482890.539  \
         +(7.455+0.008*t)*t)*t)
 
     # Nutation
@@ -42,7 +42,7 @@ def eqeqx(tdb):
         0.000063*math.sin(om+om))
 
 if __name__ == "__main__":
-    import RO.MathUtil
+    import opscore.RO.MathUtil
     print("testing eqeqx")
     # test data is formatted as follows:
     # a list of entries, each consisting of:
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = eqeqx(testInput)
-        if RO.MathUtil.compareFloats(actualOutput, expectedOutput, rtol=1e-15):
+        if opscore.RO.MathUtil.compareFloats(actualOutput, expectedOutput, rtol=1e-15):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)

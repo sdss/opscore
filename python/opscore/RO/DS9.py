@@ -7,9 +7,9 @@ Loosely based on XPA, by Andrew Williams.
 Before trying to use this, please read Requirements below.
 
 Here is a basic summary for use:
-    import RO.DS9
+    import opscore.RO.DS9
     import numpy
-    ds9Win = RO.DS9.DS9Win()
+    ds9Win = opscore.RO.DS9.DS9Win()
     # show a FITS file in frame 1
     ds9Win. showFITSFile("foo/test.fits")
     # show an array in frame 2
@@ -35,7 +35,7 @@ One common use is control more than one ds9 window.
 Since ds9 can only have one window, you must launch
 multiple instances of ds9 using the -title command-line
 option to specify a different window title for each.
-Then specify the window title as the template to RO.DS9.
+Then specify the window title as the template to opscore.RO.DS9.
 See the XPA documentation for other uses for template,
 such as talking to ds9 on a remote host.
 
@@ -58,7 +58,7 @@ Requirements:
   - Use the version of the application that is meant for your operating system.
     For Leopard (MacOS X 10.5) download the Leopard version. For Tiger (MacOS X 10.4)
     download the Tiger version. If you try to use a Tiger version under Leopard,
-    you will see a host of warning messages as RO.DS9 starts up the SAOImage DS9 application.
+    you will see a host of warning messages as opscore.RO.DS9 starts up the SAOImage DS9 application.
   - The application must be named "SAOImage DS9.app" or "SAOImageDS9.app";
     one of these should be the default for your version.
   - The application must be in one of the two standard application directories
@@ -104,7 +104,7 @@ History:
 2004-11-17 ROwen    Corrected a bug in the subprocess version of xpaget.
                     Updated header comments for big-fixed version of subprocess.
 2004-12-01 ROwen    Bug fix in xpaset: terminate data with \n if not already done.
-                    Modified to use subprocess module (imported from RO.Future
+                    Modified to use subprocess module (imported from opscore.RO.Future
                     if Python is old enough not to include it).
                     Added __all__.
 2004-12-13 ROwen    Bug fix in DS9Win; the previous version was missing
@@ -157,7 +157,7 @@ import numpy
 import os
 import time
 import warnings
-import RO.OS
+import opscore.RO.OS
 import subprocess
 
 _DebugSetup = False
@@ -172,7 +172,7 @@ def _addToPATH(newPath):
     """Add newPath to the PATH environment variable.
     Do nothing if newPath already in PATH.
     """
-    if RO.OS.PlatformName == "win":
+    if opscore.RO.OS.PlatformName == "win":
         pathSep = ";"
     else:
         pathSep = ":"
@@ -201,7 +201,7 @@ def _findApp(appName, subDirs = None, doRaise = True):
     Returns a path to the application's directory.
     Return None or raise RuntimeError if not found.
     """
-    appDirs = RO.OS.getAppDirs()
+    appDirs = opscore.RO.OS.getAppDirs()
     if subDirs is None:
         subDirs = [None]
     dirTrials = []
@@ -270,7 +270,7 @@ def _findDS9AndXPA():
     global _DirFromWhichToRunDS9, _DS9Path
     _DirFromWhichToRunDS9 = None
     _DS9Path = "ds9"
-    if RO.OS.PlatformName == "mac":
+    if opscore.RO.OS.PlatformName == "mac":
         # ds9 and xpa may be in any of:
         # - ~/Applications/ds9.app
         # - /Applications.ds9.app
@@ -308,7 +308,7 @@ def _findDS9AndXPA():
             if not foundXPA:
                 xpaDir = _findUnixApp("xpaget")
 
-    elif RO.OS.PlatformName == "win":
+    elif opscore.RO.OS.PlatformName == "win":
         ds9Dir = _findApp("ds9.exe", ["ds9"], doRaise=True)
         xpaDir = _findApp("xpaget.exe", ["xpa", "ds9"], doRaise=True)
         _DirFromWhichToRunDS9 = xpaDir

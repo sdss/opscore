@@ -7,14 +7,14 @@ History:
 2014-02-07 ROwen    Renamed config to preset
 2014-03-13 ROwen    Bug fix: was not recording default values. The fix required an update to InputCont.
 2014-03-14 ROwen    Added helpText and helpURL arguments.
-2014-05-07 ROwen    Added autoUpdate argument and modified to use RO.Wdg.Menubutton
+2014-05-07 ROwen    Added autoUpdate argument and modified to use opscore.RO.Wdg.Menubutton
 """
 __all__ = ["InputContPresetsWdg"]
 
 import functools
 from six.moves import tkinter
 
-import RO.TkUtil
+import opscore.RO.TkUtil
 from . import Entry
 from . import Label
 from . import InputDialog
@@ -43,13 +43,13 @@ class InputContPresetsWdg(Menubutton.Menubutton):
         Inputs:
         - master: master widget
         - sysName: name of this system in userPresetsDict
-        - userPresetsDict: a dict of user-specified presets for various systems; use an RO.Alg.SavedDict
+        - userPresetsDict: a dict of user-specified presets for various systems; use an opscore.RO.Alg.SavedDict
             if you want the user presets to be auto-loaded at startup and auto-saved when changed.
             Only userPresetsDict[sysName] applies to this inputCont.
             The format of the value userPresetsDict[sysName] is the same as the format of stdPresets.
         - stdPresets: standard presets for this system. None, or a dict whose entries are:
             preset name: preset as a dict of values in the form required by inputCont.setValueDict()
-        - inputCont: input container list being configured (an RO.InputCont.ContList)
+        - inputCont: input container list being configured (an opscore.RO.InputCont.ContList)
         - helpText: a string that describes the widget
         - helpURL: URL for on-line help
         - autoUpdate: automatically set text to name of preset that matches inputCont, if there is a match.
@@ -377,8 +377,8 @@ class RestoreDefaultsDialog(InputDialog.ModalDialogBase):
 
 
 if __name__ == '__main__':
-    from RO.Alg import SavedDict
-    import RO.InputCont
+    from opscore.RO.Alg import SavedDict
+    import opscore.RO.InputCont
     from . import Gridder
     from . import InputContFrame
 
@@ -409,13 +409,13 @@ if __name__ == '__main__':
                 },
             )
 
-            self._inputCont = RO.InputCont.ContList (
+            self._inputCont = opscore.RO.InputCont.ContList (
                 conts = [
-                    RO.InputCont.WdgCont (
+                    opscore.RO.InputCont.WdgCont (
                         name = 'Widget 1',
                         wdgs = self.wdg1,
                     ),
-                    RO.InputCont.WdgCont (
+                    opscore.RO.InputCont.WdgCont (
                         name = 'Widget 2',
                         wdgs = self.wdg2,
                     ),

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Widgets to load and run RO.ScriptRunner scripts.
+"""Widgets to load and run opscore.RO.ScriptRunner scripts.
 
 ScriptModuleWdg loads a script from a specified module.
 ScriptFileWdg loads a script from a python source file
@@ -35,9 +35,9 @@ __all__ = ['BasicScriptWdg', 'ScriptModuleWdg', 'ScriptFileWdg']
 
 import os.path
 from six.moves import tkinter
-import RO.Constants
-import RO.AddCallback
-import RO.ScriptRunner
+import opscore.RO.Constants
+import opscore.RO.AddCallback
+import opscore.RO.ScriptRunner
 from . import Button
 from . import StatusBar
 import imp
@@ -45,9 +45,9 @@ import imp
 # compute _StateSevDict which contains
 # state:severity for non-normal severities
 _StateSevDict = {}
-_StateSevDict[RO.ScriptRunner.Paused] = RO.Constants.sevWarning
-_StateSevDict[RO.ScriptRunner.Cancelled] = RO.Constants.sevWarning
-_StateSevDict[RO.ScriptRunner.Failed] = RO.Constants.sevError
+_StateSevDict[RO.ScriptRunner.Paused] = opscore.RO.Constants.sevWarning
+_StateSevDict[RO.ScriptRunner.Cancelled] = opscore.RO.Constants.sevWarning
+_StateSevDict[RO.ScriptRunner.Failed] = opscore.RO.Constants.sevError
 
 class _Blank(object):
     def __init__(self):
@@ -85,7 +85,7 @@ class BasicScriptWdg(RO.AddCallback.BaseMixin):
     Notes:
     - The text of the Pause button is automatically set (to Pause or Resume, as appropriate).
     - You must set the text of the start and cancel buttons.
-    - Supports the RO.AddCallback interface for state function callbacks,
+    - Supports the opscore.RO.AddCallback interface for state function callbacks,
       including addCallback and removeCallback
     """
     def __init__(self,
@@ -103,7 +103,7 @@ class BasicScriptWdg(RO.AddCallback.BaseMixin):
         cancelButton = None,
         stateFunc = None,
     ):
-        RO.AddCallback.BaseMixin.__init__(self)
+        opscore.RO.AddCallback.BaseMixin.__init__(self)
 
         self.name = name
         self.dispatcher = dispatcher
@@ -141,7 +141,7 @@ class BasicScriptWdg(RO.AddCallback.BaseMixin):
         """Create a new script runner.
         See ScriptRunner for the meaning of the arguments.
         """
-        self.scriptRunner = RO.ScriptRunner.ScriptRunner(
+        self.scriptRunner = opscore.RO.ScriptRunner.ScriptRunner(
             master = master,
             name = self.name,
             dispatcher = self.dispatcher,
@@ -208,18 +208,18 @@ class BasicScriptWdg(RO.AddCallback.BaseMixin):
         else:
             msgStr = stateStr
 
-        if state == RO.ScriptRunner.Paused:
+        if state == opscore.RO.ScriptRunner.Paused:
             self.pauseButton["text"] = "Resume"
         else:
             self.pauseButton["text"] = "Pause"
 
-        severity = _StateSevDict.get(state, RO.Constants.sevNormal)
+        severity = _StateSevDict.get(state, opscore.RO.Constants.sevNormal)
 
         self.scriptStatusBar.setMsg(msgStr, severity)
         self._setButtonState()
 
         if self.scriptRunner.isDone():
-            if stateStr == RO.ScriptRunner.Failed:
+            if stateStr == opscore.RO.ScriptRunner.Failed:
                 self.scriptStatusBar.playCmdFailed()
             else:
                 self.scriptStatusBar.playCmdDone()
@@ -328,7 +328,7 @@ class _BaseUserScriptWdg(tkinter.Frame, BasicScriptWdg):
         """Create or recreate the script frame and script runner.
         """
 #       print "reload"
-        self.scriptStatusBar.setMsg("Reloading", RO.Constants.sevNormal)
+        self.scriptStatusBar.setMsg("Reloading", opscore.RO.Constants.sevNormal)
         try:
             srArgs = self._getScriptFuncs(isFirst = False)
             srArgs.pop("HelpURL", None) # don't send HelpURL arg to _makeScriptRunner
@@ -342,9 +342,9 @@ class _BaseUserScriptWdg(tkinter.Frame, BasicScriptWdg):
             self.scriptFrame = tkinter.Frame(self)
             self.scriptFrame.grid(row=self.scriptFrameRow, column=0, sticky="news")
             self._makeScriptRunner(self.scriptFrame, **srArgs)
-            self.scriptStatusBar.setMsg("Reloaded", RO.Constants.sevNormal)
+            self.scriptStatusBar.setMsg("Reloaded", opscore.RO.Constants.sevNormal)
         except Exception as e:
-            self.scriptStatusBar.setMsg("Reload failed: %s" % (e,), RO.Constants.sevError)
+            self.scriptStatusBar.setMsg("Reload failed: %s" % (e,), opscore.RO.Constants.sevError)
             raise
 
 
@@ -406,8 +406,8 @@ class ScriptModuleWdg(_BaseUserScriptWdg):
         - "end", if present, will be run whenever "run" ends
             (whether it succeeded, failed or was cancelled)
 
-        run, init and end all receive one argument: sr, an RO.ScriptRunner
-        object. See RO.ScriptRunner for more information.
+        run, init and end all receive one argument: sr, an opscore.RO.ScriptRunner
+        object. See opscore.RO.ScriptRunner for more information.
 
         ScriptClass.__init__ or init may populate sr.master with widgets.
         sr.master is an empty frame above the status bar intended for this purpose.
@@ -466,8 +466,8 @@ class ScriptFileWdg(_BaseUserScriptWdg):
         - "end", if present, will be run whenever "run" ends
             (whether it succeeded, failed or was cancelled)
 
-        run, init and end all receive one argument: sr, an RO.ScriptRunner
-        object. See RO.ScriptRunner for more information.
+        run, init and end all receive one argument: sr, an opscore.RO.ScriptRunner
+        object. See opscore.RO.ScriptRunner for more information.
 
         ScriptClass.__init__ or init may populate sr.master with widgets.
         sr.master is an empty frame above the status bar intended for this purpose.
@@ -540,13 +540,13 @@ class ScriptFileWdg(_BaseUserScriptWdg):
         return retDict
 
 if __name__ == "__main__":
-    import RO.KeyDispatcher
+    import opscore.RO.KeyDispatcher
     from . import PythonTk
     from . import TestScriptWdg
     root = PythonTk.PythonTk()
     root.title('Script 1 (root)')
 
-    dispatcher = RO.KeyDispatcher.KeyDispatcher()
+    dispatcher = opscore.RO.KeyDispatcher.KeyDispatcher()
 
     testTL1 = root
     sr1 = ScriptModuleWdg(

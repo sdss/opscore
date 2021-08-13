@@ -4,7 +4,7 @@
 
 History:
 2002-12-16 ROwen
-2003-06-25 ROwen    Modified to return an RO.Alg.OrderedDict
+2003-06-25 ROwen    Modified to return an opscore.RO.Alg.OrderedDict
 2003-11-19 ROwen    Modified header: keywords with no values may have an '='.
                     Added "noValKey=" to test cases as it caused an infinite loop.
 2004-05-18 ROwen    Modified test code to use astr instead of str.
@@ -15,12 +15,12 @@ __all__ = ["parseKeyValueData"]
 
 from .GetKeyword import getKeyword
 from .GetValues import getValues
-import RO.Alg
+import opscore.RO.Alg
 
 def parseKeyValueData(astr):
     """Parses a string of the form:
         'keyword1=value11, value12,...; keyword2=value21, value22; keyword3=; keyword4; ...'
-    returning an RO.Alg.OrderedDict of the form:
+    returning an opscore.RO.Alg.OrderedDict of the form:
         {keyword1:(value11, value12,...), keyword2:(value21, value22, ...),
          keyword3: (), keyword4: (), ...}
 
@@ -39,13 +39,13 @@ def parseKeyValueData(astr):
     - Each keyword may have zero or more comma-separated values;
         if it has zero values then the equals sign may be omitted.
 
-    Returns dataDict, an RO.Alg.OrderedDict of keyword: valueTuple entries,
+    Returns dataDict, an opscore.RO.Alg.OrderedDict of keyword: valueTuple entries,
     one for each keyword. Details:
     - The keywords are given in the order they were specified in the message.
     - If the keyword has no values, valueTuple is ()
     - If the keyword has one value, valueTuple is (value,)
     """
-    dataDict = RO.Alg.OrderedDict()
+    dataDict = opscore.RO.Alg.OrderedDict()
     if astr == '':
         return dataDict
     nextInd = 0

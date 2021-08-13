@@ -27,7 +27,7 @@ def dcFromSC(pos):
 
 
 if __name__ == "__main__":
-    import RO.SeqUtil
+    import opscore.RO.SeqUtil
     print("testing dcFromSC")
     # test data is formatted as follows:
     # a list of entries, each consisting of:
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = dcFromSC(testInput)
-        if RO.SeqUtil.matchSequences(actualOutput, expectedOutput, rtol=1.0e-14):
+        if opscore.RO.SeqUtil.matchSequences(actualOutput, expectedOutput, rtol=1.0e-14):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)

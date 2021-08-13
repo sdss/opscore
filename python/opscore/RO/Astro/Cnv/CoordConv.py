@@ -19,7 +19,7 @@ History:
 2002-12-23 ROwen    Bug fix: was not importing ICRSFromFK4 (thanks to pychecker);
     Reorganized the code that computates method dictionaries to make it clearer;
     Reduced the number of globals and made them self-hiding (initial underscore).
-2003-05-28 ROwen    Modified to handle RO.CoordSys 2003-05-09 (defaultDate->currDefaultDate).
+2003-05-28 ROwen    Modified to handle opscore.RO.CoordSys 2003-05-09 (defaultDate->currDefaultDate).
 2005-01-21 ROwen    Bug fix: was miscomputing proper motion, due to using ICRS
                     instead of ICRS2000 as the intermediate coordinate system.
 2005-04-26 ROwen    Bug fix: conversions requiring a App Topo<->Observed step were broken
@@ -30,8 +30,8 @@ History:
 __all__ = ["coordConv"]
 
 import numpy
-import RO.CoordSys
-from RO.Astro import Tm
+import opscore.RO.CoordSys
+from opscore.RO.Astro import Tm
 from .AppGeoData import AppGeoData
 from .FK4FromICRS import fk4FromICRS
 from .FK5Prec import fk5Prec
@@ -46,8 +46,8 @@ from .ObsFromTopo import obsFromTopo
 from .TopoFromGeo import topoFromGeo
 from .TopoFromObs import topoFromObs
 
-_CSysList = (RO.CoordSys.ICRS, RO.CoordSys.FK5, RO.CoordSys.FK4, RO.CoordSys.Galactic,
-    RO.CoordSys.Geocentric, RO.CoordSys.Topocentric, RO.CoordSys.Observed,
+_CSysList = (RO.CoordSys.ICRS, opscore.RO.CoordSys.FK5, opscore.RO.CoordSys.FK4, opscore.RO.CoordSys.Galactic,
+    opscore.RO.CoordSys.Geocentric, opscore.RO.CoordSys.Topocentric, opscore.RO.CoordSys.Observed,
     "ICRS2000")
 
 class _CnvObj (object):
@@ -107,7 +107,7 @@ class _CnvObj (object):
                     addMethods(methDict, toSys)
 
         # pre-compute conversion dictionaries for every possible starting coordinate system
-        # (which so far includes all in RO.CoordSys except Physical and Mount)
+        # (which so far includes all in opscore.RO.CoordSys except Physical and Mount)
         methDictDict = {}
         for _whatGiven in _CSysList:
             # define method dictionary for coordsys _whatGiven given
@@ -125,9 +125,9 @@ class _CnvObj (object):
         """
         # handle default dates
         if fromDate is None:
-            fromDate = RO.CoordSys.getSysConst(fromSys).currDefaultDate()
+            fromDate = opscore.RO.CoordSys.getSysConst(fromSys).currDefaultDate()
         if toDate is None:
-            toDate = RO.CoordSys.getSysConst(toSys).currDefaultDate()
+            toDate = opscore.RO.CoordSys.getSysConst(toSys).currDefaultDate()
 
         self.fromDate = fromDate
         self.toDate = toDate
@@ -249,11 +249,11 @@ def coordConv(fromP, fromV, fromSys, fromDate, toSys, toDate, obsData=None, refC
         - fromV(3)  cartesian velocity (au/year); ignored if fromSys
                     is Geocentric, Topocentric or Observed
         - fromSys   coordinate system from which to convert;
-                    any of the entries in the table below; use RO.CoordSys constants.
+                    any of the entries in the table below; use opscore.RO.CoordSys constants.
         - fromDate  date*
         - toSys     coordinate system to which to convert (see fromSys)
         - toDate    date*
-        - obsData   an RO.Astro.Cnv.ObserverData object; required if fromSys or toSys
+        - obsData   an opscore.RO.Astro.Cnv.ObserverData object; required if fromSys or toSys
                     is Topocentric or Observed; ignored otherwise.
         - refCo(2)  refraction coefficients; required if fromSys or toSys is Observed;
                     ignored otherwise.

@@ -8,7 +8,7 @@ History:
 __all__ = ["azAltFromHADec"]
 
 import numpy
-import RO.MathUtil
+import opscore.RO.MathUtil
 
 def azAltFromHADec (haDec, lat):
     """Converts cartesian HA/Dec position to alt/az.
@@ -24,8 +24,8 @@ def azAltFromHADec (haDec, lat):
     increasing azAlt[0] is south-ish
     increasing azAlt[1] is east
     """
-    sinLat = RO.MathUtil.sind (lat)
-    cosLat = RO.MathUtil.cosd (lat)
+    sinLat = opscore.RO.MathUtil.sind (lat)
+    cosLat = opscore.RO.MathUtil.cosd (lat)
 
     # convert cartesian -HA/Dec to cartesain Az/Alt
     return numpy.array((
@@ -36,7 +36,7 @@ def azAltFromHADec (haDec, lat):
 
 
 if __name__ == "__main__":
-    import RO.SeqUtil
+    import opscore.RO.SeqUtil
     print("testing azAltFromHADec")
     # test data is formatted as follows:
     # a list of entries, each consisting of:
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = azAltFromHADec(*testInput)
-        if RO.SeqUtil.matchSequences(actualOutput, expectedOutput, rtol=1.0e-15):
+        if opscore.RO.SeqUtil.matchSequences(actualOutput, expectedOutput, rtol=1.0e-15):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)

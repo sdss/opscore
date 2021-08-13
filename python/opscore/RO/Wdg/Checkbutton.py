@@ -18,10 +18,10 @@ History:
 2002-12-04 ROwen    Added support for helpURL.
 2003-03-13 ROwen    Renamed from ROCheckbutton to Checkbutton;
                     added defIfDisabled, setEnable and class EnableCheckbutton.
-2003-04-15 ROwen    Modified to use RO.Wdg.CtxMenu 2003-04-15.
+2003-04-15 ROwen    Modified to use opscore.RO.Wdg.CtxMenu 2003-04-15.
 2003-05-29 ROwen    Removed EnableCheckbutton (it's obsolete).
 2003-07-09 ROwen    Added addCallback, clear, getEnable and setBool;
-                    modified to use RO.AddCallback.
+                    modified to use opscore.RO.AddCallback.
 2003-08-04 ROwen    Improved callbacks to fire when command fires (a bit later in the process;
                     prevents display bugs in some applications).
 2003-08-11 ROwen    Added set, asBool; changed isSelected to getBool.
@@ -73,15 +73,15 @@ History:
 __all__ = ['Checkbutton']
 
 from six.moves import tkinter
-import RO.AddCallback
-import RO.CnvUtil
-import RO.MathUtil
-import RO.TkUtil
+import opscore.RO.AddCallback
+import opscore.RO.CnvUtil
+import opscore.RO.MathUtil
+import opscore.RO.TkUtil
 from .CtxMenu import CtxMenuMixin
 from .IsCurrentMixin import AutoIsCurrentMixin, IsCurrentCheckbuttonMixin
 from .SeverityMixin import SeverityActiveMixin
 
-class Checkbutton (tkinter.Checkbutton, RO.AddCallback.TkVarMixin,
+class Checkbutton (tkinter.Checkbutton, opscore.RO.AddCallback.TkVarMixin,
     AutoIsCurrentMixin, IsCurrentCheckbuttonMixin, SeverityActiveMixin, CtxMenuMixin):
     """A Checkbutton with callback, help, isCurrent and severity support.
 
@@ -118,7 +118,7 @@ class Checkbutton (tkinter.Checkbutton, RO.AddCallback.TkVarMixin,
         enters some new value (at which point it is assumed they will soon issue a command
         to change the value of the object).
     - isCurrent: is the default value (used as the initial value) current?
-    - severity  initial severity; one of RO.Constants.sevNormal, sevWarning or sevError
+    - severity  initial severity; one of opscore.RO.Constants.sevNormal, sevWarning or sevError
     - all remaining keyword arguments are used to configure the Tkinter Checkbutton;
       - command is supported, but see also the callFunc argument
       - variable is forbidden (use var)
@@ -146,7 +146,7 @@ class Checkbutton (tkinter.Checkbutton, RO.AddCallback.TkVarMixin,
         autoIsCurrent = False,
         trackDefault = None,
         isCurrent = True,
-        severity = RO.Constants.sevNormal,
+        severity = opscore.RO.Constants.sevNormal,
     **kargs):
         self._defBool = False # just create the field for now
         if var is None:
@@ -179,7 +179,7 @@ class Checkbutton (tkinter.Checkbutton, RO.AddCallback.TkVarMixin,
         )
         self.configure(kargs) # call overridden configure to fix width, if necessary
 
-        RO.AddCallback.TkVarMixin.__init__(self, self._var)
+        opscore.RO.AddCallback.TkVarMixin.__init__(self, self._var)
 
         CtxMenuMixin.__init__(self,
             helpURL = helpURL,
@@ -223,7 +223,7 @@ class Checkbutton (tkinter.Checkbutton, RO.AddCallback.TkVarMixin,
         return bool(val)
 
     def clear(self):
-        """Convenience function, makes it work more like an RO.Wdg.Entry widget.
+        """Convenience function, makes it work more like an opscore.RO.Wdg.Entry widget.
         """
         self.deselect()
 
@@ -285,7 +285,7 @@ class Checkbutton (tkinter.Checkbutton, RO.AddCallback.TkVarMixin,
             - If not a string then the value is coerced to a bool
             and the box is checked if true, unchecked if false.
         - isCurrent: is value current? (if not, display with bad background color)
-        - severity: the new severity, one of: RO.Constants.sevNormal, sevWarning or sevError;
+        - severity: the new severity, one of: opscore.RO.Constants.sevNormal, sevWarning or sevError;
           if omitted, the severity is left unchanged
         kargs is ignored; it is only present for compatibility with KeyVariable callbacks.
         """
@@ -301,7 +301,7 @@ class Checkbutton (tkinter.Checkbutton, RO.AddCallback.TkVarMixin,
         Inputs:
         - boolState: new boolean state; check/uncheck box if true/false
         - isCurrent: is value current (if not, display with bad background color)
-        - severity: the new severity, one of: RO.Constants.sevNormal, sevWarning or sevError;
+        - severity: the new severity, one of: opscore.RO.Constants.sevNormal, sevWarning or sevError;
           if omitted, the severity is left unchanged
         """
         if boolState:
@@ -378,8 +378,8 @@ class Checkbutton (tkinter.Checkbutton, RO.AddCallback.TkVarMixin,
         """
         if (width != 0) \
             and not hasBitmap \
-            and (RO.TkUtil.getWindowingSystem() == RO.TkUtil.WSysAqua) \
-            and RO.TkUtil.getTclVersion().startswith("8.5"):
+            and (RO.TkUtil.getWindowingSystem() == opscore.RO.TkUtil.WSysAqua) \
+            and opscore.RO.TkUtil.getTclVersion().startswith("8.5"):
             if showIndicator:
                 corrWidth = width + 3
             else:

@@ -1,5 +1,5 @@
 
-"""Constants for the RO package, especially RO.Wdg.
+"""Constants for the RO package, especially opscore.RO.Wdg.
 
 Supplies the following constants:
 
@@ -10,19 +10,19 @@ For widgets displaying data differently depending on state:
 
 Functions to get and set the base url (prefix) for url help
 (these are not imported with from ... import *
-since they are mainly used internally to RO.Wdg):
+since they are mainly used internally to opscore.RO.Wdg):
 - _joinHelpURL
 - _setHelpURLBase
 
 History:
-2004-08-11 ROwen    Split out from RO.Wdg.Label and RO.Wdg.CtxMenu.
+2004-08-11 ROwen    Split out from opscore.RO.Wdg.Label and opscore.RO.Wdg.CtxMenu.
                     Add sev prefix to state constants.
-2004-09-02 ROwen    Moved to RO.Constants to solve circular import problems.
+2004-09-02 ROwen    Moved to opscore.RO.Constants to solve circular import problems.
 2005-01-05 ROwen    Changed st_Normal, to sevNormal, etc.
 2006-10-24 ROwen    Added sevDebug.
 2009-09-02 ROwen    Added sevCritical.
 2010-03-11 ROwen    Added SevNameDict and NameSevDict.
-2014-09-17 ROwen    Modified to use OrderedDict from collections instead of RO.Alg.
+2014-09-17 ROwen    Modified to use OrderedDict from collections instead of opscore.RO.Alg.
 """
 __all__ = ['sevDebug', 'sevNormal', 'sevWarning', 'sevError', 'sevCritical', 'SevNameDict', 'NameSevDict']
 

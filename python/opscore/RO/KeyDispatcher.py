@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Sends commands (of type RO.KeyVariable.CmdVar) and dispatches replies
+"""Sends commands (of type opscore.RO.KeyVariable.CmdVar) and dispatches replies
 to key variables (RO.KeyVariable.KeyVar and subclasses).
 
 History:
@@ -13,7 +13,7 @@ History:
                     cmd failed or cmd succeeded but did not refresh the keyVar;
                     added ignoreFailed flag to refreshAllVar
 
-2003-05-08 ROwen    Modified to use RO.CnvUtil.
+2003-05-08 ROwen    Modified to use opscore.RO.CnvUtil.
 2003-06-09 ROwen    Modified to look up commands purely by command ID, not by actor;
                     this allows us to detect some hub rejections of commands.
 2003-06-11 ROwen    Modified to make keyword dispatching case-blind;
@@ -25,7 +25,7 @@ History:
 2003-07-16 ROwen    Modified to use KeyVar.refreshTimeLim
 2003-08-13 ROwen    Moved TypeDict and AllTypes to KeyVariable to remove
                     a circular dependency.
-2003-10-10 ROwen    Modified to use new RO.Comm.HubConnection.
+2003-10-10 ROwen    Modified to use new opscore.RO.Comm.HubConnection.
 2003-12-17 ROwen    Modified KeyVar to support the actor "keys",
                     which is used to refresh values from a cache,
                     to save querying the original actor:
@@ -36,7 +36,7 @@ History:
 2004-02-05 ROwen    Modified logMsg to make it easier to use; \n is automatically appended
                     and typeCategory can be derived from typeChar.
 2004-06-30 ROwen    Added abortCmdByID method to KeyDispatcher.
-                    Modified for RO.Keyvariable.KeyCommand->CmdVar.
+                    Modified for opscore.RO.Keyvariable.KeyCommand->CmdVar.
 2004-07-23 ROwen    When disconnected, all pending commands time out.
                     Improved variable refresh and command variable timeout handling to better allow
                     other tasks to run: eliminated the use of update_idletasks in favor of scheduling
@@ -83,8 +83,8 @@ History:
 2011-06-17 ROwen    Changed "type" to "msgType" in parsed message dictionaries to avoid conflict with builtin.
 2011-07-27 ROwen    Changed the executeCmd method to not log a message.
 2012-07-18 ROwen    Removed tkWdg argument from constructor.
-                    Modified to use RO.Comm.Generic.Timer.
-2012-08-01 ROwen    Updated for RO.Comm.TCPConnection 3.0.
+                    Modified to use opscore.RO.Comm.Generic.Timer.
+2012-08-01 ROwen    Updated for opscore.RO.Comm.TCPConnection 3.0.
 2015-09-24 ROwen    Replace "== None" with "is None" to modernize the code.
 2015-11-03 ROwen    Replace "!= None" with "is not None" to modernize the code.
 2015-11-05 ROwen    Stop using dangerous bare "except:".
@@ -94,14 +94,14 @@ __all__ = ["logToStdOut", "KeyDispatcher"]
 import sys
 import time
 import traceback
-import RO.Alg
-import RO.CnvUtil
-import RO.Constants
-import RO.KeyVariable
-import RO.Comm.HubConnection
-import RO.ParseMsg
-import RO.StringUtil
-from RO.Comm.Generic import Timer
+import opscore.RO.Alg
+import opscore.RO.CnvUtil
+import opscore.RO.Constants
+import opscore.RO.KeyVariable
+import opscore.RO.Comm.HubConnection
+import opscore.RO.ParseMsg
+import opscore.RO.StringUtil
+from opscore.RO.Comm.Generic import Timer
 
 # intervals (in milliseconds) for various background tasks
 _RefreshIntervalMS = 1000 # time interval between variable refresh checks (msec)
@@ -121,8 +121,8 @@ class KeyDispatcher(object):
 
     Inputs:
     - name: used as the actor when the dispatcher reports errors
-    - connection: an RO.Conn.HubConnection object or similar;
-      if omitted, an RO.Conn.HubConnection.NullConnection is used,
+    - connection: an opscore.RO.Conn.HubConnection object or similar;
+      if omitted, an opscore.RO.Conn.HubConnection.NullConnection is used,
       which is useful for testing.
     - logFunc: a function that logs a message. Argument list must be:
         (msgStr, severity, actor, cmdr)
@@ -162,10 +162,10 @@ class KeyDispatcher(object):
             self.connection.addReadCallback(self.doRead)
             self.connection.addStateCallback(self._connStateCallback)
         else:
-            self.connection = RO.Comm.HubConnection.NullConnection()
+            self.connection = opscore.RO.Comm.HubConnection.NullConnection()
         self._isConnected = self.connection.isConnected
-        self.userCmdIDGen = RO.Alg.IDGen(1, _CmdNumWrap)
-        self.refreshCmdIDGen = RO.Alg.IDGen(_CmdNumWrap + 1, 2 * _CmdNumWrap)
+        self.userCmdIDGen = opscore.RO.Alg.IDGen(1, _CmdNumWrap)
+        self.refreshCmdIDGen = opscore.RO.Alg.IDGen(_CmdNumWrap + 1, 2 * _CmdNumWrap)
 
         self.setLogFunc(logFunc)
 
@@ -194,7 +194,7 @@ class KeyDispatcher(object):
 
         # if relevant, issue abort command, with no callbacks
         if cmdVar.abortCmdStr and self._isConnected:
-            abortCmd = RO.KeyVariable.CmdVar(
+            abortCmd = opscore.RO.KeyVariable.CmdVar(
                 cmdStr = cmdVar.abortCmdStr,
                 actor = cmdVar.actor,
             )
@@ -213,7 +213,7 @@ class KeyDispatcher(object):
         Adds a keyword variable to the list.
 
         Inputs:
-        - keyVar: the keyword variable; typically of class RO.KeyVariable
+        - keyVar: the keyword variable; typically of class opscore.RO.KeyVariable
           but can be any object that:
           - has property: keyword (a string)
           - has method "set" with arguments:
@@ -305,11 +305,11 @@ class KeyDispatcher(object):
         # parse message; if it fails, log it as an error
         self.readUnixTime = time.time()
         try:
-            msgDict = RO.ParseMsg.parseHubMsg(msgStr)
+            msgDict = opscore.RO.ParseMsg.parseHubMsg(msgStr)
         except Exception as e:
             self.logMsg(
-                msgStr = "CouldNotParse; Msg=%r; Text=%r" % (msgStr, RO.StringUtil.strFromException(e)),
-                severity = RO.Constants.sevError,
+                msgStr = "CouldNotParse; Msg=%r; Text=%r" % (msgStr, opscore.RO.StringUtil.strFromException(e)),
+                severity = opscore.RO.Constants.sevError,
             )
             return
 
@@ -324,14 +324,14 @@ class KeyDispatcher(object):
             traceback.print_exc(file=sys.stderr)
 
     def executeCmd(self, cmdVar):
-        """Executes the command (of type RO.KeyVariable.CmdVar) by performing the following tasks:
+        """Executes the command (of type opscore.RO.KeyVariable.CmdVar) by performing the following tasks:
         - Sets the command number
         - Sets the start time
         - Puts the command on the keyword dispatcher queue
         - Issues the command to the server
 
         Inputs:
-        - cmdVar: the command, of class RO.KeyVariable.CmdVar
+        - cmdVar: the command, of class opscore.RO.KeyVariable.CmdVar
 
         Note:
         - we always increment cmdID since every command must have a unique command ID
@@ -370,7 +370,7 @@ class KeyDispatcher(object):
             errMsgDict = self.makeMsgDict(
                 cmdID = cmdVar.cmdID,
                 dataStr = "WriteFailed; Actor=%r; Cmd=%r; Text=%r" % (
-                    cmdVar.actor, cmdVar.cmdStr, RO.StringUtil.strFromException(e)),
+                    cmdVar.actor, cmdVar.cmdStr, opscore.RO.StringUtil.strFromException(e)),
             )
             self._replyCmdVar(cmdVar, errMsgDict)
 
@@ -385,7 +385,7 @@ class KeyDispatcher(object):
 
     def logMsg(self,
         msgStr,
-        severity = RO.Constants.sevNormal,
+        severity = opscore.RO.Constants.sevNormal,
         actor = "TUI",
         cmdr = None,
         cmdID = 0,
@@ -397,7 +397,7 @@ class KeyDispatcher(object):
 
         Inputs:
         - msgStr: message to display; a final \n is appended
-        - severity: message severity (an RO.Constants.sevX constant)
+        - severity: message severity (an opscore.RO.Constants.sevX constant)
         - actor: name of actor
         - cmdr: commander; defaults to self
         """
@@ -421,7 +421,7 @@ class KeyDispatcher(object):
     def logMsgDict(self, msgDict):
         try:
             msgType = msgDict["msgType"].lower()
-            severity = RO.KeyVariable.TypeDict[msgType][1]
+            severity = opscore.RO.KeyVariable.TypeDict[msgType][1]
             self.logMsg(
                 msgStr = msgDict["msgStr"],
                 severity = severity,
@@ -456,11 +456,11 @@ class KeyDispatcher(object):
         )
         msgStr = " ".join((headerStr, dataStr))
         try:
-            return RO.ParseMsg.parseHubMsg(msgStr)
+            return opscore.RO.ParseMsg.parseHubMsg(msgStr)
         except Exception as e:
             sys.stderr.write("Could not make message dict from %r; error: %s" % (msgStr, e))
             traceback.print_exc(file=sys.stderr)
-            msgDict = RO.ParseMsg.parseHubMsg(headerStr)
+            msgDict = opscore.RO.ParseMsg.parseHubMsg(headerStr)
             msgDict["msgStr"] = msgStr
             msgDict["data"] = {}
             return msgDict
@@ -611,7 +611,7 @@ class KeyDispatcher(object):
                 (cmdVar.actor, cmdVar.cmdStr, keyVarNamesStr)
             self.logMsg(
                 msgStr = errMsg,
-                severity = RO.Constants.sevWarning,
+                severity = opscore.RO.Constants.sevWarning,
                 cmdID = cmdVar.cmdID,
             )
         elif keyVarSet:
@@ -620,11 +620,11 @@ class KeyDispatcher(object):
             missingKeyVarNamesStr = ", ".join(sorted([kv.keyword for kv in keyVarSet if not kv.isCurrent()]))
             if missingKeyVarNamesStr:
                 errMsg = "No refresh data for %s keyVars: %s" % (actor, missingKeyVarNamesStr)
-                self.logMsg(errMsg, severity=RO.Constants.sevWarning)
+                self.logMsg(errMsg, severity=opscore.RO.Constants.sevWarning)
         else:
             # all of the keyVars were removed or there is a bug
             errMsg = "Warning: refresh command %s %s finished but no keyVars found\n" % refreshInfo
-            self.logMsg(errMsg, severity=RO.Constants.sevWarning)
+            self.logMsg(errMsg, severity=opscore.RO.Constants.sevWarning)
 
     def _replyCmdVar(self, cmdVar, msgDict, doLog=True):
         """Send a message to a command variable and optionally log it.
@@ -671,7 +671,7 @@ class KeyDispatcher(object):
             return
         actor, cmdStr = refreshCmdInfo
         try:
-            cmdVar = RO.KeyVariable.CmdVar (
+            cmdVar = opscore.RO.KeyVariable.CmdVar (
                 actor = actor,
                 cmdStr = cmdStr,
                 timeLim = _RefreshTimeLim,
@@ -686,7 +686,7 @@ class KeyDispatcher(object):
 
 
 if __name__ == "__main__":
-    print("\nTesting RO.KeyDispatcher\n")
+    print("\nTesting opscore.RO.KeyDispatcher\n")
     from six.moves import tkinter
     root = tkinter.Tk()
 
@@ -697,37 +697,37 @@ if __name__ == "__main__":
 
     # scalars
     varList = (
-        RO.KeyVariable.KeyVar(
+        opscore.RO.KeyVariable.KeyVar(
             converters = str,
             keyword="StringKey",
             actor="test",
             refreshCmd = "refresh stringkey",
             dispatcher=kdb,
         ),
-        RO.KeyVariable.KeyVar(
-            converters = RO.CnvUtil.asInt,
+        opscore.RO.KeyVariable.KeyVar(
+            converters = opscore.RO.CnvUtil.asInt,
             keyword="IntKey",
             actor="test",
             refreshCmd = "refresh intkey",
             dispatcher=kdb,
         ),
-        RO.KeyVariable.KeyVar(
-            converters = RO.CnvUtil.asFloatOrNone,
+        opscore.RO.KeyVariable.KeyVar(
+            converters = opscore.RO.CnvUtil.asFloatOrNone,
             keyword="FloatKey",
             actor="test",
             refreshCmd = "refresh floatkey",
             dispatcher=kdb,
         ),
-        RO.KeyVariable.KeyVar(
-            converters = RO.CnvUtil.asBool,
+        opscore.RO.KeyVariable.KeyVar(
+            converters = opscore.RO.CnvUtil.asBool,
             keyword="BooleanKey",
             actor="test",
             refreshCmd = "refresh boolkey",
             dispatcher=kdb,
         ),
-        RO.KeyVariable.KeyVar(
+        opscore.RO.KeyVariable.KeyVar(
             nval = 2,
-            converters = (str, RO.CnvUtil.asInt),
+            converters = (str, opscore.RO.CnvUtil.asInt),
             keyword="KeyList",
             actor="test",
             refreshCmd = "refresh keylist str,int combo",
@@ -743,11 +743,11 @@ if __name__ == "__main__":
         print("command callback for actor=%s, cmdID=%d, cmdStr=%r called with code '%s'" % (cmdVar.actor, cmdVar.cmdID, cmdVar.cmdStr, msgType))
 
     # command
-    cmdVar = RO.KeyVariable.CmdVar(
+    cmdVar = opscore.RO.KeyVariable.CmdVar(
         cmdStr = "THIS IS A SAMPLE COMMAND",
         actor="test",
         callFunc=cmdCall,
-        callTypes = RO.KeyVariable.DoneTypes,
+        callTypes = opscore.RO.KeyVariable.DoneTypes,
     )
     kdb.executeCmd(cmdVar)
     cmdID = cmdVar.cmdID

@@ -10,9 +10,9 @@ import numpy
 
 __all__ = ["icrsFromFK4"]
 
-import RO.PhysConst
-import RO.MathUtil
-from RO.Astro import llv
+import opscore.RO.PhysConst
+import opscore.RO.MathUtil
+from opscore.RO.Astro import llv
 
 # Constants
 _MatPP = numpy.array((
@@ -78,7 +78,7 @@ def icrsFromFK4 (fk4P, fk4V, fk4Epoch):
 
     #  subtract e-terms from position. As a minor approximation,
     #  we don't bother to subtract variation in e-terms from proper motion.
-    magP = RO.MathUtil.vecMag(fk4P)
+    magP = opscore.RO.MathUtil.vecMag(fk4P)
     meanFK4P = fk4P - (eTerms * magP)
 
     # correct position for velocity (PM and rad. vel.) to B1950
@@ -96,7 +96,7 @@ def icrsFromFK4 (fk4P, fk4V, fk4Epoch):
 
 
 if __name__ == "__main__":
-    import RO.SeqUtil
+    import opscore.RO.SeqUtil
     print("testing icrsFromFK4")
     # test data is formatted as follows:
     # a list of entries, each consisting of:
@@ -141,12 +141,9 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = icrsFromFK4(*testInput)
-        expectedFlat = RO.SeqUtil.flatten(expectedOutput)
-        actualFlat = RO.SeqUtil.flatten(actualOutput)
-        if RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1.0e-14):
+        expectedFlat = opscore.RO.SeqUtil.flatten(expectedOutput)
+        actualFlat = opscore.RO.SeqUtil.flatten(actualOutput)
+        if opscore.RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1.0e-14):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)
-
-
-

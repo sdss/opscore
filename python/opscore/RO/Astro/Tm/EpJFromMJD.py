@@ -3,7 +3,7 @@
 
 __all__ = ["epJFromMJD"]
 
-from RO.Astro import llv
+from opscore.RO.Astro import llv
 
 def epJFromMJD (mjd):
     """

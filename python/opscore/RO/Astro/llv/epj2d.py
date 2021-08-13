@@ -24,7 +24,7 @@ def epj2d(epj):
 
 
 if __name__ == "__main__":
-    import RO.MathUtil
+    import opscore.RO.MathUtil
     print("testing epj2d")
     # testData is a list of duples consisting of:
     # - input data
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = epj2d(testInput)
-        if 0 != RO.MathUtil.compareFloats(actualOutput, expectedOutput, rtol=1e-15):
+        if 0 != opscore.RO.MathUtil.compareFloats(actualOutput, expectedOutput, rtol=1e-15):
             print("failed on input:", testInput)
             print("expected output:", expectedOutput)
             print("actual output  :", actualOutput)

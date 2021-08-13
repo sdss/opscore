@@ -1,31 +1,31 @@
 #!/usr/bin/env python
 
-"""Preferences for the RO.Wdg package.
+"""Preferences for the opscore.RO.Wdg package.
 
 Note: call
 History:
-2004-08-11 ROwen    Split out from RO.Wdg.Label to make it more readily available.
+2004-08-11 ROwen    Split out from opscore.RO.Wdg.Label to make it more readily available.
 2004-09-03 ROwen    Bug fix; getWdgPrefDict was calling a nonexistent function if self.prefDict not set..
-                    Modified for RO.Wdg.st_... -> RO.Constants.st_...
+                    Modified for opscore.RO.Wdg.st_... -> opscore.RO.Constants.st_...
 2005-01-03 ROwen    Refactored to put most code in a class.
                     Added "Active Background Color" and "Active Bad Background" to PrefDict.
                     These are automatically adjusted as the non-active version is modified.
                     Modified the test code to output more useful information.
-2005-01-05 ROwen    Modified for RO.Wdg.Label state->severity and RO.Constants.st_... -> sev...
+2005-01-05 ROwen    Modified for opscore.RO.Wdg.Label state->severity and opscore.RO.Constants.st_... -> sev...
 2005-06-08 ROwen    Changed WdgPrefs to a new-style class.
 2005-06-16 ROwen    Bug fix: was using == instead of = for an assigment. Found by PyChecker.
-2006-10-24 ROwen    Added RO.Constants.sevDebug support including Debug Color preference.
-                    Moved scaleColor to RO.TkUtil and improved it and rename it to addColors.
+2006-10-24 ROwen    Added opscore.RO.Constants.sevDebug support including Debug Color preference.
+                    Moved scaleColor to opscore.RO.TkUtil and improved it and rename it to addColors.
 2009-09-02 ROwen    Added Critical Color.
-2010-03-11 ROwen    Modified to use RO.Constants.SevNameDict. As a result: if a severity is added,
+2010-03-11 ROwen    Modified to use opscore.RO.Constants.SevNameDict. As a result: if a severity is added,
                     this module will raise an error if the color preference is missing.
 """
 __all__ = []
 
 from six.moves import tkinter
-import RO.Constants
-import RO.TkUtil
-import RO.Prefs.PrefVar
+import opscore.RO.Constants
+import opscore.RO.TkUtil
+import opscore.RO.Prefs.PrefVar
 
 # use lazy evaluation to avoid accessing tk root until there is one
 _wdgPrefs = None
@@ -54,9 +54,9 @@ def getWdgPrefDict():
 
 def getSevPrefDict():
     """Return a dictionary of state preferences:
-    - RO.State.Normal: Foreground Color preference variable
-    - RO.State.Warning: Warning Color preference variable
-    - RO.State.Error: Error Color preference variable
+    - opscore.RO.State.Normal: Foreground Color preference variable
+    - opscore.RO.State.Warning: Warning Color preference variable
+    - opscore.RO.State.Error: Error Color preference variable
 
     """
     global _wdgPrefs
@@ -107,9 +107,9 @@ class WdgPrefs(object):
     as preference name: preference variable.
 
     - sevPrefDict: a dictionary containing:
-      - RO.State.Normal: Foreground Color preference variable
-      - RO.State.Warning: Warning Color preference variable
-      - RO.State.Error: Error Color preference variable
+      - opscore.RO.State.Normal: Foreground Color preference variable
+      - opscore.RO.State.Warning: Warning Color preference variable
+      - opscore.RO.State.Error: Error Color preference variable
 
 
     Note: the following widget attributes should update automatically
@@ -129,7 +129,7 @@ class WdgPrefs(object):
                 prefVar = prefSet.getPrefVar(prefName)
                 if prefVar:
                     return prefVar
-            return RO.Prefs.PrefVar.ColorPrefVar(name = prefName, defValue = defColor)
+            return opscore.RO.Prefs.PrefVar.ColorPrefVar(name = prefName, defValue = defColor)
 
         backColor = self._tkWdg.cget("background")
         foreColor = self._tkWdg.cget("foreground")
@@ -149,9 +149,9 @@ class WdgPrefs(object):
 
         # set severity: color preference dictionary
         sevNamePrefNameDict = {"normal": "foreground"}
-        self.sevPrefDict = RO.Alg.OrderedDict(
+        self.sevPrefDict = opscore.RO.Alg.OrderedDict(
             (sev, self.prefDict["%s Color" % sevNamePrefNameDict.get(sevName, sevName).title()])
-            for sev, sevName in RO.Constants.SevNameDict.items())
+            for sev, sevName in opscore.RO.Constants.SevNameDict.items())
 
         # add activebackground color (could do the same for activeforeground,
         # but it doesn't seem to be used).
@@ -185,8 +185,8 @@ class WdgPrefs(object):
             # create separate prefs and callbacks from the normal prefs to update them
 
             # add prefs
-            self.prefDict[activeBackName] = RO.Prefs.PrefVar.ColorPrefVar(name = activeBackName)
-            self.prefDict[activeBadBackName] = RO.Prefs.PrefVar.ColorPrefVar(name = activeBadBackName)
+            self.prefDict[activeBackName] = opscore.RO.Prefs.PrefVar.ColorPrefVar(name = activeBackName)
+            self.prefDict[activeBadBackName] = opscore.RO.Prefs.PrefVar.ColorPrefVar(name = activeBadBackName)
 
             # add callbacks to update active prefs; add to beginning of list
             # so active pref is fully updated when the remaining non-active pref's
@@ -213,7 +213,7 @@ class WdgPrefs(object):
         """Bad Background preference has changed;
         update Active Bad Background accordingly.
         """
-        activeBadBackColor = RO.TkUtil.addColors((badBackColor, self._activeBackScale))
+        activeBadBackColor = opscore.RO.TkUtil.addColors((badBackColor, self._activeBackScale))
         self.prefDict["Active Bad Background"].setValue(activeBadBackColor)
 
 

@@ -32,7 +32,7 @@ class IsCurrentMixin(object):
     including Label and Entry.
     See also IsCurrentActiveMixin.
 
-    Uses these RO.Wdg.WdgPref preferences:
+    Uses these opscore.RO.Wdg.WdgPref preferences:
     - "Background Color"
     - "Bad Background"
 
@@ -87,7 +87,7 @@ class IsCurrentActiveMixin(IsCurrentMixin):
     Button, Menu, Menubutton, Radiobutton, Scale, Scrollbar.
     For Checkbutton see IsCurrentCheckbuttonMixin.
 
-    Uses these RO.Wdg.WdgPref preferences:
+    Uses these opscore.RO.Wdg.WdgPref preferences:
     - "Background Color"
     - "Bad Background"
     - "Active Background Color"

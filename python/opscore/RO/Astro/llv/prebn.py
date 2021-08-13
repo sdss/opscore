@@ -10,7 +10,7 @@ P.T.Wallace Starlink    30 December 1992
 __all__ = ["prebn"]
 
 import numpy
-import RO.PhysConst
+import opscore.RO.PhysConst
 from .euler import euler
 
 def prebn(bep0, bep1):
@@ -86,5 +86,3 @@ if __name__ == "__main__":
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)
-
-

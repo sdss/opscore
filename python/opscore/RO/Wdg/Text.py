@@ -16,9 +16,9 @@ History:
 __all__ = ['Text']
 
 from six.moves import tkinter
-import RO.CnvUtil
-import RO.StringUtil
-import RO.MathUtil
+import opscore.RO.CnvUtil
+import opscore.RO.StringUtil
+import opscore.RO.MathUtil
 from . import Bindings
 from .CtxMenu import CtxMenuMixin
 from . import WdgPrefs
@@ -35,7 +35,7 @@ class Text (tkinter.Text, CtxMenuMixin):
                 and the widget can still be updated via set, etc.
                 note that readOnly prevents any clear/default/etc menu items.
     - isCurrent sets isCurrent and thus the background color
-    - useStateTags  if True, tags for RO.Constant.sevNormal, etc. are set up with appropriate colors.
+    - useStateTags  if True, tags for opscore.RO.Constant.sevNormal, etc. are set up with appropriate colors.
     - any additional keyword arguments are used to configure the widget;
                 the default width is 8
                 text and textvariable are silently ignored (use var instead of textvariable)
@@ -71,7 +71,7 @@ class Text (tkinter.Text, CtxMenuMixin):
 
         if useStateTags:
             for severity, pref in self._sevPrefDict.items():
-                if severity == RO.Constants.sevNormal:
+                if severity == opscore.RO.Constants.sevNormal:
                     # normal foreground color is already automatically updated
                     continue
                 pref.addCallback(self._updateStateTagColors, callNow=False)
@@ -218,15 +218,15 @@ class Text (tkinter.Text, CtxMenuMixin):
             self.configure(background=self._prefDict["Bad Background"].getValue())
 
     def _updateStateTagColors(self, *args):
-        """Update the colors for tags RO.Constants.sevNormal, sevWarning and sevError.
+        """Update the colors for tags opscore.RO.Constants.sevNormal, sevWarning and sevError.
         Ignored unless useStateTags True at instantiation.
         """
-        for state in (RO.Constants.sevWarning, RO.Constants.sevError):
+        for state in (RO.Constants.sevWarning, opscore.RO.Constants.sevError):
             self.tag_configure(state, color = self._sevPrefDict[state].getValue())
 
 
 if __name__ == "__main__":
-    from RO.Wdg.PythonTk import PythonTk
+    from opscore.RO.Wdg.PythonTk import PythonTk
     from . import StatusBar
     root = PythonTk()
 

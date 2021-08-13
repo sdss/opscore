@@ -1,6 +1,6 @@
 
 """Displays hot help, error messages and monitors the progress of commands
-of the class RO.KeyVariable.cmdVar
+of the class opscore.RO.KeyVariable.cmdVar
 
 History:
 2003-04-04 ROwen    Adapted from StatusWdg.
@@ -34,17 +34,17 @@ History:
                     Added playCmdDone, playCmdFailed methods.
                     Modified to use st_Normal, etc. constants for message level.
                     Define __all__ to restrict import.
-2004-09-03 ROwen    Modified for RO.Wdg.sev... -> RO.Constants.sev...
+2004-09-03 ROwen    Modified for opscore.RO.Wdg.sev... -> opscore.RO.Constants.sev...
 2004-10-01 ROwen    Bug fix: width arg was being ignored.
 2005-01-05 ROwen    setMsg: changed level to severity.
 2005-05-12 ROwen    Mod. to use the default borderwidth.
 2005-06-16 ROwen    Added cmdSummary argument to doCmd.
-                    Modified to use severity built into RO.Wdg.EntryWdg
+                    Modified to use severity built into opscore.RO.Wdg.EntryWdg
                     (prefs no longer need color prefs and the code is simpler).
                     Modified command output to ignore info messages
                     unless they contain a "Text" keyword.
 2005-06-17 ROwen    Bug fix: mis-typed severity constant (reported by Craig Loomis).
-2005-07-14 ROwen    Modified to use RO.Alg.IDGen for the temporary message ID.
+2005-07-14 ROwen    Modified to use opscore.RO.Alg.IDGen for the temporary message ID.
                     Bug fix: clear reset the temporary message ID,
                     which could cause clearTempMsg to clear the wrong message.
                     Modified to not inherit from CtxMenu.CtxMenuMixin,
@@ -56,7 +56,7 @@ History:
 2010-03-05 ROwen    Fixed an error in the tracking of command reply severity.
 2010-03-08 ROwen    Bug fix: command replies were sometimes displayed with the wrong color.
 2011-06-17 ROwen    Changed "type" to "msgType" in parsed message dictionaries to avoid conflict with builtin.
-2012-07-09 ROwen    Modified to use RO.TkUtil.Timer.
+2012-07-09 ROwen    Modified to use opscore.RO.TkUtil.Timer.
 2015-01-08 ROwen    If a message in reply to a command has unknown message type then report the problem
                     and assume the command failed.
 2015-09-24 ROwen    Replace "== None" with "is None" to modernize the code.
@@ -66,11 +66,11 @@ __all__ = ['StatusBar']
 
 import sys
 from six.moves import tkinter
-import RO.Alg
-import RO.Constants
-import RO.KeyVariable
-import RO.Prefs.PrefVar
-from RO.TkUtil import Timer
+import opscore.RO.Alg
+import opscore.RO.Constants
+import opscore.RO.KeyVariable
+import opscore.RO.Prefs.PrefVar
+from opscore.RO.TkUtil import Timer
 from . import Sound
 from . import Entry
 
@@ -93,8 +93,8 @@ class StatusBar(tkinter.Frame):
     and display their progress.
 
     Inputs:
-    - dispatcher    an RO.KeyDispatcher
-    - prefs         a RO.Prefs.PrefSet of preferences; uses:
+    - dispatcher    an opscore.RO.KeyDispatcher
+    - prefs         a opscore.RO.Prefs.PrefSet of preferences; uses:
                     - "Command Done" and "Command Failed" sounds if playCmdSounds true
     - playCmdSounds if true, play "Command Done", "Command Failed" sounds
                     when a command started by doCmd succeeds or fails.
@@ -122,7 +122,7 @@ class StatusBar(tkinter.Frame):
         self.summaryLen = int(summaryLen)
         self.cmdDoneSound = _getSound(playCmdSounds, prefs, "Command Done")
         self.cmdFailedSound = _getSound(playCmdSounds, prefs, "Command Failed")
-        self.tempIDGen = RO.Alg.IDGen(1, sys.maxsize)
+        self.tempIDGen = opscore.RO.Alg.IDGen(1, sys.maxsize)
 
         tkinter.Frame.__init__(self, master, **kargs)
         self.displayWdg = Entry.StrEntry(
@@ -146,8 +146,8 @@ class StatusBar(tkinter.Frame):
     def clear(self):
         """Clear the display and cancels all messages.
         """
-        self.displayWdg.set("", severity=RO.Constants.sevNormal)
-        self.permSeverity = RO.Constants.sevNormal
+        self.displayWdg.set("", severity=opscore.RO.Constants.sevNormal)
+        self.permSeverity = opscore.RO.Constants.sevNormal
         self.permMsg = None
         self.currID = None # None if perm msg, tempID if temporary msg
         self.entryErrorID = None
@@ -182,7 +182,7 @@ class StatusBar(tkinter.Frame):
         self.clear()
 
         self.cmdVar = cmdVar
-        self.cmdMaxSeverity = RO.Constants.sevNormal
+        self.cmdMaxSeverity = opscore.RO.Constants.sevNormal
         self.cmdLastWarning = None
         if cmdSummary is None:
             if len(self.cmdVar.cmdStr) > self.summaryLen + 3:
@@ -210,7 +210,7 @@ class StatusBar(tkinter.Frame):
         if msgStr:
             self.entryErrorID = self.setMsg(
                 msgStr = msgStr,
-                severity = RO.Constants.sevWarning,
+                severity = opscore.RO.Constants.sevWarning,
                 isTemp = True,
             )
             self.bell()
@@ -226,7 +226,7 @@ class StatusBar(tkinter.Frame):
         except AttributeError:
             return
         if msgStr:
-            self.helpID = self.setMsg(msgStr, severity=RO.Constants.sevNormal, isTemp=True)
+            self.helpID = self.setMsg(msgStr, severity=opscore.RO.Constants.sevNormal, isTemp=True)
 
     def handleLeave(self, evt):
         """Handle the <Leave> event to erase help.
@@ -244,12 +244,12 @@ class StatusBar(tkinter.Frame):
         """
         self.cmdFailedSound.play()
 
-    def setMsg(self, msgStr, severity=RO.Constants.sevNormal, isTemp=False, duration=None):
+    def setMsg(self, msgStr, severity=opscore.RO.Constants.sevNormal, isTemp=False, duration=None):
         """Display a new message.
 
         Inputs:
         - msgStr    the new string to display
-        - severity  one of RO.Constants.sevNormal (default), sevWarning or sevError
+        - severity  one of opscore.RO.Constants.sevNormal (default), sevWarning or sevError
         - isTemp    if true, message is temporary and can be cleared with clearTempMsg;
                     if false, any existing temp info is ditched
         - duration  the amount of time (msec) to leave a temporary message;
@@ -272,18 +272,18 @@ class StatusBar(tkinter.Frame):
     def _cmdCallback(self, msgType, msgDict, cmdVar=None):
         # print "StatusBar _cmdCallback(%r, %r, %r)" % (msgType, msgDict, cmdVar)
         try:
-            msgDescr, newSeverity = RO.KeyVariable.TypeDict[msgType]
+            msgDescr, newSeverity = opscore.RO.KeyVariable.TypeDict[msgType]
         except KeyError:
             # invalid msgType; print a warning, then assume failure
             sys.stderr.write("StatusBar._cmdCallback: invalid msgType=%r for msgDict=%s; assuming failure\n" % (msgType, msgDict,))
             msgDescr = "invalid msgType=%r" % (msgType,)
             msgType = "f"
-            newSeverity = RO.Constants.sevError
+            newSeverity = opscore.RO.Constants.sevError
         self.cmdMaxSeverity = max(newSeverity, self.cmdMaxSeverity)
         if msgType == ":":
             # command finished; omit associated text,
             # but append warning info if there were warnings.
-            if self.cmdMaxSeverity == RO.Constants.sevWarning:
+            if self.cmdMaxSeverity == opscore.RO.Constants.sevWarning:
                 if self.cmdLastWarning:
                     msgDescr += "; warning: " + self.cmdLastWarning
                 else:
@@ -299,17 +299,17 @@ class StatusBar(tkinter.Frame):
         try:
             dataStr = msgDict["data"]["text"][0]
         except LookupError:
-            if newSeverity == RO.Constants.sevNormal:
+            if newSeverity == opscore.RO.Constants.sevNormal:
                 # info message with no textual info; skip it
                 return
             dataStr = msgDict.get("msgStr", "")[msgDict.get("dataStart", 0):]
         if msgType == "w" and dataStr:
             # save last warning in case command fails with no text
             self.cmdLastWarning = dataStr
-        elif msgType in RO.KeyVariable.DoneTypes and not dataStr:
+        elif msgType in opscore.RO.KeyVariable.DoneTypes and not dataStr:
             # message failed without an explanation; use last warning
             dataStr = self.cmdLastWarning
         infoText = "%s %s: %s" % (self.cmdSummary, msgDescr, dataStr)
         self.setMsg(infoText, severity=newSeverity)
-        if msgType in RO.KeyVariable.DoneTypes:
+        if msgType in opscore.RO.KeyVariable.DoneTypes:
             self.playCmdFailed()

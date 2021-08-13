@@ -6,7 +6,7 @@ History:
 """
 __all__ = ["getUTCMinusTAI", "setUTCMinusTAI", "taiFromPySec", "utcFromTAI", "taiFromPySec", "pySecFromTAI"]
 
-import RO.PhysConst
+import opscore.RO.PhysConst
 from .UTCFromPySec import utcFromPySec, pySecFromUTC
 
 # global variable UTC-TAI (since leap seconds are unpredictable)
@@ -18,7 +18,7 @@ def getUTCMinusTAI():
 
     Warning: the value will only be correct if it was properly set by setUTCMinusTAI
     """
-    return _UTCMinusTAIDays * RO.PhysConst.SecPerDay
+    return _UTCMinusTAIDays * opscore.RO.PhysConst.SecPerDay
 
 def setUTCMinusTAI(newUTCMinusTAISec):
     """Set UTC - TAI (in seconds)"""

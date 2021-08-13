@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 
-"""Containers (wrappers) for RO.Wdg input widgets, including Entry,
+"""Containers (wrappers) for opscore.RO.Wdg input widgets, including Entry,
 Checkbutton and OptionMenu.
 
 Input containers support the following (and more):
@@ -13,7 +13,7 @@ quite simple to write. A few basic examples are provided, but if these do not
 meet your needs then I strongly encourage you to write your own.
 
 * getValueDict and setValueDict retrieve and restore the input values.
-This can be useful for a command history (e.g. via RO.Wdg.HistoryMenu)
+This can be useful for a command history (e.g. via opscore.RO.Wdg.HistoryMenu)
 and for setting widgets based on data from files or programmatically generated data.
 
 The make the latter easy, I have tried to keep the format of the value dictionary
@@ -43,7 +43,7 @@ History:
                     widgets still show values even if disabled (returning the default
                     when a different value was visible would be a big mistake).
                     Added wdgSet parameter.
-2002-11-15 ROwen    Moved InputCont.Frame to RO.Wdg.InputContFrame.
+2002-11-15 ROwen    Moved InputCont.Frame to opscore.RO.Wdg.InputContFrame.
 2003-03-11 ROwen    Fixed bugs: defaults in ROEntry widgets were miscomputed
 2003-03-14 ROwen    Overhauled BasicContListFmt to include the keyword
                     and to return "" if there are no elements in the list (after omitting blanks);
@@ -53,7 +53,7 @@ History:
 2003-04-03 ROwen    Added rejectBlanks to BasicContListFmt.
 2003-04-16 ROwen    Added noneIfAllDef to class Set.
 2003-05-28 ROwen    Modified ROEntry to let the widget handle callbacks.
-2003-06-26 ROwen    Total rewrite (finally): now only handles RO.Wdg input widgets;
+2003-06-26 ROwen    Total rewrite (finally): now only handles opscore.RO.Wdg input widgets;
                     handles lists of widgets; added a boolean container;
                     format functions receive the input container and so have more power.
 2003-07-24 ROwen    Further modification: if you specify a single widget for WdgCont
@@ -63,9 +63,9 @@ History:
 2003-08-08 ROwen    Added BoolOmitCont; changed BoolCont to BoolNegCont.
 2003-10-20 ROwen    Bug fix: setValueList was broken.
 2003-10-23 ROwen    Bug fix: getWdgByName was broken in BoolNegCont and BoolOmitCont;
-                    modified to use RO.Alg.MatchList instead of RO.Alg.GetByPrefix.
+                    modified to use opscore.RO.Alg.MatchList instead of opscore.RO.Alg.GetByPrefix.
 2003-11-04 ROwen    Modified WdgCont to not restore defaults while creating;
-                    RO.Wdg widgets are already set to their defaults
+                    opscore.RO.Wdg widgets are already set to their defaults
                     and it caused problems by calling callbacks early.
 2003-11-18 ROwen    Modified to use SeqUtil instead of MathUtil.
 2004-05-18 ROwen    Stopped importing sys since it wasn't used.
@@ -79,7 +79,7 @@ History:
                       - restoreDefault and setValueDict now make just one callback,
                         instead of one callback per input container.
                       - added removeCallback.
-                    - Renamed doEnable to setEnable to match RO.Wdg widgets.
+                    - Renamed doEnable to setEnable to match opscore.RO.Wdg widgets.
                     - Eliminated formatNow argument (it was not being used and was broken).
 2005-05-10 ROwen    Removed up another omitHidden that was ignored
                     (use blankIfDisabled or write your own format function instead).
@@ -96,8 +96,8 @@ History:
 2015-11-03 ROwen    Replace "!= None" with "is not None" to modernize the code.
 """
 import itertools
-import RO.AddCallback
-import RO.SeqUtil
+import opscore.RO.AddCallback
+import opscore.RO.SeqUtil
 
 # formatting functions
 def nullFmt(inputCont):
@@ -276,11 +276,11 @@ class BasicContListFmt(object):
 
 # widget containers
 class WdgCont(RO.AddCallback.BaseMixin):
-    """A container handling an ordered list of RO.Wdg input widgets with one associated name.
+    """A container handling an ordered list of opscore.RO.Wdg input widgets with one associated name.
 
     Inputs:
     - name: unique name associated with this item (used for get/setValueDict...)
-    - wdgs: one or more RO.Wdg input widgets
+    - wdgs: one or more opscore.RO.Wdg input widgets
     - formatFunc: a function that takes one argument (this container)
             and returns a formatted string. Used for getString.
             The default is name value1 value2.... (BasicFmt with no arguments)
@@ -301,10 +301,10 @@ class WdgCont(RO.AddCallback.BaseMixin):
         omitDef = True,
         setDefIfAbsent = True,
     ):
-        RO.AddCallback.BaseMixin.__init__(self)
+        opscore.RO.AddCallback.BaseMixin.__init__(self)
         self._name = name
-        self._isList = RO.SeqUtil.isSequence(wdgs)
-        self._wdgList = RO.SeqUtil.asList(wdgs)
+        self._isList = opscore.RO.SeqUtil.isSequence(wdgs)
+        self._wdgList = opscore.RO.SeqUtil.asList(wdgs)
         self._didRegister = False
 
         self._omitDef = bool(omitDef)
@@ -333,7 +333,7 @@ class WdgCont(RO.AddCallback.BaseMixin):
                 wdg.addCallback(self._doCallbacks)
             self._didRegister = True
 
-        RO.AddCallback.BaseMixin.addCallback(self, callFunc, callNow)
+        opscore.RO.AddCallback.BaseMixin.addCallback(self, callFunc, callNow)
 
     def allCallbacksEnabled(self):
         """Return True of all widget's callbacks are enabled
@@ -491,11 +491,11 @@ class WdgCont(RO.AddCallback.BaseMixin):
     def _doCallbacks(self, dumArg=None):
         """Call callbacks; this variant accepts and ignores one optional argument
         """
-        RO.AddCallback.BaseMixin._doCallbacks(self)
+        opscore.RO.AddCallback.BaseMixin._doCallbacks(self)
 
 
 class BoolNegCont(WdgCont):
-    """A container handling a set of RO.Wdg.Checkbutton input widgets whose value is specified by
+    """A container handling a set of opscore.RO.Wdg.Checkbutton input widgets whose value is specified by
     name (if True) or negStr + name (if False). When setting values,
     case is irrelevant and names can be unique prefixes.
 
@@ -503,7 +503,7 @@ class BoolNegCont(WdgCont):
 
     Inputs:
     - name: unique name associated with this item (used for get/setValueDict...)
-    - wdgs: one or more RO.Wdg.Checkbutton widgets
+    - wdgs: one or more opscore.RO.Wdg.Checkbutton widgets
     - wdgNames: widget name(s); if omitted then the "text" property of each widget is used.
             if supplied then it must be the same length as wdgs.
             Names must not begin with negStr (case irrelevant).
@@ -538,7 +538,7 @@ class BoolNegCont(WdgCont):
         if wdgNames is None:
             wdgNames = [wdg['text'] for wdg in self._wdgList]
         else:
-            wdgNames = RO.SeqUtil.asList(wdgNames)
+            wdgNames = opscore.RO.SeqUtil.asList(wdgNames)
             if len(wdgNames) != len(self._wdgList):
                 raise ValueError('wdgNames has %d elements; %d needed' % (len(wdgNames), len(self._wdgList)))
         self._wdgNames = wdgNames
@@ -550,8 +550,8 @@ class BoolNegCont(WdgCont):
                 raise ValueError('invalid widget name %r; cannot start with negStr=%r' % (name, self._negStr))
 
         # generate widget dict and widget name getter
-        self._wdgDict = RO.Alg.OrderedDict(list(zip(self._wdgNames, self._wdgList)))
-        self._wdgNameGetter = RO.Alg.MatchList(wdgNames, abbrevOK=True, ignoreCase=True)
+        self._wdgDict = opscore.RO.Alg.OrderedDict(list(zip(self._wdgNames, self._wdgList)))
+        self._wdgNameGetter = opscore.RO.Alg.MatchList(wdgNames, abbrevOK=True, ignoreCase=True)
 
     def getDefValueList(self):
         """Get the default value as a list: [name1, negStr + name2, ...].
@@ -623,7 +623,7 @@ class BoolNegCont(WdgCont):
 
 
 class BoolOmitCont(WdgCont):
-    """A container handling a set of RO.Wdg.Checkbutton input widgets whose value is specified by
+    """A container handling a set of opscore.RO.Wdg.Checkbutton input widgets whose value is specified by
     name (if True) or omitted if false.
 
     Similar to BoolNegCont, but:
@@ -635,7 +635,7 @@ class BoolOmitCont(WdgCont):
 
     Inputs:
     - name: unique name associated with this item (used for get/setValueDict...)
-    - wdgs: one or more RO.Wdg.Checkbutton widgets
+    - wdgs: one or more opscore.RO.Wdg.Checkbutton widgets
     - wdgNames: widget name(s); if omitted then the "text" property of each widget is used.
             if supplied then it must be the same length as wdgs.
             Names must not begin with negStr (case irrelevant).
@@ -664,14 +664,14 @@ class BoolOmitCont(WdgCont):
         if wdgNames is None:
             wdgNames = [wdg['text'] for wdg in self._wdgList]
         else:
-            wdgNames = RO.SeqUtil.asList(wdgNames)
+            wdgNames = opscore.RO.SeqUtil.asList(wdgNames)
             if len(wdgNames) != len(self._wdgList):
                 raise ValueError('wdgNames has %d elements; %d needed' % (len(wdgNames), len(self._wdgList)))
         self._wdgNames = wdgNames
 
         # generate widget dict and widget name getter
-        self._wdgDict = RO.Alg.OrderedDict(list(zip(self._wdgNames, self._wdgList)))
-        self._wdgNameGetter = RO.Alg.MatchList(wdgNames, abbrevOK=True, ignoreCase=True)
+        self._wdgDict = opscore.RO.Alg.OrderedDict(list(zip(self._wdgNames, self._wdgList)))
+        self._wdgNameGetter = opscore.RO.Alg.MatchList(wdgNames, abbrevOK=True, ignoreCase=True)
 
         # verify that all widgets have default=checked
         for name, wdg in self._wdgDict.items():
@@ -719,10 +719,10 @@ class BoolOmitCont(WdgCont):
 
 # containers of widget containers
 class ContList(WdgCont):
-    """A list of RO.InputCont container objects.
+    """A list of opscore.RO.InputCont container objects.
 
     Inputs:
-    - conts: one or more RO.InputCont objects (including other containers)
+    - conts: one or more opscore.RO.InputCont objects (including other containers)
     - name: optional name associated with this list; used for formatted output
             and as an optional namespace for the value dictionary.
             See the documentation for getValueDict for an explanation.
@@ -734,7 +734,7 @@ class ContList(WdgCont):
             it receives one argument: this input container.
     - callNow: if True, the callback function is tested during construction
 
-    See also the documentation for RO.InputCont.WdgCont.
+    See also the documentation for opscore.RO.InputCont.WdgCont.
     """
     def __init__ (self,
         conts,
@@ -820,7 +820,7 @@ class ContList(WdgCont):
         then the data for the items in this list are put in their own dictionary:
            {self._name:{name1:value1, name2:value2...}},
         where self._name is the name of this list,
-        and name1, name2...are names of the RO.InputCont widgets in the list.
+        and name1, name2...are names of the opscore.RO.InputCont widgets in the list.
 
         If the list does not have a name (self._name is blank),
         then the data is put at the root level of the dictionary:
@@ -915,8 +915,8 @@ class ContList(WdgCont):
 
 if __name__ == "__main__":
     from six.moves import tkinter
-    import RO.Wdg
-    root = RO.Wdg.PythonTk()
+    import opscore.RO.Wdg
+    root = opscore.RO.Wdg.PythonTk()
 
     def doHide(*args):
         if hideVar.get():
@@ -967,24 +967,24 @@ if __name__ == "__main__":
         WdgCont (
             name = 'ASingle',
             wdgs=(
-                RO.Wdg.StrEntry(wdgFrame, width=5),
+                opscore.RO.Wdg.StrEntry(wdgFrame, width=5),
             ),
             formatFunc = VMSQualFmt(),
         ),
         WdgCont (
             name = 'APair',
             wdgs=(
-                RO.Wdg.StrEntry(wdgFrame, width=5),
-                RO.Wdg.StrEntry(wdgFrame, width=5),
+                opscore.RO.Wdg.StrEntry(wdgFrame, width=5),
+                opscore.RO.Wdg.StrEntry(wdgFrame, width=5),
             ),
             formatFunc = VMSQualFmt(),
         ),
         BoolNegCont (
             name = 'Keep',
             wdgs=(
-                RO.Wdg.Checkbutton(wdgFrame, text='Object'),
-                RO.Wdg.Checkbutton(wdgFrame, text='Boresight'),
-                RO.Wdg.Checkbutton(wdgFrame, text='Calib', defValue=True),
+                opscore.RO.Wdg.Checkbutton(wdgFrame, text='Object'),
+                opscore.RO.Wdg.Checkbutton(wdgFrame, text='Boresight'),
+                opscore.RO.Wdg.Checkbutton(wdgFrame, text='Calib', defValue=True),
             ),
             formatFunc = VMSQualFmt(),
         ),

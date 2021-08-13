@@ -10,7 +10,7 @@ History:
 2005-08-24 ROwen    Expanded the docstring for TclFunc and made the tcl name a bit clearer.
 2005-08-25 ROwen    Removed useless __del__ from TclFunc and updated the documentation.
 2005-09-12 ROwen    Added EvtNoProp.
-2006-10-25 ROwen    Added addColors (based on scaleColor from RO.Wdg.WdgPrefs).
+2006-10-25 ROwen    Added addColors (based on scaleColor from opscore.RO.Wdg.WdgPrefs).
                     Modified colorOK to use winfo_rgb.
 2010-05-04 ROwen    Added Geometry, including the ability to constrain a window's geometry to fit on screen.
 2010-05-21 ROwen    Bug fix: Geometry.toTkStr could include extent when it shouldn't.
@@ -29,7 +29,7 @@ import re
 import sys
 import traceback
 from six.moves import tkinter
-import RO.OS
+import opscore.RO.OS
 
 # windowing system constants
 WSysAqua = "aqua"
@@ -128,7 +128,7 @@ def getWindowingSystem():
             g_winSys = tkWdg.tk.call("tk", "windowingsystem")
         except tkinter.TclError:
             # windowingsystem not supported; take a best guess
-            if RO.OS.PlatformName == "win":
+            if opscore.RO.OS.PlatformName == "win":
                 g_winSys = "win32"
             else:
                 g_winSys = "x11"
@@ -253,7 +253,7 @@ class Geometry(object):
         (I have particularly seen this for windows nearly as large as the screen)
     That is why the constrainToGeomStr method always returns a tk geometry string with positive corners.
     """
-    if RO.OS.PlatformName == "mac":
+    if opscore.RO.OS.PlatformName == "mac":
         minCorner = (0, 22)
     else:
         minCorner = (0, 0)

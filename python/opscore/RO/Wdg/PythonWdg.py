@@ -28,10 +28,10 @@ History:
 2004-05-18 ROwen    Bug fix: ScriptWdg.run arguments globals and locals shadowed builtins.
                     Stopped importing sys and string since they weren't used.
 2004-06-22 ROwen    Renamed ScriptWdg->PythonWdg to avoid collisions with new
-                    RO.ScriptRunner and associated RO.ScriptWdg.
+                    opscore.RO.ScriptRunner and associated opscore.RO.ScriptWdg.
                     Deleted ScriptWindow since it was not being used.
 2004-08-10 ROwen    Added helpURL argument.
-                    Modified to use an RO.Wdg.Text widget.
+                    Modified to use an opscore.RO.Wdg.Text widget.
 2004-08-11 ROwen    Define __all__ to restrict import.
 2004-09-14 ROwen    Bug fix: output file close error (fd.close inst. of fd.close()).
 2005-06-16 ROwen    Changed "== None" to "is None" in some cases, to appease pychecker and myself.
@@ -42,8 +42,8 @@ __all__ = ['PythonWdg']
 import os
 import re
 from six.moves import tkinter
-import RO.CnvUtil
-import RO.OS
+import opscore.RO.CnvUtil
+import opscore.RO.OS
 from . import Text
 
 class PythonWdg(tkinter.Frame):
@@ -78,7 +78,7 @@ class PythonWdg(tkinter.Frame):
         self.scroll.grid(row=0, column=1, sticky=tkinter.NS)
 
         if self.filePath:
-            fd = RO.OS.openUniv(self.filePath)
+            fd = opscore.RO.OS.openUniv(self.filePath)
             try:
                 self.inputWdg.delete(1.0, tkinter.END)
                 for line in fd.readlines():
@@ -123,7 +123,7 @@ class PythonWdg(tkinter.Frame):
         filePath = tkinter.filedialog.askopenfilename()
         if not filePath:
             return
-        filePath = RO.CnvUtil.asStr(filePath)
+        filePath = opscore.RO.CnvUtil.asStr(filePath)
         top = tkinter.Toplevel(self.master, )
         top.title(os.path.basename(filePath))
         frame = PythonWdg(top, filePath=filePath)
@@ -139,7 +139,7 @@ class PythonWdg(tkinter.Frame):
             filePath = tkinter.filedialog.asksaveasfilename(initialfile=self.filePath)
             if not filePath:
                 return
-            self.filePath = RO.CnvUtil.asStr(filePath)
+            self.filePath = opscore.RO.CnvUtil.asStr(filePath)
         fd = open(filePath, 'w')
         try:
             fd.write(script)

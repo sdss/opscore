@@ -26,20 +26,20 @@ History:
 2002-03-05 ROwen    Modified to use GenericCallback.
 2002-03-11 ROwen    Added LogWdg.setColor and ColorPrefVar handling.
 2002-05-13 ROwen    Support multiple sets of categories.
-2002-08-08 ROwen    Moved to RO.Wdg.
+2002-08-08 ROwen    Moved to opscore.RO.Wdg.
 2002-11-22 ROwen    Made it difficult or impossible to change the logged data.
 2002-12-05 ROwen    Added support for URL-based help.
-2002-12-20 ROwen    Removed any attempt to import RO.Wdg...., thanks to pychecker.
+2002-12-20 ROwen    Removed any attempt to import opscore.RO.Wdg...., thanks to pychecker.
 2003-03-11 ROwen    Changed to use OptionMenu instead of ROOptionMenu.
-2003-04-15 ROwen    Modified to use RO.Wdg.CtxMenu 2003-04-15.
+2003-04-15 ROwen    Modified to use opscore.RO.Wdg.CtxMenu 2003-04-15.
 2003-06-18 ROwen    Bug fix: was not initially auto-scrolling if not initially displayed
                     (Tk or Tkinter's changed how it reports scroll position if the
                     window was never displayed);
                     Modified to test for StandardError instead of Exception
 2003-09-30 ROwen    Fixed to use 2003-07-09 version of OptionMenu.
 2004-05-18 ROwen    Moved import sys to if __name__ ==...
-2004-08-11 ROwen    Modified to use RO.Wdg.Text, for an enhanced contextual menu.
-                    Modified the other widgets to their RO.Wdg versions
+2004-08-11 ROwen    Modified to use opscore.RO.Wdg.Text, for an enhanced contextual menu.
+                    Modified the other widgets to their opscore.RO.Wdg versions
                     to make it easier to set the help URL.
                     Define __all__ to restrict import.
 2006-06-01 ROwen    Added helpText argument.
@@ -71,14 +71,14 @@ History:
 __all__ = ['LogWdg']
 
 from six.moves import tkinter
-import RO.Alg
+import opscore.RO.Alg
 from . import Text
 
 _AllTextTag = "__alltext"
 
-_SevTagDict = RO.Alg.OrderedDict(
-    (sev, "__sev_%s" % (name,)) for sev, name in RO.Constants.SevNameDict.items())
-_SevTagListDict = RO.Alg.OrderedDict(
+_SevTagDict = opscore.RO.Alg.OrderedDict(
+    (sev, "__sev_%s" % (name,)) for sev, name in opscore.RO.Constants.SevNameDict.items())
+_SevTagListDict = opscore.RO.Alg.OrderedDict(
     (sev, list(_SevTagDict.values())[ind:]) for ind, sev in enumerate(_SevTagDict.keys()))
 
 class LogWdg(tkinter.Frame):
@@ -133,10 +133,10 @@ class LogWdg(tkinter.Frame):
         self.text.tag_configure(_AllTextTag)
 
         # set up severity tags and tie them to color preferences
-        self._severityPrefDict = RO.Wdg.WdgPrefs.getSevPrefDict()
+        self._severityPrefDict = opscore.RO.Wdg.WdgPrefs.getSevPrefDict()
         for sev, sevTag in _SevTagDict.items():
             pref = self._severityPrefDict[sev]
-            if sev == RO.Constants.sevNormal:
+            if sev == opscore.RO.Constants.sevNormal:
                 # normal color is already automatically updated
                 # but do make tag known to text widget
                 self.text.tag_configure(sevTag)
@@ -157,7 +157,7 @@ class LogWdg(tkinter.Frame):
         self.text.bind("<<Clear>>", killEvent)
         self.text.bind("<Key>", killEvent)
 
-    def addMsg(self, astr, tags=(), severity=RO.Constants.sevNormal):
+    def addMsg(self, astr, tags=(), severity=opscore.RO.Constants.sevNormal):
         """Append a line of data to the log, adding a trailing \n
 
         If you do not want a trailing \n added for you then call addOutput instead.
@@ -166,11 +166,11 @@ class LogWdg(tkinter.Frame):
         - astr: data to append (a trailing \n IS added for you)
         - tags: tags for the text. Warning: tags whose names begin with __ (two underscores)
             are reserved for internal use.
-        - severity: one of the RO.Constants.sevX constants
+        - severity: one of the opscore.RO.Constants.sevX constants
         """
         self.addOutput(astr + "\n", tags=tags, severity=severity)
 
-    def addOutput(self, astr, tags=(), severity=RO.Constants.sevNormal):
+    def addOutput(self, astr, tags=(), severity=opscore.RO.Constants.sevNormal):
         """Append data to the log without adding a trailing \n.
 
         If you want a trailing \n then you must supply it or call addMsg instead.
@@ -178,7 +178,7 @@ class LogWdg(tkinter.Frame):
         Inputs:
         - astr: text to append (a trailing \n is NOT added for you)
         - tags: tags for the text
-        - severity: one of the RO.Constants.sevX constants
+        - severity: one of the opscore.RO.Constants.sevX constants
         """
         #print "addOutput(astr=%r; tags=%r)" % (astr, tags)
         # set auto-scroll flag true if scrollbar is at end
@@ -205,7 +205,7 @@ class LogWdg(tkinter.Frame):
         Each element of the list must contain exactly three entries:
         - astr: the text to append; you must supply \n for the end of each line
         - tags: a collection of tags
-        - severity: one of the RO.Constants.sevX constants
+        - severity: one of the opscore.RO.Constants.sevX constants
         """
         if not strTagSevList:
             return
@@ -296,7 +296,7 @@ class LogWdg(tkinter.Frame):
         """Return all severity tags that have severity >= minSeverity
 
         Inputs:
-        - minSeverity: minimum severity for returned tags; an RO.Constants.sev constant
+        - minSeverity: minimum severity for returned tags; an opscore.RO.Constants.sev constant
         """
         return _SevTagListDict[minSeverity]
 

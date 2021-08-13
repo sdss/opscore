@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""A version of RO.TCPConnection that can negotiate a connection with the APO Hub.
+"""A version of opscore.RO.TCPConnection that can negotiate a connection with the APO Hub.
 
 This is a good example of the sort of connection used by KeyDispatcher.
 
@@ -18,14 +18,14 @@ History:
 2003-10-14 ROwen    Bug fix: NullConnection used TCPConnection.Connected instead of Connected.
 2003-10-15 ROwen    getProgID and getUsername were broken (usually returned cmdr).
 2005-01-06 ROwen    Changed NullConnection program from myprog to TU01; a more realistic name.
-2005-01-12 ROwen    Modified for new RO.Wdg.ModalDialogBase.
+2005-01-12 ROwen    Modified for new opscore.RO.Wdg.ModalDialogBase.
 2006-04-29 ROwen    Added loginExtra arg.
 2008-04-29 ROwen    Fixed reporting of exceptions that contain unicode arguments.
 2009-07-17 ROwen    Eliminated deprecation warning in Python 2.6 by using hashlib if present.
 2011-06-16 ROwen    Ditched obsolete "except (SystemExit, KeyboardInterrupt): raise" code
 2011-06-17 ROwen    Changed "type" to "msgType" in parsed message dictionaries to avoid conflict with builtin.
 2012-07-16 ROwen    Added support for Twisted framework.
-                    You must now call RO.Comm.Generic.setFramework before importing this module.
+                    You must now call opscore.RO.Comm.Generic.setFramework before importing this module.
 2012-12-06 ROwen    Fixed a bug in the demo code; it once again requires Tkinter.
 2014-09-17 ROwen    Bug fix: an error message referenced a mis-typed variable name.
 2015-09-24 ROwen    Replace "== None" with "is None" to modernize the code.
@@ -41,8 +41,8 @@ except ImportError:
 import sys
 
 from .TCPConnection import TCPConnection
-import RO.ParseMsg
-import RO.StringUtil
+import opscore.RO.ParseMsg
+import opscore.RO.StringUtil
 
 class HubConnection(TCPConnection):
     """Connection to Apache Point Observatory hub
@@ -149,7 +149,7 @@ class HubConnection(TCPConnection):
                 self.__password = None
 
                 # expect the line ': nonce="..."'
-                msgDict = RO.ParseMsg.parseHubMsg(hubMsg)
+                msgDict = opscore.RO.ParseMsg.parseHubMsg(hubMsg)
                 msgType = msgDict["msgType"]
                 dataDict = msgDict["data"]
                 nonce = dataDict.get("nonce", (None,))[0]
@@ -174,7 +174,7 @@ class HubConnection(TCPConnection):
             elif self._authState == 1:
                 # expect the line ": loggedIn cmdrID=..."
                 # print "read %r in response to login" % (hubMsg,)
-                msgDict = RO.ParseMsg.parseHubMsg(hubMsg)
+                msgDict = opscore.RO.ParseMsg.parseHubMsg(hubMsg)
                 msgType = msgDict["msgType"]
                 dataDict = msgDict["data"]
                 cmdr = dataDict.get("cmdrID", (None,))[0]
@@ -195,7 +195,7 @@ class HubConnection(TCPConnection):
                 raise RuntimeError("bug: unknown auth state %r" % (self._authState,))
         except Exception as e:
             self._authState = -1
-            self.disconnect(False, RO.StringUtil.strFromException(e))
+            self.disconnect(False, opscore.RO.StringUtil.strFromException(e))
 
     def _setState(self, newState, reason=None):
         # print "%s._setState(newState=%s, reason=%s)" % (self, newState, reason)
@@ -231,7 +231,7 @@ class NullConnection(HubConnection):
 
 if __name__ == "__main__":
     from six.moves import tkinter
-    import RO.Wdg
+    import opscore.RO.Wdg
     root = tkinter.Tk()
 
     host = "hub35m.apo.nmsu.edu"

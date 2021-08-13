@@ -4,7 +4,7 @@
 support for help.
 
 Note: to see the menus you must issue a <<CtxMenu>> event,
-e.g. by running RO.Wdg.Bindings.stdBindings(wdg).
+e.g. by running opscore.RO.Wdg.Bindings.stdBindings(wdg).
 
 Known issues: tk_popup will fail on MacOS with Tkinter.TclError
 if another application's window is in front, at least with ActiveState Tcl/Tk 8.5.11.
@@ -30,9 +30,9 @@ History:
                     to a widget that already is or has a contextual menu.
 2004-08-11 ROwen    Modified to use Constants for URL help base.
                     Define __all__ to restrict import.
-2004-09-03 ROwen    Modified for RO.Wdg.st_... -> RO.Constants.st_...
+2004-09-03 ROwen    Modified for opscore.RO.Wdg.st_... -> opscore.RO.Constants.st_...
 2004-09-14 ROwen    Bug fix to test code.
-                    Removed unused global _HelpURLBase (moved to RO.Constants).
+                    Removed unused global _HelpURLBase (moved to opscore.RO.Constants).
                     Minor change to CtxMenu to make pychecker happier.
 2004-10-05 ROwen    Modified to open HTML help in a background thread.
 2004-10-13 ROwen    Removed unused import of urlparse and webbrowser.
@@ -48,9 +48,9 @@ History:
 __all__ = ['CtxMenu', 'CtxMenuMixin', 'addCtxMenu']
 
 from six.moves import tkinter
-import RO.Comm.BrowseURL
-import RO.Constants
-import RO.OS
+import opscore.RO.Comm.BrowseURL
+import opscore.RO.Constants
+import opscore.RO.OS
 
 class CtxMenu(object):
     def __init__(self,
@@ -153,7 +153,7 @@ class CtxMenu(object):
         if not helpURL:
             return
 
-        RO.Comm.BrowseURL.browseURL(helpURL)
+        opscore.RO.Comm.BrowseURL.browseURL(helpURL)
 
     def getHelpURL(self):
         """Returns the instance variable helpURL.
@@ -162,7 +162,7 @@ class CtxMenu(object):
         of _HelpURLBase and self.helpURL.
         """
         if self.helpURL:
-            return RO.Constants._joinHelpURL(self.helpURL)
+            return opscore.RO.Constants._joinHelpURL(self.helpURL)
         return None
 
 class CtxMenuMixin(CtxMenu):

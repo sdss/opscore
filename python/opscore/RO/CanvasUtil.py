@@ -7,10 +7,10 @@ History:
 2002-08-08 ROwen    Moved to RO class name.
 2002-11-06 ROwen    Fixed a typo in the test code (spiral instead of Spiral);
                     fixed darwin handling assuming aqua Tk (which as the standard Mac offset bug)
-2002-11-12 ROwen    Moved the mac fix stuff into RO.Wdg.Canvas.
+2002-11-12 ROwen    Moved the mac fix stuff into opscore.RO.Wdg.Canvas.
 2003-04-29 ROwen    Fix for Python 2.3: stopped using range for floats.
 2004-05-18 ROwen    Removed import sys, since it was not being used.
-2004-10-22 ROwen    Modified demo to not use RO.Wdg.PatchedCanvas
+2004-10-22 ROwen    Modified demo to not use opscore.RO.Wdg.PatchedCanvas
                     since it is no longer needed.
 2005-06-06 ROwen    Improved Spiral:
                     - Keep track of geom ID for more reliable clear during redraw.
@@ -23,7 +23,7 @@ __all__ = ["ctrCircle", "ctrPlus", "ctrX", "radialLine", "Spiral"]
 
 import math
 from six.moves import tkinter
-import RO.MathUtil
+import opscore.RO.MathUtil
 
 def ctrCircle(cnv, xpos, ypos, rad, width = 1, **kargs):
     """Draws a centered circle on the specified canvas.
@@ -127,7 +127,7 @@ def radialLine(cnv, xpos, ypos, rad, angle, width=1, **kargs):
         d3: distance from the outside edge of the line to the trailing points
         defaults to something reasonable, which may be (8, 10, 3)
     """
-    angleRadians = angle * RO.MathUtil.RadPerDeg
+    angleRadians = angle * opscore.RO.MathUtil.RadPerDeg
     dx = rad * math.cos(angleRadians)
     dy = rad * math.sin(angleRadians)
     cnv.create_line(
@@ -248,12 +248,12 @@ class Spiral(object):
         radPix = self.begRad + (radialPixPerDeg * (ang - self.begAng))
 
         adjAng = (ang * self.angScale) + self.angOff
-        xPos = self.xctr + (radPix * RO.MathUtil.cosd(adjAng))
-        yPos = self.yctr - (radPix * RO.MathUtil.sind(adjAng))
+        xPos = self.xctr + (radPix * opscore.RO.MathUtil.cosd(adjAng))
+        yPos = self.yctr - (radPix * opscore.RO.MathUtil.sind(adjAng))
         return (xPos, yPos)
 
 if __name__ == '__main__':
-    from RO.Wdg.PythonTk import PythonTk
+    from opscore.RO.Wdg.PythonTk import PythonTk
     root = PythonTk()
 
     cnv = tkinter.Canvas (root, width=201, height=201)

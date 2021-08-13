@@ -5,7 +5,7 @@ History:
 2001-01-10 ROwen    Modified floatCnv to not handle NaN floating values,
     since this failed on Mac OS X; it will still handle string "NaN" (any case).
 2002-08-08 ROwen    Modified to use new Astro.Tm functions which are in days, not sec.
-2003-05-08 ROwen    Modified to use RO.CnvUtil.
+2003-05-08 ROwen    Modified to use opscore.RO.CnvUtil.
 2003-11-21 ROwen    Bug fix: __init__ did not check the data.
 2005-06-08 ROwen    Changed PVT to a new-style class.
 2007-07-02 ROwen    Added hasVel method.
@@ -18,10 +18,10 @@ import time
 
 import numpy
 
-import RO.Astro.Tm
-import RO.CnvUtil
-import RO.MathUtil
-import RO.PhysConst
+import opscore.RO.Astro.Tm
+import opscore.RO.CnvUtil
+import opscore.RO.MathUtil
+import opscore.RO.PhysConst
 
 class PVT(object):
     """Defines a position, velocity, time triplet, where time is in TAI.
@@ -55,7 +55,7 @@ class PVT(object):
             return None
 
         if t is None:
-            t = RO.Astro.Tm.taiFromPySec() * RO.PhysConst.SecPerDay
+            t = opscore.RO.Astro.Tm.taiFromPySec() * opscore.RO.PhysConst.SecPerDay
 
         return self.pos + (self.vel * (t - self.t))
 
@@ -84,17 +84,17 @@ class PVT(object):
         Raises ValueError if any value is invalid.
         """
         if pos is not None:
-            self.pos = RO.CnvUtil.asFloatOrNone(pos)
+            self.pos = opscore.RO.CnvUtil.asFloatOrNone(pos)
         if vel is not None:
-            self.vel = RO.CnvUtil.asFloatOrNone(vel)
+            self.vel = opscore.RO.CnvUtil.asFloatOrNone(vel)
         if t is not None:
-            self.t = RO.CnvUtil.asFloatOrNone(t)
+            self.t = opscore.RO.CnvUtil.asFloatOrNone(t)
 
 
 if __name__ == "__main__":
     print("\nrunning PVT test")
 
-    currTAI = RO.Astro.Tm.taiFromPySec() * RO.PhysConst.SecPerDay
+    currTAI = opscore.RO.Astro.Tm.taiFromPySec() * opscore.RO.PhysConst.SecPerDay
 
     varList = (
         PVT(),
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     )
 
     for i in range(5):
-        t = RO.Astro.Tm.taiFromPySec() * RO.PhysConst.SecPerDay
+        t = opscore.RO.Astro.Tm.taiFromPySec() * opscore.RO.PhysConst.SecPerDay
         print("\ntime =", t)
         for var in varList:
             print(var, "pos =", var.getPos(t))

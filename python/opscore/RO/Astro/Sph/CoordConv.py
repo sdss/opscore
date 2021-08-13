@@ -4,8 +4,8 @@
 __all__ = ["coordConv"]
 
 from . import Const
-from RO.Astro import Cnv
-import RO.MathUtil
+from opscore.RO.Astro import Cnv
+import opscore.RO.MathUtil
 from .CCFromSCPVOff import ccFromSCPVOff
 from .SCFromCCPVOff import scFromCCPVOff
 
@@ -21,14 +21,14 @@ def coordConv(
     Inputs:
     - fromPos(2)    input position (deg)
     - fromSys       coord. system from which to convert (e.g. "ICRS");
-                    any of the entries in the table below; use RO.CoordSys constants.
+                    any of the entries in the table below; use opscore.RO.CoordSys constants.
     - fromDate      date of "from" coordinates*.
     - toSys         coordinate system to which to convert (see fromSys)
     - toDate        date of "to" coordinates*
     - fromPM(2)**   input proper motion (arcsec per century***); default is (0,0)
     - fromParlax**  input parallax (arcsec)
     - fromRadVel**  input radial velocity (km/sec, positive receding)
-    - obsData       an RO.Astro.Cnv.ObserverData object; required if fromSys or toSys
+    - obsData       an opscore.RO.Astro.Cnv.ObserverData object; required if fromSys or toSys
                     is Topocentric or Observed; ignored otherwise.
     - refCo(2)      refraction coefficients; required if fromSys or toSys is Observed;
                     ignored otherwise.
@@ -114,7 +114,7 @@ def coordConv(
     toPos, toPM, toParlax, toRadVel, toDir, toOffMag, atPole = scFromCCPVOff (toP, toV, toOffP)
 
     # put toDir into same wrap as fromDir
-    toDir = fromDir + RO.MathUtil.wrapCtr (toDir - fromDir)
+    toDir = fromDir + opscore.RO.MathUtil.wrapCtr (toDir - fromDir)
 
     # if at infinity, zero parallax and set to radial velocity = from radial velocity
     if atInf:

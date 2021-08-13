@@ -8,7 +8,7 @@ History:
 __all__ = ["geoFromICRS"]
 
 import numpy
-from RO.Astro import llv
+from opscore.RO.Astro import llv
 
 def geoFromICRS(icrsP, icrsV, agData):
     """
@@ -63,7 +63,7 @@ def geoFromICRS(icrsP, icrsV, agData):
 
 
 if __name__ == "__main__":
-    import RO.SeqUtil
+    import opscore.RO.SeqUtil
     from .AppGeoData import AppGeoData
     print("testing geoFromICRS")
     # test data is formatted as follows:
@@ -101,9 +101,9 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = geoFromICRS(*testInput)
-        expectedFlat = RO.SeqUtil.flatten(expectedOutput)
-        actualFlat = RO.SeqUtil.flatten(actualOutput)
-        if RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1.0e-10):
+        expectedFlat = opscore.RO.SeqUtil.flatten(expectedOutput)
+        actualFlat = opscore.RO.SeqUtil.flatten(actualOutput)
+        if opscore.RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1.0e-10):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)

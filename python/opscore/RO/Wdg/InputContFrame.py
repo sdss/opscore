@@ -2,7 +2,7 @@
 """
 
 History:
-2002-11-15 ROwen    Broken out of RO.InputCont to improve the architecture.
+2002-11-15 ROwen    Broken out of opscore.RO.InputCont to improve the architecture.
 2003-03-12 ROwen    Added getStringList; changed 1/0 to True/False.
 2003-07-10 ROwen    Uses self.inputCont instead of self.inputContSet.
 2003-10-20 ROwen    Bug fixes: getDefValueDict and getValueDict both had
@@ -17,7 +17,7 @@ __all__ = ['InputContFrame']
 from six.moves import tkinter
 
 class InputContFrame(tkinter.Frame):
-    """A convenience class for widgets containing an RO.InputCont container class.
+    """A convenience class for widgets containing an opscore.RO.InputCont container class.
     You must store the container list in instance variable self.inputCont and all the
     important calls automatically work.
 

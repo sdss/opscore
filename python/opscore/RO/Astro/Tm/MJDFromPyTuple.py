@@ -4,7 +4,7 @@
 __all__ = ["mjdFromPyTuple"]
 
 import math
-import RO.PhysConst
+import opscore.RO.PhysConst
 
 def mjdFromPyTuple(timeTuple):
     """Converts a python time tuple to Modified Julian Date.
@@ -33,11 +33,11 @@ def mjdFromPyTuple(timeTuple):
         + day \
         + 1721028.5
 
-    return (jd - RO.PhysConst.JDMinusMJD) + (((((sec / 60.0) + minute) / 60.0) + hour) / 24.0)
+    return (jd - opscore.RO.PhysConst.JDMinusMJD) + (((((sec / 60.0) + minute) / 60.0) + hour) / 24.0)
 
 
 if __name__ == "__main__":
-    import RO.MathUtil
+    import opscore.RO.MathUtil
     print("testing mjdFromPyTuple")
     # dataList = tuples of year, month, Julian date, where
     # - JD is at noon on the specified year and month
@@ -94,9 +94,9 @@ if __name__ == "__main__":
     )
     for year, month, jd in testData:
         testInput = (year, month, 1, 12, 0, 0)
-        expectedOutput = jd - RO.PhysConst.JDMinusMJD
+        expectedOutput = jd - opscore.RO.PhysConst.JDMinusMJD
         actualOutput = mjdFromPyTuple(testInput)
-        if 0 != RO.MathUtil.compareFloats(actualOutput, expectedOutput, rtol=1e-15):
+        if 0 != opscore.RO.MathUtil.compareFloats(actualOutput, expectedOutput, rtol=1e-15):
             print("failed on input:", testInput)
             print("expected output:", expectedOutput)
             print("actual output  :", actualOutput)

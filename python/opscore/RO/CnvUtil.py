@@ -302,7 +302,7 @@ def posFromPVT(pvt):
     """Return the position of a PVT, or None if pvt is None or has no valid position.
 
     Inputs:
-    - PVT: an RO.PVT.PVT position, velocity, time object.
+    - PVT: an opscore.RO.PVT.PVT position, velocity, time object.
 
     This is a convenience function to handle the case that the input is None
     """
@@ -317,8 +317,8 @@ def nullCnv(val):
 if __name__ == "__main__":
     import random
     import sys
-    import RO.SysConst
-    import RO.MathUtil
+    import opscore.RO.SysConst
+    import opscore.RO.MathUtil
     print("running CnvUtil test")
 
     def tryFunc(func, arg, desVal):
@@ -397,7 +397,7 @@ if __name__ == "__main__":
     print("testing %s" % (funcName(func),))
 
     for ii in range(1000):
-        floatVal = (random.random() - 0.5) * 2.0 * RO.SysConst.FBigNum
+        floatVal = (random.random() - 0.5) * 2.0 * opscore.RO.SysConst.FBigNum
         tryFunc(func, floatVal, floatVal)
         tryFunc(func, str(floatVal), floatVal)
 
@@ -409,7 +409,7 @@ if __name__ == "__main__":
     print("testing %s" % (funcName(func),))
 
     for ii in range(1000):
-        floatVal = (random.random() - 0.5) * 2.0 * RO.SysConst.FBigNum
+        floatVal = (random.random() - 0.5) * 2.0 * opscore.RO.SysConst.FBigNum
         tryFunc(func, floatVal, floatVal)
         tryFunc(func, str(floatVal), floatVal)
     tryFunc(func, "NaN", None)
@@ -424,7 +424,7 @@ if __name__ == "__main__":
     print("testing %s" % (funcName(func),))
 
     for ii in range(1000):
-        floatVal = (random.random() - 0.5) * 2.0 * RO.SysConst.FBigNum
+        floatVal = (random.random() - 0.5) * 2.0 * opscore.RO.SysConst.FBigNum
         if str(floatVal) == BadFloatStr:
             continue
         tryFunc(func, str(floatVal), floatVal)

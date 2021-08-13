@@ -30,8 +30,8 @@ __all__ = ["sind", "cosd", "tand", "asind", "acosd", "atand", "atan2d", "compare
 
 import math
 import numpy
-from RO.PhysConst import RadPerDeg
-import RO.SysConst
+from opscore.RO.PhysConst import RadPerDeg
+import opscore.RO.SysConst
 
 DegPerRad = 1.0 / RadPerDeg
 _TinyFloat = numpy.finfo(float).tiny
@@ -72,7 +72,7 @@ def atan2d(x, y):
     """arctangent of y/x, in degrees"""
     return DegPerRad * math.atan2(x, y)
 
-def compareFloats(a, b, rtol=1.0e-5, atol=RO.SysConst.FAccuracy):
+def compareFloats(a, b, rtol=1.0e-5, atol=opscore.RO.SysConst.FAccuracy):
     """Compares values a and b
     Returns 0 if the values are approximately equals, i.e.:
     - |a - b| < atol + (rtol * |a + b|)
@@ -186,7 +186,7 @@ def rThetaFromXY(xy):
     if r < _TinyFloat:
         theta = numpy.nan
     else:
-        theta = math.atan2(xy[1], xy[0]) / RO.PhysConst.RadPerDeg
+        theta = math.atan2(xy[1], xy[0]) / opscore.RO.PhysConst.RadPerDeg
     return (r, theta)
 
 def xyFromRTheta(rTheta):

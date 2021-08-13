@@ -8,7 +8,7 @@ History:
 __all__ = ['Menubutton']
 
 from six.moves import tkinter
-import RO.Constants
+import opscore.RO.Constants
 from .CtxMenu import CtxMenuMixin
 
 
@@ -18,7 +18,7 @@ class Menubutton(tkinter.Menubutton, CtxMenuMixin):
         helpText = None,
         helpURL = None,
         callFunc = None,
-        severity = RO.Constants.sevNormal,
+        severity = opscore.RO.Constants.sevNormal,
     **kwArgs):
         """Creates a new Menubutton.
 
@@ -28,7 +28,7 @@ class Menubutton(tkinter.Menubutton, CtxMenuMixin):
         - callFunc  callback function; the function receives one argument: self.
                     It is called whenever the value changes (manually or via
                     the associated variable being set).
-        - severity  initial severity; one of RO.Constants.sevNormal, sevWarning or sevError
+        - severity  initial severity; one of opscore.RO.Constants.sevNormal, sevWarning or sevError
         - all remaining keyword arguments are used to configure the Tkinter Menubutton;
           command is supported, for the sake of conformity, but callFunc is preferred.
         """

@@ -1,7 +1,7 @@
 
 """Track the state of a collection of widgets
 
-Intended for use with RO.Wdg.Toplevel in saving and restoring state
+Intended for use with opscore.RO.Wdg.Toplevel in saving and restoring state
 
 History:
 2015-09-24 ROwen    Replace "== None" with "is None" to modernize the code.
@@ -10,8 +10,8 @@ History:
 __all__ = ["StateTracker"]
 
 import sys
-import RO.Alg.GenericCallback
-import RO.Constants
+import opscore.RO.Alg.GenericCallback
+import opscore.RO.Constants
 
 class _ItemState(object):
     """Functions for getting and setting item state
@@ -40,12 +40,12 @@ class StateTracker(object):
         Inputs:
         - logFunc: a function to call if an item cannot be set or if debugging turned on; must take two arguments:
             - msgStr (positional): the message string
-            - severity (by name0: the message severity (an RO.Constants.sev* constant)
+            - severity (by name0: the message severity (an opscore.RO.Constants.sev* constant)
             if None then writes to sys.stderr
         - doDebug: if True then print a message for each getState and setState
         """
         if logFunc is None:
-            def logFunc(msgStr, severity=RO.Constants.sevNormal):
+            def logFunc(msgStr, severity=opscore.RO.Constants.sevNormal):
                 sys.stderr.write(msgStr)
         self._logFunc = logFunc
         self._itemDict = {}
@@ -60,7 +60,7 @@ class StateTracker(object):
         self.trackItem(
             name = name,
             getFunc = wdg.getString,
-            setFunc = RO.Alg.GenericCallback(wdg.set, doCheck=False),
+            setFunc = opscore.RO.Alg.GenericCallback(wdg.set, doCheck=False),
         )
 
     def trackCheckbutton(self, name, wdg):
@@ -113,5 +113,4 @@ class StateTracker(object):
                 try:
                     item.setFunc(val)
                 except Exception as e:
-                    self._logFunc("Failed to set %s to %r: %s\n" % (name, val, RO.StringUtil.strFromException(e)), severity=RO.Constants.sevWarning)
-
+                    self._logFunc("Failed to set %s to %r: %s\n" % (name, val, opscore.RO.StringUtil.strFromException(e)), severity=opscore.RO.Constants.sevWarning)

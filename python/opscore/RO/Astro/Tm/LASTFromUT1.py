@@ -2,9 +2,9 @@
 
 __all__ = ["lastFromUT1"]
 
-import RO.PhysConst
-import RO.MathUtil
-from RO.Astro import llv
+import opscore.RO.PhysConst
+import opscore.RO.MathUtil
+from opscore.RO.Astro import llv
 from .LMSTFromUT1 import lmstFromUT1
 
 def lastFromUT1(ut1, longitude):
@@ -27,7 +27,7 @@ def lastFromUT1(ut1, longitude):
 
     # find apparent - mean sidereal time, in degrees
     # note: this wants the TDB date, but UT1 is probably close enough
-    appMinusMean = llv.eqeqx(ut1) / RO.PhysConst.RadPerDeg
+    appMinusMean = llv.eqeqx(ut1) / opscore.RO.PhysConst.RadPerDeg
 
     # find local apparent sideral time, in degrees, in range [0, 360)
-    return RO.MathUtil.wrapPos (lmst + appMinusMean)
+    return opscore.RO.MathUtil.wrapPos (lmst + appMinusMean)

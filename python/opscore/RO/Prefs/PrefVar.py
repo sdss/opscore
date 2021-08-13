@@ -15,7 +15,7 @@ PrefSet stores a collection of PrefVars and can read the values from a preferenc
 See PrefSet.readFromFile for details on the file format.
 
 To Do:
-- Consolidate PrefVar, RO.InputCont and RO.Wdg.Entry to use a common set of typed variable containers.
+- Consolidate PrefVar, opscore.RO.InputCont and opscore.RO.Wdg.Entry to use a common set of typed variable containers.
 
 History:
 2002-02-06 ROwen    Basics done, still need to finish color and implement fonts.
@@ -30,24 +30,24 @@ History:
 2003-02-28 ROwen    Fixed some bugs in StrPrefVar pattern matching.
 2003-03-28 ROwen    Changed StrPrefVar to return a blank range string
                     instead of a cryptic regular expression.
-2003-04-11 ROwen    Changed BoolPrefVar to use RO.Wdg.Checkbutton;
+2003-04-11 ROwen    Changed BoolPrefVar to use opscore.RO.Wdg.Checkbutton;
                     made all editors include helpText and helpURL.
 2003-04-18 ROwen    Changed BoolPrefVar to use True and False as their string values;
                     added methods asValue, asStr, asSummary.
-2003-04-28 ROwen    Modified to use updated RO.KeyVariable cnv functions.
+2003-04-28 ROwen    Modified to use updated opscore.RO.KeyVariable cnv functions.
 2003-04-29 ROwen    Fixes for Python 2.3:
                     - modified to not use rexec (uses the less safe eval instead);
                     - font summary explicitly converts all values to strings.
 2003-05-08 ROwen    Changed FontPrefVar coerce values to int or bool as appropriate,
                     fixing a problem introduced 2003-04-29 for Python 2.2;
-                    modified to use new RO.CnvUtil functions.
+                    modified to use new opscore.RO.CnvUtil functions.
 2003-06-18 ROwen    Modified to test for StandardError instead of Exception
 2003-08-04 ROwen    Changed default callNow to False.
 2003-08-07 ROwen    Added DirectoryPrefVar;
                     modified getEditWdg to accept a 3rd argument:
                     the contextual menu configuration function.
 2003-08-11 ROwen    Modified getEditWdg so var is optional and edit value is pre-set.
-2003-09-22 ROwen    Changed getDefaultValue to getDefValue, to match setDefValue and RO.Wdg.
+2003-09-22 ROwen    Changed getDefaultValue to getDefValue, to match setDefValue and opscore.RO.Wdg.
 2003-11-17 ROwen    Added FilePrefVar and SoundPrefVar; modified StrPrefVar such that
                     its edit widget does its own value checking.
 2003-11-24 ROwen    If defValue invalid, prints msg to stderr and uses None,
@@ -58,7 +58,7 @@ History:
                     was broken due to self_doChoose instead of self._doChoose.
 2004-02-23 ROwen    Preference files are now read with universal newline support
                     on Python 2.3 or later
-2004-03-05 ROwen    Modified to use RO.OS.univOpen.
+2004-03-05 ROwen    Modified to use opscore.RO.OS.univOpen.
 2004-05-18 ROwen    Removed checkPartialValue; it is the editor's responsibility.
                     Removed **kargs from getEditWdg in a few places; it was ignored.
 2004-08-06 ROwen    Bug fix in DirectoryPrefVar and FilePrefVar: if one typed
@@ -76,12 +76,12 @@ History:
 2005-07-14 ROwen    Changed help text for file, directory and sound editors to standard help text.
 2005-09-15 ROwen    PrefSet: changed oldPrefNames argument to oldPrefInfo;
                     one can now map old pref names to new pref names.
-2006-03-07 ROwen    Modified Dir, File and SoundPrefVar to use new RO.Wdg.PathWdg.
+2006-03-07 ROwen    Modified Dir, File and SoundPrefVar to use new opscore.RO.Wdg.PathWdg.
 2006-04-27 ROwen    Stopped importing unused tkFileDialog (thanks, pychecker!).
 2006-06-05 ROwen    Removed getEditWdg methods from DirectoryPrefVar, FilePrefVar and SoundPrefVar;
                     the widgets had problems best fixed by producing the editors in PrefEditor.
 2007-09-10 ROwen    PrefVar: the default family is now "MS Sans Serif" for Windows.
-                    Stopped using RO.OS.openUniv, since RO package is no longer compatible with Python 2.3.
+                    Stopped using opscore.RO.OS.openUniv, since RO package is no longer compatible with Python 2.3.
 2008-04-29 ROwen    Fixed reporting of exceptions that contain unicode arguments.
 2009-07-20 ROwen    Updated the documentation strings.
 2009-09-23 ROwen    Updated SoundPrefVar documentation to remove explicit mention of snack.
@@ -99,12 +99,12 @@ import re
 import sys
 from six.moves import tkinter
 from six.moves import tkinter_font as tkFont
-import RO.Alg
-import RO.CnvUtil
-import RO.MathUtil
-import RO.OS
-import RO.StringUtil
-import RO.Wdg
+import opscore.RO.Alg
+import opscore.RO.CnvUtil
+import opscore.RO.MathUtil
+import opscore.RO.OS
+import opscore.RO.StringUtil
+import opscore.RO.Wdg
 
 class PrefVar(object):
     """Base class for preference variables. Intended to be subclassed, not used directly.
@@ -164,7 +164,7 @@ class PrefVar(object):
         self.formatStr = formatStr
         self.editWidth = editWidth
         self.doPrint = doPrint
-        self.cnvFunc = cnvFunc or RO.CnvUtil.nullCnv
+        self.cnvFunc = cnvFunc or opscore.RO.CnvUtil.nullCnv
         self._callbackList = []
 
         try:
@@ -237,7 +237,7 @@ class PrefVar(object):
         - var: a Tkinter variable to be used in the widget
         - ctxConfigFunc: a function that updates the contextual menu
         """
-        editWdg = RO.Wdg.StrEntry(master,
+        editWdg = opscore.RO.Wdg.StrEntry(master,
             defValue = self.defValue,
             var = var,
             helpText = self.helpText,
@@ -378,7 +378,7 @@ class StrPrefVar(PrefVar):
         - var: a Tkinter variable to be used in the widget
         - ctxConfigFunc: a function that updates the contextual menu
         """
-        editWdg = RO.Wdg.StrEntry(master,
+        editWdg = opscore.RO.Wdg.StrEntry(master,
             defValue = self.defValue,
             var = var,
             finalPattern = self.finalPattern,
@@ -469,25 +469,25 @@ class FilePrefVar(StrPrefVar):
 
 
 class SoundPrefVar(FilePrefVar):
-    """Contains an RO.Wdg.SoundPlayer object, which plays a sound file or a series of beeps.
+    """Contains an opscore.RO.Wdg.SoundPlayer object, which plays a sound file or a series of beeps.
 
     If the sound file is not specified or cannot be played*
-    then RO.Wdg.SoundPlayer will play a default bell sequence instead.
+    then opscore.RO.Wdg.SoundPlayer will play a default bell sequence instead.
 
     Inputs:
     - name: the name of this variable (a string)
     - category: category of preference
     - defValue: default value
     - editWidth: width of text entry field (does not include the choose button)
-    - bellNum   number of times to ring the bell; ignored if RO.Wdg.SoundPlayer can play the sound file*
-    - bellDelay delay (ms) between each ring; ignored if RO.Wdg.SoundPlayer can play the sound file*
+    - bellNum   number of times to ring the bell; ignored if opscore.RO.Wdg.SoundPlayer can play the sound file*
+    - bellDelay delay (ms) between each ring; ignored if opscore.RO.Wdg.SoundPlayer can play the sound file*
     - **kargs: keyword arguments for StrPrefVar
 
-    *The bell arguments are only used if RO.Wdg.SoundPlayer cannot play the sound file, e.g.:
+    *The bell arguments are only used if opscore.RO.Wdg.SoundPlayer cannot play the sound file, e.g.:
     - no sound file is specified
     - the user is running over X11 (which has no sound support)
     - the file is corrupt
-    - the sound library used by RO.Wdg.SoundPlayer is not installed correctly
+    - the sound library used by opscore.RO.Wdg.SoundPlayer is not installed correctly
     """
     def __init__(self,
         name,
@@ -519,7 +519,7 @@ class SoundPrefVar(FilePrefVar):
 
     def setValue (self, rawValue):
         FilePrefVar.setValue(self, rawValue)
-        self._snd = RO.Wdg.SoundPlayer(
+        self._snd = opscore.RO.Wdg.SoundPlayer(
             fileName = rawValue,
             bellNum = self._bellNum,
             bellDelay = self._bellDelay,
@@ -540,7 +540,7 @@ class BoolPrefVar(PrefVar):
         kargs = kargs.copy()    # prevent modifying a passed-in dictionary
 
         kargs.setdefault("formatStr", "%s")
-        kargs.setdefault("cnvFunc", RO.CnvUtil.asBool)
+        kargs.setdefault("cnvFunc", opscore.RO.CnvUtil.asBool)
         kargs["validValues"] = None
         kargs["suggValues"] = None
 
@@ -561,7 +561,7 @@ class BoolPrefVar(PrefVar):
         """
         # specify onvalue and offvalue because the pref editor
         # to avoid editor's variable from being set to '0' and '1'
-        editWdg = RO.Wdg.Checkbutton(master,
+        editWdg = opscore.RO.Wdg.Checkbutton(master,
             var = var,
             helpText = self.helpText,
             helpURL = self.helpURL,
@@ -605,7 +605,7 @@ class IntPrefVar(PrefVar):
         self.minValue = minValue
         self.maxValue = maxValue
 
-        kargs.setdefault("cnvFunc", RO.CnvUtil.asInt)
+        kargs.setdefault("cnvFunc", opscore.RO.CnvUtil.asInt)
 
         PrefVar.__init__(self,
             name = name,
@@ -618,7 +618,7 @@ class IntPrefVar(PrefVar):
     def locCheckValue(self, value):
         """Raise a ValueError exception if the value is out of range.
         """
-        RO.MathUtil.checkRange(value, self.minValue, self.maxValue)
+        opscore.RO.MathUtil.checkRange(value, self.minValue, self.maxValue)
 
     def getEditWdg(self, master, var=None, ctxConfigFunc=None):
         """Return a Tkinter widget that allows the user to edit the
@@ -629,7 +629,7 @@ class IntPrefVar(PrefVar):
         - var: a Tkinter variable to be used in the widget
         - ctxConfigFunc: a function that updates the contextual menu
         """
-        editWdg = RO.Wdg.IntEntry(master,
+        editWdg = opscore.RO.Wdg.IntEntry(master,
             minValue = self.minValue,
             maxValue = self.maxValue,
             defValue = self.defValue,
@@ -680,7 +680,7 @@ class FloatPrefVar(PrefVar):
         self.maxValue = maxValue
         self.allowExp = allowExp
 
-        kargs.setdefault("cnvFunc", RO.CnvUtil.asFloat)
+        kargs.setdefault("cnvFunc", opscore.RO.CnvUtil.asFloat)
 
         PrefVar.__init__(self,
             name = name,
@@ -693,7 +693,7 @@ class FloatPrefVar(PrefVar):
     def locCheckValue(self, value):
         """Raise a ValueError exception if the value is out of range.
         """
-        RO.MathUtil.checkRange(value, self.minValue, self.maxValue)
+        opscore.RO.MathUtil.checkRange(value, self.minValue, self.maxValue)
 
     def getEditWdg(self, master, var=None, ctxConfigFunc=None):
         """Return a Tkinter widget that allows the user to edit the
@@ -704,7 +704,7 @@ class FloatPrefVar(PrefVar):
         - var: a Tkinter variable to be used in the widget
         - ctxConfigFunc: a function that updates the contextual menu
         """
-        editWdg = RO.Wdg.FloatEntry(master,
+        editWdg = opscore.RO.Wdg.FloatEntry(master,
             minValue = self.minValue,
             maxValue = self.maxValue,
             defValue = self.defValue,
@@ -848,7 +848,7 @@ class FontPrefVar(PrefVar):
         kargs["formatStr"] = "%r"
         kargs["cnvFunc"] = dict # a function that parsed string representations of a dict would be nicer
 
-        if RO.OS.PlatformName == "win":
+        if opscore.RO.OS.PlatformName == "win":
             internalDefFamily = "MS Sans Serif"
         else:
             internalDefFamily = "helvetica"
@@ -913,8 +913,8 @@ class FontPrefVar(PrefVar):
         # between Python 2.2 (all values as strings) and 2.3
         for key, cnvFunc in (
             ("size", str),
-            ("underline", RO.CnvUtil.asBool),
-            ("overstrike", RO.CnvUtil.asBool),
+            ("underline", opscore.RO.CnvUtil.asBool),
+            ("overstrike", opscore.RO.CnvUtil.asBool),
         ):
             self.value[key] = cnvFunc(self.value[key])
 
@@ -1057,7 +1057,7 @@ class PrefSet(object):
     ):
         self.defHeader = defHeader
         self.defFileName = defFileName
-        self.prefDict = RO.Alg.OrderedDict()
+        self.prefDict = opscore.RO.Alg.OrderedDict()
         if prefList is not None:
             for prefVar in prefList:
                 self.addPrefVar(prefVar)
@@ -1085,10 +1085,10 @@ class PrefSet(object):
         return self.prefDict[name.lower()].value
 
     def getCategoryDict(self):
-        """Returns on RO.Alg.OrderedDict (a dictionary whose keys remain in the order added).
+        """Returns on opscore.RO.Alg.OrderedDict (a dictionary whose keys remain in the order added).
         Each key is a category and each value is a list of PrefVars in that category.
         """
-        catDict = RO.Alg.OrderedDict()
+        catDict = opscore.RO.Alg.OrderedDict()
 
         for prefVar in self.prefDict.values():
             catDict.setdefault(prefVar.category, []).append(prefVar)

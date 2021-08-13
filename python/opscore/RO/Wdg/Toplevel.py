@@ -20,7 +20,7 @@ History:
                     Changed getGeometry to always return the entire geometry string.
 2004-02-23 ROwen    Preference files are now read with universal newline support
                     on Python 2.3 or later.
-2004-03-05 ROwen    Modified to use RO.OS.univOpen.
+2004-03-05 ROwen    Modified to use opscore.RO.OS.univOpen.
 2004-05-18 ROwen    Bug fix in ToplevelSet: referred to defGeomFixDict instead of defGeomVisDict.
 2004-07-16 ROwen    Modified Toplevel to propogate the exception if wdgFunc fails.
                     As a result, ToplevelSet.createToplevel no longer creates an erroneous
@@ -52,7 +52,7 @@ History:
 2010-06-28 ROwen    Removed one unused import (thanks to pychecker).
 2011-06-16 ROwen    Ditched obsolete "except (SystemExit, KeyboardInterrupt): raise" code
 2011-08-11 ROwen    Added support for saving and restoring widget state.
-                    Made error handling safer by using RO.StringUtil.strFromException.
+                    Made error handling safer by using opscore.RO.StringUtil.strFromException.
 2011-08-19 ROwen    Support Python < 2.6 by importing simplejson if json not found.
 2012-07-10 ROwen    Removed used of update_idletasks; used a different technique to fix the problem
                     that windows that are only resizable in one dimension are sometimes drawn incorrectly.
@@ -70,11 +70,11 @@ import os.path
 import sys
 import traceback
 from six.moves import tkinter
-import RO.CnvUtil
-import RO.OS
-import RO.SeqUtil
-import RO.StringUtil
-import RO.TkUtil
+import opscore.RO.CnvUtil
+import opscore.RO.OS
+import opscore.RO.SeqUtil
+import opscore.RO.StringUtil
+import opscore.RO.TkUtil
 
 # constants for the closeMode argument
 tl_CloseDestroys = 0
@@ -111,10 +111,10 @@ class Toplevel(tkinter.Toplevel):
           The widget is packed to grow as required based on resizable.
         - doSaveState: save window state in the geometry file? If True then you must provide wdgFunc
             and the widget it returns must support this method:
-            - getStateTracker(): return an RO.Wdg.StateTracker object
+            - getStateTracker(): return an opscore.RO.Wdg.StateTracker object
             State is saved in the geometry file as a JSon encoding of the dict.
 
-        Typically one uses RO.Alg.GenericCallback or something similar to generate wdgFunc,
+        Typically one uses opscore.RO.Alg.GenericCallback or something similar to generate wdgFunc,
         for example: GenericFunction(Tkinter.Label, text="this is a label").
         But BEWARE!!! if you use GenericCallback then you must give it NAMED ARGUMENTS ONLY.
         This is because GenericCallback puts unnamed saved (specified in advance) arguments first,
@@ -126,7 +126,7 @@ class Toplevel(tkinter.Toplevel):
         tkinter.Toplevel.__init__(self, master)
         self.wm_withdraw()
 
-        resizable = RO.SeqUtil.oneOrNAsList(resizable, 2, valDescr = "resizable")
+        resizable = opscore.RO.SeqUtil.oneOrNAsList(resizable, 2, valDescr = "resizable")
         resizable = tuple([bool(rsz) for rsz in resizable])
         self.__canResize = resizable[0] or resizable[1]
         self.__geometry = ""
@@ -160,7 +160,7 @@ class Toplevel(tkinter.Toplevel):
                 self.__wdg = wdgFunc(self)
                 self.__wdg.pack(expand="yes", fill="both")
             except Exception as e:
-                sys.stderr.write("Could not create window %r: %s\n" % (title, RO.StringUtil.strFromException(e)))
+                sys.stderr.write("Could not create window %r: %s\n" % (title, opscore.RO.StringUtil.strFromException(e)))
                 traceback.print_exc(file=sys.stderr)
                 raise
             if doSaveState:
@@ -210,7 +210,7 @@ class Toplevel(tkinter.Toplevel):
         #print "%s.setGeometry(%s)" % (self, geomStr,)
         if not geomStr:
             return
-        geom = RO.TkUtil.Geometry.fromTkStr(geomStr).constrained()
+        geom = opscore.RO.TkUtil.Geometry.fromTkStr(geomStr).constrained()
         if self.__canResize:
             includeExtent = None # supply if available, else omit
         else:
@@ -331,7 +331,7 @@ class Toplevel(tkinter.Toplevel):
 
     def __printInfo(self):
         """A debugging tool prints info to the main window"""
-        print("info for RO.Wdg.Toplevel %s" % self.wm_title())
+        print("info for opscore.RO.Wdg.Toplevel %s" % self.wm_title())
         print("getGeometry = %r" % (self.getGeometry(),))
         print("geometry = %r" % (self.geometry()))
         print("width, height = %r, %r" % (self.winfo_width(), self.winfo_height()))
@@ -545,16 +545,16 @@ class ToplevelSet(object):
                     outFile = open(fileName, "w")
                     outFile.close()
                 except Exception as e:
-                    sys.stderr.write ("Could not create geometry file %r; error: %s\n" % (fileName, RO.StringUtil.strFromException(e)))
+                    sys.stderr.write ("Could not create geometry file %r; error: %s\n" % (fileName, opscore.RO.StringUtil.strFromException(e)))
                 sys.stderr.write ("Created blank geometry file %r\n" % (fileName,))
             else:
                 sys.stderr.write ("Geometry file %r does not exist; using default values\n" % (fileName,))
             return
 
         try:
-            inFile = RO.OS.openUniv(fileName)
+            inFile = opscore.RO.OS.openUniv(fileName)
         except Exception as e:
-            raise RuntimeError("Could not open geometry file %r; error: %s\n" % (fileName, RO.StringUtil.strFromException(e)))
+            raise RuntimeError("Could not open geometry file %r; error: %s\n" % (fileName, opscore.RO.StringUtil.strFromException(e)))
 
         newGeomDict = {}
         newVisDict = {}
@@ -583,7 +583,7 @@ class ToplevelSet(object):
                 if len(geomVisList) > 1:
                     vis = geomVisList[1].strip()
                     if vis:
-                        vis = RO.CnvUtil.asBool(vis)
+                        vis = opscore.RO.CnvUtil.asBool(vis)
                         newVisDict[name] = vis
 
                 if len(geomVisList) > 2:
@@ -624,7 +624,7 @@ class ToplevelSet(object):
         try:
             outFile = open(fileName, "w")
         except Exception as e:
-            raise RuntimeError("Could not open geometry file %r; error: %s\n" % (fileName, RO.StringUtil.strFromException(e)))
+            raise RuntimeError("Could not open geometry file %r; error: %s\n" % (fileName, opscore.RO.StringUtil.strFromException(e)))
 
         try:
             names = self.getNames()
@@ -671,7 +671,7 @@ class ToplevelSet(object):
 
 
 if __name__ == "__main__":
-    from RO.Wdg.PythonTk import PythonTk
+    from opscore.RO.Wdg.PythonTk import PythonTk
     root = PythonTk()
 
     testWin = Toplevel(

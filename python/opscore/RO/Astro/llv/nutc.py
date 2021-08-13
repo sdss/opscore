@@ -4,9 +4,9 @@
 __all__ = ["nutc"]
 
 import math
-import RO.PhysConst
+import opscore.RO.PhysConst
 
-_ArcSecPerRev  =  RO.PhysConst.ArcSecPerDeg * 360.0
+_ArcSecPerRev  =  opscore.RO.PhysConst.ArcSecPerDeg * 360.0
 
 def nutc(tdb):
     """
@@ -33,35 +33,35 @@ def nutc(tdb):
     """
 
     #  Units of 0.0001 arcsec to radians
-    u2r = RO.PhysConst.RadPerArcSec / 1.0e4
+    u2r = opscore.RO.PhysConst.RadPerArcSec / 1.0e4
 
 
     # TDB - J2000 in centuries
-    t = (tdb - RO.PhysConst.MJDJ2000) / (RO.PhysConst.DayPerYear * 100.0)
+    t = (tdb - opscore.RO.PhysConst.MJDJ2000) / (RO.PhysConst.DayPerYear * 100.0)
 
     #
     #  fundamental arguments in the fk5 reference system
     #
 
     #  Mean longitude of the moon minus mean longitude of the moon's perigee
-    el = RO.PhysConst.RadPerArcSec * (485866.733 + ((1325 * _ArcSecPerRev) + 715922.633  \
+    el = opscore.RO.PhysConst.RadPerArcSec * (485866.733 + ((1325 * _ArcSecPerRev) + 715922.633  \
         + (31.310 + (0.064 * t)) * t) * t)
 
     #  Mean longitude of the sun minus mean longitude of the sun's perigee
-    elp = RO.PhysConst.RadPerArcSec * (1287099.804 + ((99 * _ArcSecPerRev) + 1292581.224  \
+    elp = opscore.RO.PhysConst.RadPerArcSec * (1287099.804 + ((99 * _ArcSecPerRev) + 1292581.224  \
         + (-0.577 - 0.012 * t) * t) * t)
 
     #  Mean longitude of the moon minus mean longitude of the moon's node
-    f = RO.PhysConst.RadPerArcSec * (335778.877 + (1342 * _ArcSecPerRev + 295263.137  \
+    f = opscore.RO.PhysConst.RadPerArcSec * (335778.877 + (1342 * _ArcSecPerRev + 295263.137  \
         + (-13.257 + 0.011 * t) * t) * t)
 
     #  Mean elongation of the moon from the sun
-    d = RO.PhysConst.RadPerArcSec * (1072261.307 + (1236 * _ArcSecPerRev + 1105601.328  \
+    d = opscore.RO.PhysConst.RadPerArcSec * (1072261.307 + (1236 * _ArcSecPerRev + 1105601.328  \
         + (-6.891 + 0.019 * t) * t) * t)
 
     #  Longitude of the mean ascending node of the lunar orbit on the
     #   ecliptic, measured from the mean equinox of date
-    om = RO.PhysConst.RadPerArcSec * (450160.280 + (-5 * _ArcSecPerRev - 482890.539  \
+    om = opscore.RO.PhysConst.RadPerArcSec * (450160.280 + (-5 * _ArcSecPerRev - 482890.539  \
         + (7.455 + 0.008 * t) * t) * t)
 
     #  Multiples of arguments
@@ -420,13 +420,13 @@ def nutc(tdb):
     deps = de * u2r
 
     #  Mean obliquity
-    eps0 = RO.PhysConst.RadPerArcSec * (84381.448 +  \
+    eps0 = opscore.RO.PhysConst.RadPerArcSec * (84381.448 +  \
         (-46.8150 + (-0.00059 + (0.001813 * t)) * t) * t)
 
     return (dpsi, deps, eps0)
 
 if __name__ == "__main__":
-    import RO.SeqUtil
+    import opscore.RO.SeqUtil
     print("testing nutc")
     # test data is formatted as follows:
     # a list of entries, each consisting of:
@@ -446,8 +446,7 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = nutc(testInput)
-        if RO.SeqUtil.matchSequences(actualOutput, expectedOutput, rtol=1e-15):
+        if opscore.RO.SeqUtil.matchSequences(actualOutput, expectedOutput, rtol=1e-15):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)
-

@@ -36,11 +36,11 @@ import weakref
 from . import Bindings
 from .CtxMenu import addCtxMenu
 from six.moves import tkinter
-import RO.AddCallback
-import RO.Constants
-import RO.MathUtil
-import RO.Comm.HTTPGet as HTTPGet
-import RO.Wdg
+import opscore.RO.AddCallback
+import opscore.RO.Constants
+import opscore.RO.MathUtil
+import opscore.RO.Comm.HTTPGet as HTTPGet
+import opscore.RO.Wdg
 
 
 _StatusInterval = 200 # ms between status checks
@@ -134,9 +134,9 @@ class HTTPGetWdg(tkinter.Frame):
 
         detFrame = tkinter.Frame(self)
 
-        gr = RO.Wdg.Gridder(detFrame, sticky="ew")
+        gr = opscore.RO.Wdg.Gridder(detFrame, sticky="ew")
 
-        self.fromWdg = RO.Wdg.StrEntry(
+        self.fromWdg = opscore.RO.Wdg.StrEntry(
             master = detFrame,
             readOnly = True,
             helpURL = helpURL and helpURL + "#From",
@@ -144,7 +144,7 @@ class HTTPGetWdg(tkinter.Frame):
         )
         gr.gridWdg("From", self.fromWdg, colSpan=3)
 
-        self.toWdg = RO.Wdg.StrEntry(
+        self.toWdg = opscore.RO.Wdg.StrEntry(
             master = detFrame,
             readOnly = True,
             helpURL = helpURL and helpURL + "#To",
@@ -152,13 +152,13 @@ class HTTPGetWdg(tkinter.Frame):
         )
         gr.gridWdg("To", self.toWdg, colSpan=2)
 
-        self.stateWdg = RO.Wdg.StrEntry(
+        self.stateWdg = opscore.RO.Wdg.StrEntry(
             master = detFrame,
             readOnly = True,
             helpURL = helpURL and helpURL + "#State",
             borderwidth = 0,
         )
-        self.abortWdg = RO.Wdg.Button(
+        self.abortWdg = opscore.RO.Wdg.Button(
             master = detFrame,
             text = "Abort",
             command = self._abort,
@@ -180,12 +180,12 @@ class HTTPGetWdg(tkinter.Frame):
     def getFile(self, *args, **kargs):
         """Get a file
 
-        Inputs: the same as for RO.Comm.HTTPGet
+        Inputs: the same as for opscore.RO.Comm.HTTPGet
 
-        Returns an RO.Comm.HTTPGet object
+        Returns an opscore.RO.Comm.HTTPGet object
         """
         httpGet = HTTPGet.HTTPGet(*args, **kargs)
-        stateLabel = RO.Wdg.StrLabel(self, anchor="w", width=httpGet.StateStrMaxLen)
+        stateLabel = opscore.RO.Wdg.StrLabel(self, anchor="w", width=httpGet.StateStrMaxLen)
         self._trackMem(httpGet, str(httpGet))
 
         # display item and append to list
@@ -204,7 +204,7 @@ class HTTPGetWdg(tkinter.Frame):
         self.getQueue.append((httpGet, stateLabel))
 
         httpGet.addCallback(
-            RO.Alg.GenericCallback(self._stateCallback, stateLabel),
+            opscore.RO.Alg.GenericCallback(self._stateCallback, stateLabel),
             callNow = True,
         )
 
@@ -312,11 +312,11 @@ class HTTPGetWdg(tkinter.Frame):
         else:
             # display state
             if state == httpGet.Failed:
-                severity = RO.Constants.sevError
+                severity = opscore.RO.Constants.sevError
             elif state in (httpGet.Aborting, httpGet.Aborted):
-                severity = RO.Constants.sevWarning
+                severity = opscore.RO.Constants.sevWarning
             else:
-                severity = RO.Constants.sevNormal
+                severity = opscore.RO.Constants.sevNormal
             stateLabel.set(state, severity=severity)
 
         if httpGet == self.selHTTPGet:
@@ -360,7 +360,7 @@ class HTTPGetWdg(tkinter.Frame):
                 self.abortWdg.grid_remove()
 
         stateStr = state
-        severity = RO.Constants.sevNormal
+        severity = opscore.RO.Constants.sevNormal
         if state == httpGet.Running:
             if httpGet.totBytes:
                 stateStr = "read %s of %s bytes" % (httpGet.readBytes, httpGet.totBytes)
@@ -368,9 +368,9 @@ class HTTPGetWdg(tkinter.Frame):
                 stateStr = "read %s bytes" % (httpGet.readBytes,)
         elif state == httpGet.Failed:
             stateStr = "Failed: %s" % (httpGet.errMsg,)
-            severity = RO.Constants.sevError
+            severity = opscore.RO.Constants.sevError
         elif state in (httpGet.Aborting, httpGet.Aborted):
-            severity = RO.Constants.sevWarning
+            severity = opscore.RO.Constants.sevWarning
 
         self.stateWdg.set(stateStr, severity=severity)
         self.fromWdg.set(httpGet.dispStr)

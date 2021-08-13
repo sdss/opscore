@@ -9,9 +9,9 @@ History:
 __all__ = ["icrsFromFixedFK4"]
 
 import numpy
-import RO.PhysConst
-import RO.MathUtil
-from RO.Astro import llv, Tm
+import opscore.RO.PhysConst
+import opscore.RO.MathUtil
+from opscore.RO.Astro import llv, Tm
 
 # Constants
 _MatPP = numpy.array((
@@ -62,7 +62,7 @@ def icrsFromFixedFK4(fk4P, fk4Date):
 
     #  subtract e-terms from position. As a minor approximation,
     #  we don't bother to subtract variation in e-terms from proper motion.
-    magP = RO.MathUtil.vecMag(fk4P)
+    magP = opscore.RO.MathUtil.vecMag(fk4P)
     meanFK4P = fk4P - (eTerms * magP)
 
     #  precess position to B1950, assuming zero fk4 pm
@@ -82,7 +82,7 @@ def icrsFromFixedFK4(fk4P, fk4Date):
 
 
 if __name__ == "__main__":
-    import RO.SeqUtil
+    import opscore.RO.SeqUtil
     print("testing icrsFromFixedFK4")
     # test data is formatted as follows:
     # a list of entries, each consisting of:
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = icrsFromFixedFK4(*testInput)
-        if RO.SeqUtil.matchSequences(actualOutput, expectedOutput, rtol=1.0e-14):
+        if opscore.RO.SeqUtil.matchSequences(actualOutput, expectedOutput, rtol=1.0e-14):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)

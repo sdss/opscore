@@ -9,8 +9,8 @@ History:
 __all__ = ["topoFromGeo"]
 
 import numpy
-import RO.MathUtil
-from RO.Astro import llv
+import opscore.RO.MathUtil
+from opscore.RO.Astro import llv
 from .AzAltFromHADec import azAltFromHADec
 
 def topoFromGeo(appGeoP, last, obsData):
@@ -33,8 +33,8 @@ def topoFromGeo(appGeoP, last, obsData):
     References:
     P.T. Wallace, "Proposals for Keck Tel. Pointing Algorithms", 1986 (unpub)
     """
-    sinLAST = RO.MathUtil.sind (last)
-    cosLAST = RO.MathUtil.cosd (last)
+    sinLAST = opscore.RO.MathUtil.sind (last)
+    cosLAST = opscore.RO.MathUtil.cosd (last)
 
     #  rotate position and offset to (-ha)/Dec (still cartesian, of course)
     posA = numpy.array((
@@ -61,7 +61,7 @@ def topoFromGeo(appGeoP, last, obsData):
 
 
 if __name__ == "__main__":
-    import RO.SeqUtil
+    import opscore.RO.SeqUtil
     from .ObserverData import ObserverData
     print("testing topoFromGeo")
     # test data is formatted as follows:
@@ -91,7 +91,7 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = topoFromGeo(*testInput)
-        if RO.SeqUtil.matchSequences(actualOutput, expectedOutput, rtol=1.0e-10):
+        if opscore.RO.SeqUtil.matchSequences(actualOutput, expectedOutput, rtol=1.0e-10):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)

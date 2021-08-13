@@ -130,9 +130,9 @@ History:
     bug fix: isFirst and isLast not set properly
     if the first or last file was a not a text file
 2.4 2003-04-18 Russell Owen: bug fix: was not checking patterns correctly;
-    modified to use RO.OS.expandFileList.
+    modified to use opscore.RO.OS.expandFileList.
 2003-11-18 ROwen    Modified to use SeqUtil instead of MathUtil.
-2003-12-15 ROwen    Bug fix: changed one RO. to RO.SeqUtil.
+2003-12-15 ROwen    Bug fix: changed one opscore.RO. to opscore.RO.SeqUtil.
                     Modified to open input files in universal newline mode.
                     Modified to use EasyDialogs instead of macfs for output dialog.
 2004-02-06 ROwen    Changed recurseDirs to recursionDepth and added exclPatterns.
@@ -148,8 +148,8 @@ __all__ = ["procFiles"]
 import os.path
 import sys
 import traceback
-import RO.OS
-import RO.SeqUtil
+import opscore.RO.OS
+import opscore.RO.SeqUtil
 
 def procFiles (
     func,
@@ -164,14 +164,14 @@ def procFiles (
         raise RuntimeError("supplied function is not callable")
 
     # handle case of inPathList being a single string
-    inPathList = RO.SeqUtil.asSequence(inPathList)
+    inPathList = opscore.RO.SeqUtil.asSequence(inPathList)
 
     # Recurse into directories, choosing files that match the pattern
     # rejecting nonexistent files with a message to stderr
     # and filtering out duplicates.
     # Doing this ahead of time means we can reliably sense the first and last file
     # and reliably count the files.
-    inPathList = RO.OS.findFiles(
+    inPathList = opscore.RO.OS.findFiles(
         paths = inPathList,
         patterns = patterns,
         recursionDepth = recursionDepth,
@@ -237,7 +237,7 @@ def procFiles (
             try:
                 try:
                     # open input file (in universal newline mode if possible) and redirect input
-                    sys.stdin = RO.OS.openUniv(inPath)
+                    sys.stdin = opscore.RO.OS.openUniv(inPath)
 
                     # call user-supplied function to process file
                     isLast  = (inPath == inPathList[-1])

@@ -5,7 +5,7 @@
 Extra features include: help, default handling, the ability to change menu items
 and the ability to configure the menu.
 
-OptionMenu is essentially an RO.Wdg.Entry widget (though I don't promise
+OptionMenu is essentially an opscore.RO.Wdg.Entry widget (though I don't promise
 that *all* methods are implemented).
 
 Note: I had to go mucking with internals, so some of this code is based on
@@ -31,7 +31,7 @@ History:
 2003-04-03 ROwen    Added preliminary implementation of ConfigMenu;
                     modified so default defValue is the first item.
 2003-04-14 ROwen    Added defMenu input.
-2003-04-15 ROwen    Modified to use RO.Wdg.CtxMenu 2003-04-15.
+2003-04-15 ROwen    Modified to use opscore.RO.Wdg.CtxMenu 2003-04-15.
 2003-04-17 ROwen    Modified to not set defValue = items[0];
                     removed hack that set "" means restore default.
 2003-04-24 ROwen    Modified to call callback functions
@@ -39,7 +39,7 @@ History:
 2003-06-13 ROwen    Added support for multiple helpText items;
                     bug fix: callFunc sometimes received an extra arg "caller".
 2003-07-09 ROwen    Modified to call back with self instead of value;
-                    modified to use RO.AddCallback; added getEnable.
+                    modified to use opscore.RO.AddCallback; added getEnable.
 2003-08-05 ROwen    Modified so setDefault sets the current value if there is none;
                     bug fix: getString returned None if no value and no default;
                     now returns "" in that case.
@@ -56,7 +56,7 @@ History:
 2003-12-17 ROwen    Bug fix: a value of None was being shown as "None"
                     instead of a separator.
 2004-03-05 ROwen    Added support for unicode entries.
-2004-07-21 ROwen    Modified for updated RO.AddCallback.
+2004-07-21 ROwen    Modified for updated opscore.RO.AddCallback.
 2004-08-11 ROwen    Define __all__ to restrict import.
 2004-09-01 ROwen    Added checkDef argument to setItems; default is False (new behavior).
 2004-09-14 ROwen    Removed unused *args from _doCallback to make pychecker happy.
@@ -108,9 +108,9 @@ History:
 __all__ = ['OptionMenu']
 
 from six.moves import tkinter
-import RO.AddCallback
-import RO.Alg
-import RO.SeqUtil
+import opscore.RO.AddCallback
+import opscore.RO.Alg
+import opscore.RO.SeqUtil
 from .IsCurrentMixin import AutoIsCurrentMixin, IsCurrentActiveMixin
 from .SeverityMixin import SeverityActiveMixin
 from .Menubutton import Menubutton
@@ -122,7 +122,7 @@ class _DoItem:
     def __call__(self):
         self.var.set(self.value)
 
-class OptionMenu(Menubutton, RO.AddCallback.TkVarMixin,
+class OptionMenu(Menubutton, opscore.RO.AddCallback.TkVarMixin,
     AutoIsCurrentMixin, IsCurrentActiveMixin, SeverityActiveMixin):
     """A Tkinter OptionMenu that adds many features.
 
@@ -163,7 +163,7 @@ class OptionMenu(Menubutton, RO.AddCallback.TkVarMixin,
                 - if False then setDefault never changes the current value
                 - if None then trackDefault = autoIsCurrent (because these normally go together)
     - isCurrent: is the value current?
-    - severity: one of: RO.Constants.sevNormal (the default), sevWarning or sevError
+    - severity: one of: opscore.RO.Constants.sevNormal (the default), sevWarning or sevError
     - postCommand: callback function to call when the menu is posted;
                 this can be used to change the items before the menu is shown.
     - all remaining keyword arguments are used to configure the Menu.
@@ -186,7 +186,7 @@ class OptionMenu(Menubutton, RO.AddCallback.TkVarMixin,
         trackDefault = None,
         isCurrent = True,
         postCommand = None,
-        severity = RO.Constants.sevNormal,
+        severity = opscore.RO.Constants.sevNormal,
     **kargs):
         showDefault = not (var and defValue is None)
         if var is None:
@@ -200,7 +200,7 @@ class OptionMenu(Menubutton, RO.AddCallback.TkVarMixin,
         self._fixedHelpText = None
         self.helpText = None
         self.defMenu = defMenu
-        self._matchItem = RO.Alg.MatchList(abbrevOK = abbrevOK, ignoreCase = ignoreCase)
+        self._matchItem = opscore.RO.Alg.MatchList(abbrevOK = abbrevOK, ignoreCase = ignoreCase)
         if trackDefault is None:
             trackDefault = bool(autoIsCurrent)
         self.trackDefault = trackDefault
@@ -227,7 +227,7 @@ class OptionMenu(Menubutton, RO.AddCallback.TkVarMixin,
         self._menu = tkinter.Menu(self, tearoff = False, postcommand = postCommand)
         self["menu"] = self._menu
 
-        RO.AddCallback.TkVarMixin.__init__(self, var)
+        opscore.RO.AddCallback.TkVarMixin.__init__(self, var)
 
         # do after adding callback support, but before setting default (which triggers a callback)
         AutoIsCurrentMixin.__init__(self, autoIsCurrent)
@@ -481,7 +481,7 @@ class OptionMenu(Menubutton, RO.AddCallback.TkVarMixin,
             # if existing help text is fixed, keep using it
             # otherwise there is no help (cannot reuse item-specific help)
             self.helpText = self._fixedHelpText
-        elif RO.SeqUtil.isSequence(helpText):
+        elif opscore.RO.SeqUtil.isSequence(helpText):
             # new item-specific help
             nItems = len(items)
             self._fixedHelpText = None

@@ -28,7 +28,7 @@ __all__ = ["delDir", "expandPath", "findFiles", "getResourceDir", "removeDupPath
 import os.path
 import sys
 import fnmatch
-import RO.SeqUtil
+import opscore.RO.SeqUtil
 
 def delDir(dirPath):
     """Delete dirPath and all contents
@@ -127,11 +127,11 @@ def findFiles(
     [!seq]  matches any character not in seq
     """
     # process the inputs
-    paths = RO.SeqUtil.asSequence(paths)
-    patterns = RO.SeqUtil.asSequence(patterns or "*")
-    exclPatterns = RO.SeqUtil.asSequence(exclPatterns or ())
-    dirPatterns = RO.SeqUtil.asSequence(dirPatterns or "*")
-    exclDirPatterns = RO.SeqUtil.asSequence(exclDirPatterns or ())
+    paths = opscore.RO.SeqUtil.asSequence(paths)
+    patterns = opscore.RO.SeqUtil.asSequence(patterns or "*")
+    exclPatterns = opscore.RO.SeqUtil.asSequence(exclPatterns or ())
+    dirPatterns = opscore.RO.SeqUtil.asSequence(dirPatterns or "*")
+    exclDirPatterns = opscore.RO.SeqUtil.asSequence(exclDirPatterns or ())
     if recursionDepth is None:
         recursionDepth = _Inf()
     else:

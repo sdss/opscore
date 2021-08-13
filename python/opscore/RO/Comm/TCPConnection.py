@@ -6,10 +6,10 @@ All permit disconnection and reconnection and the base class offers support for
 authorization and line-oriented output.
 
 Requirements:
-- Tkinter or Twisted framework; see RO.Comm.Generic.
+- Tkinter or Twisted framework; see opscore.RO.Comm.Generic.
 
 History:
-2002-11-22 R Owen: first version with history. Moved to RO.Comm
+2002-11-22 R Owen: first version with history. Moved to opscore.RO.Comm
     and modified to use TkSocket sockets. This fixed a pitfall
     (it was not safe to close the socket if a read handler
     was present) and socket writes are done in a background thread
@@ -29,7 +29,7 @@ History:
                     or reason changes.
                     Changed doCall to callNow in addStateCallback,
                     for consistency with other addCallback functions.
-2004-05-18 ROwen    Stopped importing string, Tkinter, RO.Alg and RO.Wdg; they weren't used.
+2004-05-18 ROwen    Stopped importing string, Tkinter, opscore.RO.Alg and opscore.RO.Wdg; they weren't used.
 2004-07-13 ROwen    Modified for overhauled TkSocket.
 2004-09-14 ROwen    Importing socket module but not using it.
 2004-10-12 ROwen    Corrected documentation for addReadCallback and addStateCallback.
@@ -45,11 +45,11 @@ History:
 2008-02-13 ROwen    Added mayConnect method.
 2010-06-28 ROwen    Removed unused import (thanks to pychecker).
 2012-08-01 ROwen    Added support for Twisted framework.
-                    You must now call RO.Comm.Generic.setFramework before importing this module.
+                    You must now call opscore.RO.Comm.Generic.setFramework before importing this module.
                     Many methods are now properties, e.g. isDone->isDone.
                     Added name attribute to TCPConnection.
 2012-11-29 ROwen    Overhauled demo code.
-2012-12-06 ROwen    Set tk as RO.Comm.Generic framework if not already set.
+2012-12-06 ROwen    Set tk as opscore.RO.Comm.Generic framework if not already set.
 2012-12-17 ROwen    Initial state was 0, should have been Disconnected.
 2014-04-10 ROwen    Use NullTCPSocket instead of NullSocket for better "not connected" error messages.
 2014-09-18 ROwen    Fixed a bug in the unit test.
@@ -58,13 +58,13 @@ History:
 __all__ = ["TCPConnection"]
 
 import sys
-from RO.Comm.BaseSocket import NullTCPSocket
-from RO.AddCallback import safeCall2
-import RO.Comm.Generic
-if RO.Comm.Generic.getFramework() is None:
-    print("Warning: RO.Comm.Generic framework not set; setting to tk")
-    RO.Comm.Generic.setFramework("tk")
-from RO.Comm.Generic import TCPSocket
+from opscore.RO.Comm.BaseSocket import NullTCPSocket
+from opscore.RO.AddCallback import safeCall2
+import opscore.RO.Comm.Generic
+if opscore.RO.Comm.Generic.getFramework() is None:
+    print("Warning: opscore.RO.Comm.Generic framework not set; setting to tk")
+    opscore.RO.Comm.Generic.setFramework("tk")
+from opscore.RO.Comm.Generic import TCPSocket
 
 class TCPConnection(object):
     """A TCP Socket with the ability to disconnect and reconnect.
@@ -418,8 +418,8 @@ if __name__ == "__main__":
     from six.moves import tkinter
     root = tkinter.Tk()
     root.withdraw()
-    from RO.Comm.Generic import TCPServer
-    from RO.TkUtil import Timer
+    from opscore.RO.Comm.Generic import TCPServer
+    from opscore.RO.TkUtil import Timer
 
     clientConn = None
     echoServer = None

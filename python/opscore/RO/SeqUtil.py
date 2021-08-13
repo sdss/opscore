@@ -38,7 +38,7 @@ except ImportError:
 
 from six import string_types
 
-import RO.MathUtil
+import opscore.RO.MathUtil
 
 
 def asCollection(item):
@@ -170,7 +170,7 @@ def removeDups(aSeq):
 
     return [val  for val in aSeq if isUnique(val)]
 
-def matchSequences(a, b, rtol=1.0e-5, atol=RO.SysConst.FAccuracy):
+def matchSequences(a, b, rtol=1.0e-5, atol=opscore.RO.SysConst.FAccuracy):
     """Compares sequences a and b element by element,
     returning a list of indices for non-matching value pairs.
     The test for matching is compareFloats
@@ -179,7 +179,7 @@ def matchSequences(a, b, rtol=1.0e-5, atol=RO.SysConst.FAccuracy):
     but returns a bit more information.
     """
     return [ind for ind in range(len(a))
-        if RO.MathUtil.compareFloats(a[ind], b[ind], rtol, atol) != 0]
+        if opscore.RO.MathUtil.compareFloats(a[ind], b[ind], rtol, atol) != 0]
 
 
 if __name__ == '__main__':

@@ -10,9 +10,9 @@ __all__ = ["obsFromTopo"]
 
 from math import sqrt
 import numpy
-import RO.SysConst
-import RO.PhysConst
-import RO.MathUtil
+import opscore.RO.SysConst
+import opscore.RO.PhysConst
+import opscore.RO.MathUtil
 
 # Constants
 _MaxZDU = 85.0
@@ -58,8 +58,8 @@ def obsFromTopo(appTopoP, refCo):
     umagsq = uxysq + (uz * uz)
 
     #  test input vector
-    if uxysq * RO.SysConst.FAccuracy <= RO.SysConst.FSmallNum:
-        if umagsq * RO.SysConst.FAccuracy <= RO.SysConst.FSmallNum:
+    if uxysq * opscore.RO.SysConst.FAccuracy <= opscore.RO.SysConst.FSmallNum:
+        if umagsq * opscore.RO.SysConst.FAccuracy <= opscore.RO.SysConst.FSmallNum:
             #  |R| is too small to use -- probably a bug in the calling software
             raise ValueError("appTopoP %r too small" % (appTopoP,))
         #  at zenith; set output = input
@@ -67,7 +67,7 @@ def obsFromTopo(appTopoP, refCo):
     else:
         #  normal calculation...
         # unrefracted zenith distance
-        zdu = RO.MathUtil.atan2d (uxymag, uz)
+        zdu = opscore.RO.MathUtil.atan2d (uxymag, uz)
 
         #  Compute the refraction correction using an iterative approximation (see details).
         #  Compute it at the unrefracted zenith distance, unless that zd is too large,
@@ -79,20 +79,20 @@ def obsFromTopo(appTopoP, refCo):
             zduIter = _MaxZDU
         for iterNum in range(2):
             zdrIter = zduIter + zdr_u
-            cosZD = RO.MathUtil.cosd (zdrIter)
-            tanZD = RO.MathUtil.tand (zdrIter)
+            cosZD = opscore.RO.MathUtil.cosd (zdrIter)
+            tanZD = opscore.RO.MathUtil.tand (zdrIter)
             zdr_u -= ((zdr_u + refA * tanZD + refB * tanZD**3) /  \
                 (1.0 + (RO.PhysConst.RadPerDeg * (refA + 3.0 * refB * tanZD**2) / cosZD**2)))
 
         #  compute refracted position as a cartesian vector
         zdr = zdu + zdr_u
-        rz = uxymag * RO.MathUtil.tand (90.0 - zdr)
+        rz = uxymag * opscore.RO.MathUtil.tand (90.0 - zdr)
         obsP = numpy.array((ux, uy, rz))
     return (obsP, tooLow)
 
 
 if __name__ == "__main__":
-    import RO.SeqUtil
+    import opscore.RO.SeqUtil
     print("testing obsFromTopo")
     # test data is formatted as follows:
     # a list of entries, each consisting of:
@@ -129,9 +129,9 @@ if __name__ == "__main__":
     )
     for testInput, expectedOutput in testData:
         actualOutput = obsFromTopo(*testInput)
-        actualFlat = RO.SeqUtil.flatten(actualOutput)
-        expectedFlat = RO.SeqUtil.flatten(expectedOutput)
-        if RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1.0e-15):
+        actualFlat = opscore.RO.SeqUtil.flatten(actualOutput)
+        expectedFlat = opscore.RO.SeqUtil.flatten(expectedOutput)
+        if opscore.RO.SeqUtil.matchSequences(actualFlat, expectedFlat, rtol=1.0e-15):
             print("failed on input:", testInput)
             print("expected output:\n", expectedOutput)
             print("actual output:\n", actualOutput)

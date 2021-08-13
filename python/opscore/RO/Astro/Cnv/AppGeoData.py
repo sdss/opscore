@@ -2,14 +2,14 @@
 
 """
 History:
-2004-05-18 ROwen    Stop importing RO.PhysConst; it wasn't used.
+2004-05-18 ROwen    Stop importing opscore.RO.PhysConst; it wasn't used.
 2007-04-24 ROwen    Converted from Numeric to numpy.
 2015-09-24 ROwen    Replace "== None" with "is None" to modernize the code.
 """
 __all__ = ["AppGeoData"]
 
-from RO.Astro import llv
-from RO.Astro import Tm
+from opscore.RO.Astro import llv
+from opscore.RO.Astro import Tm
 
 class AppGeoData(object):
     """Position-independent data for conversion
