@@ -7,7 +7,9 @@ Refer to https://trac.sdss3.org/wiki/Ops/Validation for details.
 # Created 18-Nov-2008 by David Kirkby (dkirkby@uci.edu)
 
 import collections
-import importlib
+import hashlib
+import imp
+import sys
 import textwrap
 
 from opscore.utility import html as utilHtml
@@ -450,6 +452,8 @@ class KeysDictionary(object):
         try:
             # get the path corresponding to the actorkeys package
             import actorkeys  # noqa
+
+            keyspath = sys.modules["actorkeys"].__path__
         except ImportError:
             raise KeysDictionaryError("no actorkeys package found")
 
@@ -478,7 +482,7 @@ class KeysDictionary(object):
                     % (dictname, kdict.name)
                 )
             # do a checksum so that we can detect changes independently of versioning
-            kdict.checksum = hashlib.md5(filedata).hexdigest()
+            kdict.checksum = hashlib.md5(filedata.encode()).hexdigest()
             return kdict
         except ImportError as e:
             raise KeysDictionaryError(
