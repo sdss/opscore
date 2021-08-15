@@ -81,7 +81,7 @@ class Gridder(object):
         return self._master
 
     def addShowHideControl(self, cat, ctrl):
-        """Adds A show/hide control (RO.Wdg.Checkbuttons)
+        """Adds A show/hide control (opscore.RO.Wdg.Checkbuttons)
         for a given category (replacing the existing control, if any).
         If all controls are gridded, then updates the show/hide status.
 

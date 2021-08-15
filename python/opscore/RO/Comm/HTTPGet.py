@@ -120,7 +120,7 @@ class _ExitClass:
 _ExitObj = _ExitClass()
 
 
-class HTTPGet(RO.AddCallback.BaseMixin):
+class HTTPGet(opscore.RO.AddCallback.BaseMixin):
     """Downloads the specified url to a file.
 
     Inputs:

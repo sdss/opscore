@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """Sends commands (of type opscore.RO.KeyVariable.CmdVar) and dispatches replies
-to key variables (RO.KeyVariable.KeyVar and subclasses).
+to key variables (opscore.RO.KeyVariable.KeyVar and subclasses).
 
 History:
 2002-11-25 ROwen    First version with history.
@@ -634,7 +634,7 @@ class KeyDispatcher(object):
         update the refresh command dict accordingly.
 
         Inputs:
-        - cmdVar    command variable (RO.KeyVariable.CmdVar)
+        - cmdVar    command variable (opscore.RO.KeyVariable.CmdVar)
         - msgDict   message to send
         """
         if doLog:

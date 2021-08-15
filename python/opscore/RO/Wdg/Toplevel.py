@@ -595,7 +595,7 @@ class ToplevelSet(object):
                         except Exception as e:
                             sys.stderr.write("Error reading line %d of geometry file %s: %s" % (ind+1, fileName, line))
                             sys.stderr.write("  failed to parse state: %r\n" % (stateDictStr,))
-                            sys.stderr.write("  error: %s\n" % (RO.StringUtil.strFromException(e),))
+                            sys.stderr.write("  error: %s\n" % (opscore.RO.StringUtil.strFromException(e),))
 
             self.fileGeomDict = newGeomDict
             self.fileVisDict = newVisDict

@@ -37,7 +37,7 @@ def nutc(tdb):
 
 
     # TDB - J2000 in centuries
-    t = (tdb - opscore.RO.PhysConst.MJDJ2000) / (RO.PhysConst.DayPerYear * 100.0)
+    t = (tdb - opscore.RO.PhysConst.MJDJ2000) / (opscore.RO.PhysConst.DayPerYear * 100.0)
 
     #
     #  fundamental arguments in the fk5 reference system

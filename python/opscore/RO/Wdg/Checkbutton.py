@@ -378,7 +378,7 @@ class Checkbutton (tkinter.Checkbutton, opscore.RO.AddCallback.TkVarMixin,
         """
         if (width != 0) \
             and not hasBitmap \
-            and (RO.TkUtil.getWindowingSystem() == opscore.RO.TkUtil.WSysAqua) \
+            and (opscore.RO.TkUtil.getWindowingSystem() == opscore.RO.TkUtil.WSysAqua) \
             and opscore.RO.TkUtil.getTclVersion().startswith("8.5"):
             if showIndicator:
                 corrWidth = width + 3

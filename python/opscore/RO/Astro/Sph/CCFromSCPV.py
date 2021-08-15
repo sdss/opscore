@@ -13,7 +13,7 @@ from .CCFromSC import ccFromSC
 _MinParallax = 1.0e-7  # arcsec
 
 # Constants
-_RadPerYear_per_ASPerCy = opscore.RO.PhysConst.RadPerDeg / (RO.PhysConst.ArcSecPerDeg * 100.0)
+_RadPerYear_per_ASPerCy = opscore.RO.PhysConst.RadPerDeg / (opscore.RO.PhysConst.ArcSecPerDeg * 100.0)
 _AUPerYear_per_KMPerSec = opscore.RO.PhysConst.SecPerDay * opscore.RO.PhysConst.DayPerYear / opscore.RO.PhysConst.KmPerAU
 
 def ccFromSCPV(

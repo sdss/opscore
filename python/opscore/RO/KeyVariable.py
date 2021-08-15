@@ -168,7 +168,7 @@ AllTypes = "".join(list(TypeDict.keys()))
 DoneTypes = ":f!"
 FailTypes = "f!"
 
-class KeyVar(RO.AddCallback.BaseMixin):
+class KeyVar(opscore.RO.AddCallback.BaseMixin):
     """Processes data associated with a keyword.
 
     Inputs:
@@ -269,7 +269,7 @@ class KeyVar(RO.AddCallback.BaseMixin):
             if self.maxNVal == 0:
                 cnvDescr = "0"
             elif opscore.RO.SeqUtil.isSequence(converters):
-                cnvNameList = [RO.LangUtil.funcName(cnv) for cnv in converters]
+                cnvNameList = [opscore.RO.LangUtil.funcName(cnv) for cnv in converters]
                 cnvNameStr = ", ".join(cnvNameList)
                 if not (self.minNVal == self.maxNVal == len(cnvNameList)):
                     # not a fixed length keyVar or length != # of converters
@@ -1128,7 +1128,7 @@ if __name__ == "__main__":
             KeyVar("Int",          converters=opscore.RO.CnvUtil.asInt, doPrint=True),
             KeyVar("Float",        converters=opscore.RO.CnvUtil.asFloat, doPrint=True),
             KeyVar("Bool",         converters=opscore.RO.CnvUtil.asBool, doPrint=True),
-            KeyVar("IntStr",       converters=(RO.CnvUtil.asInt, str), doPrint=True),
+            KeyVar("IntStr",       converters=(opscore.RO.CnvUtil.asInt, str), doPrint=True),
             KeyVar("Str1-2",       nval=(1,2), converters=str, doPrint=True),
             KeyVar("Str2",         nval=2, converters=str, doPrint=True),
             PVTKeyVar("PVT1-2",    naxes=(1,2), doPrint=True),

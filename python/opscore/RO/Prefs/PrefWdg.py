@@ -43,7 +43,7 @@ from . import PrefEditor
 import opscore.RO.Constants
 import opscore.RO.Wdg
 
-class PrefWin(RO.Wdg.Toplevel):
+class PrefWin(opscore.RO.Wdg.Toplevel):
     def __init__(self,
         master,
         prefSet,

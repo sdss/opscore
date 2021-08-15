@@ -254,7 +254,7 @@ if __name__ == "__main__":
     )
 
     def doConnect(host, port):
-        class PasswordDialog(RO.Wdg.ModalDialogBase):
+        class PasswordDialog(opscore.RO.Wdg.ModalDialogBase):
             def body(self, master):
 
                 tkinter.Label(master, text="Program ID:").grid(row=0, column=0)

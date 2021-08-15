@@ -138,7 +138,7 @@ class ScriptError (RuntimeError):
     """
     pass
 
-class ScriptRunner(RO.AddCallback.BaseMixin):
+class ScriptRunner(opscore.RO.AddCallback.BaseMixin):
     """Execute a script.
 
     Allows waiting for various things without messing up the main event loop.
@@ -626,7 +626,7 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
         Fails as soon as any command fails.
 
         Inputs:
-        - one or more command variables (RO.KeyVariable.CmdVar objects)
+        - one or more command variables (opscore.RO.KeyVariable.CmdVar objects)
         - checkFail: check for command failure?
             if True (the default) command failure will halt your script
         - retVal: value to return at the end; defaults to None
@@ -871,7 +871,7 @@ class ScriptRunner(RO.AddCallback.BaseMixin):
                 raise
             except Exception as e:
                 self._state = Failed
-                self._reason = "endFunc failed: %s" % (RO.StringUtil.strFromException(e),)
+                self._reason = "endFunc failed: %s" % (opscore.RO.StringUtil.strFromException(e),)
                 traceback.print_exc(file=sys.stderr)
         else:
             self.debugPrint("ScriptRunner._end: no end function to call")
@@ -997,7 +997,7 @@ class _WaitCmdVars(_WaitBase):
 
     Inputs:
     - scriptRunner: the script runner
-    - one or more command variables (RO.KeyVariable.CmdVar objects)
+    - one or more command variables (opscore.RO.KeyVariable.CmdVar objects)
     - checkFail: check for command failure?
         if True (the default) command failure will halt your script
     - retVal: the value to return at the end (in scriptRunner.value)

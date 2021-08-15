@@ -198,7 +198,7 @@ def angSideAng(side_aa, ang_B, side_cc):
             side_bb = 2.0 * opscore.RO.MathUtil.atan2d (num4, den4) - side_aa
         side_bb = opscore.RO.MathUtil.wrapPos (side_bb)
 
-    return (RO.MathUtil.wrapPos(ang_A), side_bb, opscore.RO.MathUtil.wrapPos(ang_C), False)
+    return (opscore.RO.MathUtil.wrapPos(ang_A), side_bb, opscore.RO.MathUtil.wrapPos(ang_C), False)
 
 
 if __name__ == "__main__":
@@ -312,9 +312,9 @@ if __name__ == "__main__":
     ang_B = 90.0
     for side_aa in (1.0, 20.0, 45.0, 90, 110.0, 179.0):
         for side_cc in (1.0, 20.0, 45.0, 90.0, 110.0, 179.0):
-            ang_A = opscore.RO.MathUtil.atan2d(RO.MathUtil.tand(side_aa), opscore.RO.MathUtil.sind(side_cc))
-            ang_C = opscore.RO.MathUtil.atan2d(RO.MathUtil.tand(side_cc), opscore.RO.MathUtil.sind(side_aa))
-            side_bb = opscore.RO.MathUtil.atan2d(RO.MathUtil.tand(side_aa), opscore.RO.MathUtil.sind(ang_A) * opscore.RO.MathUtil.cosd(side_cc))
+            ang_A = opscore.RO.MathUtil.atan2d(opscore.RO.MathUtil.tand(side_aa), opscore.RO.MathUtil.sind(side_cc))
+            ang_C = opscore.RO.MathUtil.atan2d(opscore.RO.MathUtil.tand(side_cc), opscore.RO.MathUtil.sind(side_aa))
+            side_bb = opscore.RO.MathUtil.atan2d(opscore.RO.MathUtil.tand(side_aa), opscore.RO.MathUtil.sind(ang_A) * opscore.RO.MathUtil.cosd(side_cc))
             # these tweaks handle other quadrants; they're based on what works, so are somewhat suspect
             if side_bb < 0:
                 side_bb = - side_bb

@@ -107,7 +107,7 @@ class VMSTelnet(TCPConnection):
         if host:
             self.host = host
 
-        class PasswordDialog(RO.Wdg.ModalDialogBase):
+        class PasswordDialog(opscore.RO.Wdg.ModalDialogBase):
             def body(self, master):
 
                 opscore.RO.Wdg.StrLabel(master, text="Password:").grid(row=0, column=0)

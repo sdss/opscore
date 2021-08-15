@@ -102,7 +102,7 @@ def topoFromObs(obsP, refCo):
                 coszd = opscore.RO.MathUtil.cosd (zdrIter)
                 tanzd = opscore.RO.MathUtil.tand (zdrIter)
                 zdr_u -= ((zdr_u + refA * tanzd + refB * tanzd**3) /  \
-                    (1.0 + (RO.PhysConst.RadPerDeg * (refA + 3.0 * refB * tanzd**2) / coszd**2)))
+                    (1.0 + (opscore.RO.PhysConst.RadPerDeg * (refA + 3.0 * refB * tanzd**2) / coszd**2)))
                 zdu = zdr - zdr_u
 
         #  compute unrefracted position as a cartesian vector

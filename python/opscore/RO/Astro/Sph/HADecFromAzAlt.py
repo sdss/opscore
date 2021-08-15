@@ -46,7 +46,7 @@ def haDecFromAzAlt (azAlt, lat):
     # convert -ha/dec direction cosines to spherical -ha/dec (deg)
     ((negHA, dec), atPole) = scFromDC (negHADecDC)
 
-    return ((RO.MathUtil.wrapCtr(-negHA), dec), atPole)
+    return ((opscore.RO.MathUtil.wrapCtr(-negHA), dec), atPole)
 
 
 if __name__ == "__main__":

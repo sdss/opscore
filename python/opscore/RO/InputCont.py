@@ -275,7 +275,7 @@ class BasicContListFmt(object):
 
 
 # widget containers
-class WdgCont(RO.AddCallback.BaseMixin):
+class WdgCont(opscore.RO.AddCallback.BaseMixin):
     """A container handling an ordered list of opscore.RO.Wdg input widgets with one associated name.
 
     Inputs:
@@ -464,7 +464,7 @@ class WdgCont(RO.AddCallback.BaseMixin):
         # convert to list before sending to setValueList and let it check length
         vals = valDict.get(self._name, None)
         if vals is not None:
-            self.setValueList(RO.SeqUtil.asSequence(vals))
+            self.setValueList(opscore.RO.SeqUtil.asSequence(vals))
         elif self._setDefIfAbsent:
             self.restoreDefault()
 
@@ -753,7 +753,7 @@ class ContList(WdgCont):
             callFunc = callFunc,
             callNow = callNow,
         )
-        if len(RO.SeqUtil.asList(conts)) < 1:
+        if len(opscore.RO.SeqUtil.asList(conts)) < 1:
             raise ValueError('must supply at least one input container')
         self._wdgList = self._wdgList
 

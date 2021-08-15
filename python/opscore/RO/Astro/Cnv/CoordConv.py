@@ -46,7 +46,7 @@ from .ObsFromTopo import obsFromTopo
 from .TopoFromGeo import topoFromGeo
 from .TopoFromObs import topoFromObs
 
-_CSysList = (RO.CoordSys.ICRS, opscore.RO.CoordSys.FK5, opscore.RO.CoordSys.FK4, opscore.RO.CoordSys.Galactic,
+_CSysList = (opscore.RO.CoordSys.ICRS, opscore.RO.CoordSys.FK5, opscore.RO.CoordSys.FK4, opscore.RO.CoordSys.Galactic,
     opscore.RO.CoordSys.Geocentric, opscore.RO.CoordSys.Topocentric, opscore.RO.CoordSys.Observed,
     "ICRS2000")
 

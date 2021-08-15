@@ -102,7 +102,7 @@ class SoundPlayer(object):
                 _PyGameReady = True
             except Exception as e:
                 sys.stderr.write("Could not initialize pygame for sound: %s\n" % \
-                    (RO.StringUtil.strFromException(e),))
+                    (opscore.RO.StringUtil.strFromException(e),))
                 _PyGameAvail = False
 
         self._snd = None

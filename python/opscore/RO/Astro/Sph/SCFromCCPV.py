@@ -9,7 +9,7 @@ from .SCFromCC import scFromCC
 
 # Constants
 _ASPerCy_Per_RadPerYear = 100.0 * opscore.RO.PhysConst.ArcSecPerDeg / opscore.RO.PhysConst.RadPerDeg
-_KMPerSec_Per_AUPerYear = opscore.RO.PhysConst.KmPerAU / (RO.PhysConst.DayPerYear * opscore.RO.PhysConst.SecPerDay)
+_KMPerSec_Per_AUPerYear = opscore.RO.PhysConst.KmPerAU / (opscore.RO.PhysConst.DayPerYear * opscore.RO.PhysConst.SecPerDay)
 
 def scFromCCPV(p, v):
     """

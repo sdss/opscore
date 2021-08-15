@@ -798,7 +798,7 @@ class ColorPrefVar(PrefVar):
         try:
             self.colorCheckWdg.winfo_rgb(value)
         except tkinter.TclError as e:
-            raise ValueError(RO.StringUtil.strFromException(e))
+            raise ValueError(opscore.RO.StringUtil.strFromException(e))
 
 class FontPrefVar(PrefVar):
     """Tk Font preference variable.

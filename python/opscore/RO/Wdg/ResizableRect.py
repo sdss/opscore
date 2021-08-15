@@ -36,7 +36,7 @@ from opscore.RO.Alg import GenericCallback
 
 Debug = False
 
-class ResizableRect(RO.AddCallback.BaseMixin):
+class ResizableRect(opscore.RO.AddCallback.BaseMixin):
     """Resizable box
 
     Inputs:

@@ -82,7 +82,7 @@ def obsFromTopo(appTopoP, refCo):
             cosZD = opscore.RO.MathUtil.cosd (zdrIter)
             tanZD = opscore.RO.MathUtil.tand (zdrIter)
             zdr_u -= ((zdr_u + refA * tanZD + refB * tanZD**3) /  \
-                (1.0 + (RO.PhysConst.RadPerDeg * (refA + 3.0 * refB * tanZD**2) / cosZD**2)))
+                (1.0 + (opscore.RO.PhysConst.RadPerDeg * (refA + 3.0 * refB * tanZD**2) / cosZD**2)))
 
         #  compute refracted position as a cartesian vector
         zdr = zdu + zdr_u

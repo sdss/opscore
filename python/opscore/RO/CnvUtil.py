@@ -324,7 +324,7 @@ if __name__ == "__main__":
     def tryFunc(func, arg, desVal):
         try:
             if isinstance(desVal, float):
-                isOK = (RO.MathUtil.compareFloats(func(arg), desVal) == 0)
+                isOK = (opscore.RO.MathUtil.compareFloats(func(arg), desVal) == 0)
             else:
                 isOK = (func(arg) == desVal)
             if not isOK:

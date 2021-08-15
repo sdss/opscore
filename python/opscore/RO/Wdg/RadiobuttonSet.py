@@ -54,7 +54,7 @@ import opscore.RO.TkUtil
 from .Button import Radiobutton
 from .IsCurrentMixin import AutoIsCurrentMixin, IsCurrentActiveMixin
 
-class RadiobuttonSet (RO.AddCallback.TkVarMixin,
+class RadiobuttonSet (opscore.RO.AddCallback.TkVarMixin,
     AutoIsCurrentMixin, IsCurrentActiveMixin):
     """A set of Tkinter Radiobuttons with extra features.
 

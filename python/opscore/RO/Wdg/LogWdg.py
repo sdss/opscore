@@ -141,7 +141,7 @@ class LogWdg(tkinter.Frame):
                 # but do make tag known to text widget
                 self.text.tag_configure(sevTag)
                 continue
-            pref.addCallback(RO.Alg.GenericCallback(self._updSevTagColor, sevTag), callNow=True)
+            pref.addCallback(opscore.RO.Alg.GenericCallback(self._updSevTagColor, sevTag), callNow=True)
 
         self.findCountVar = tkinter.IntVar()
 
@@ -216,7 +216,7 @@ class LogWdg(tkinter.Frame):
             strTagList = [(astr, (_AllTextTag, _SevTagDict[severity]) + tuple(tags))
                 for astr, tags, severity in strTagSevList]
         except Exception as e:
-            raise RuntimeError("Could not parse strTagSevList: %s" % (RO.StringUtil.strFromException(e),))
+            raise RuntimeError("Could not parse strTagSevList: %s" % (opscore.RO.StringUtil.strFromException(e),))
 
         doScrollToEnd = self.doAutoScroll and self.isScrolledToEnd()
 
@@ -516,7 +516,7 @@ if __name__ == '__main__':
     )
     testFrame.grid(row=0, column=0, sticky="nsew")
 
-    severityList = list(RO.Constants.SevNameDict.keys())
+    severityList = list(opscore.RO.Constants.SevNameDict.keys())
 
     entry = tkinter.Entry(root)
     entry.grid(row=1, column=0, sticky="nsew")

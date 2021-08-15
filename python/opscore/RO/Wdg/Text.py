@@ -221,7 +221,7 @@ class Text (tkinter.Text, CtxMenuMixin):
         """Update the colors for tags opscore.RO.Constants.sevNormal, sevWarning and sevError.
         Ignored unless useStateTags True at instantiation.
         """
-        for state in (RO.Constants.sevWarning, opscore.RO.Constants.sevError):
+        for state in (opscore.RO.Constants.sevWarning, opscore.RO.Constants.sevError):
             self.tag_configure(state, color = self._sevPrefDict[state].getValue())
 
 

@@ -42,7 +42,7 @@ def airmass(alt):
     2002-08-02 ROwen  Converted to Python
     """
     # secM1 is secant(zd) - 1 where zd = 90-alt
-    secM1 = (1.0 / (RO.MathUtil.sind(max(_MinAlt, alt)))) - 1.0
+    secM1 = (1.0 / (opscore.RO.MathUtil.sind(max(_MinAlt, alt)))) - 1.0
 
     return 1.0 + secM1 * (0.9981833 - secM1 * (0.002875 + (0.0008083 * secM1)))
 

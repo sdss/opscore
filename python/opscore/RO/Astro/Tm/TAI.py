@@ -11,7 +11,7 @@ from .UTCFromPySec import utcFromPySec, pySecFromUTC
 
 # global variable UTC-TAI (since leap seconds are unpredictable)
 # set to some initial plausible value and update with setUTCMinusTAI
-_UTCMinusTAIDays = -35 / float(RO.PhysConst.SecPerDay) # a reasonable value correct as of 2012-12
+_UTCMinusTAIDays = -35 / float(opscore.RO.PhysConst.SecPerDay) # a reasonable value correct as of 2012-12
 
 def getUTCMinusTAI():
     """Return UTC - TAI (in seconds).
@@ -23,7 +23,7 @@ def getUTCMinusTAI():
 def setUTCMinusTAI(newUTCMinusTAISec):
     """Set UTC - TAI (in seconds)"""
     global _UTCMinusTAIDays
-    _UTCMinusTAIDays = newUTCMinusTAISec / float(RO.PhysConst.SecPerDay)
+    _UTCMinusTAIDays = newUTCMinusTAISec / float(opscore.RO.PhysConst.SecPerDay)
 
 def taiFromUTC(utc):
     """Convert UTC (MJD) to TAI (MJD)"""

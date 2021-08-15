@@ -104,9 +104,9 @@ if __name__ == "__main__":
     ad2.setdefault("b", "bar")
     ad2.setdefault("b", "bar")
     print("listdict:")
-    print((RO.StringUtil.prettyDict(ad)))
+    print((opscore.RO.StringUtil.prettyDict(ad)))
     print("listdict copy (modified):")
-    print((RO.StringUtil.prettyDict(ad2)))
+    print((opscore.RO.StringUtil.prettyDict(ad2)))
 
 
     ad = SetDict()
@@ -122,6 +122,6 @@ if __name__ == "__main__":
     ad2.setdefault("b", "bar")
     ad2.setdefault("b", "bar")
     print("setdict:")
-    print((RO.StringUtil.prettyDict(ad)))
+    print((opscore.RO.StringUtil.prettyDict(ad)))
     print("setdict copy (modified):")
-    print((RO.StringUtil.prettyDict(ad2)))
+    print((opscore.RO.StringUtil.prettyDict(ad2)))

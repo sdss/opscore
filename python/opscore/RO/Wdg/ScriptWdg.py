@@ -45,9 +45,9 @@ import imp
 # compute _StateSevDict which contains
 # state:severity for non-normal severities
 _StateSevDict = {}
-_StateSevDict[RO.ScriptRunner.Paused] = opscore.RO.Constants.sevWarning
-_StateSevDict[RO.ScriptRunner.Cancelled] = opscore.RO.Constants.sevWarning
-_StateSevDict[RO.ScriptRunner.Failed] = opscore.RO.Constants.sevError
+_StateSevDict[opscore.RO.ScriptRunner.Paused] = opscore.RO.Constants.sevWarning
+_StateSevDict[opscore.RO.ScriptRunner.Cancelled] = opscore.RO.Constants.sevWarning
+_StateSevDict[opscore.RO.ScriptRunner.Failed] = opscore.RO.Constants.sevError
 
 class _Blank(object):
     def __init__(self):
@@ -61,7 +61,7 @@ class _FakeButton:
     pack = noop
     ctxSetConfigFunc = noop
 
-class BasicScriptWdg(RO.AddCallback.BaseMixin):
+class BasicScriptWdg(opscore.RO.AddCallback.BaseMixin):
     """Handles button enable/disable and such for a ScriptRunner.
     You are responsible for creating and displaying the status bar(s)
     and start, pause and cancel buttons.

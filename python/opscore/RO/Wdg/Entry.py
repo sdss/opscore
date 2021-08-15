@@ -527,7 +527,7 @@ class _BaseEntry (tkinter.Entry, opscore.RO.AddCallback.BaseMixin,
             self.checkValue(self.var.get())
             self.neatenDisplay()
         except (ValueError, TypeError) as e:
-            self.setEntryError(RO.StringUtil.strFromException(e))
+            self.setEntryError(opscore.RO.StringUtil.strFromException(e))
             self.focus_set()
             return False
 
@@ -690,7 +690,7 @@ class _BaseEntry (tkinter.Entry, opscore.RO.AddCallback.BaseMixin,
             if self._entryError:
                 self.setEntryError(None)
         except (ValueError, TypeError) as e:
-            self.setEntryError(RO.StringUtil.strFromException(e))
+            self.setEntryError(opscore.RO.StringUtil.strFromException(e))
             try:
                 # verify that the previous value works, else clear field
                 # this test should rarely fail!
@@ -719,7 +719,7 @@ class _BaseEntry (tkinter.Entry, opscore.RO.AddCallback.BaseMixin,
                 self.checkValue(currVal)
                 self.neatenDisplay()
             except (ValueError, TypeError) as e:
-                self.setEntryError(RO.StringUtil.strFromException(e))
+                self.setEntryError(opscore.RO.StringUtil.strFromException(e))
                 self.focus_set()
                 return "break"
 
@@ -1472,9 +1472,9 @@ class DMSEntry (_NumEntry):
 #               self.unitsVar.set("hms"[:index])
 #       else:
 #           if self.isRelative:
-#               self.unitsVar.set(RO.StringUtil.DMSStr[-index:])
+#               self.unitsVar.set(opscore.RO.StringUtil.DMSStr[-index:])
 #           else:
-#               self.unitsVar.set(RO.StringUtil.DMSStr[:index])
+#               self.unitsVar.set(opscore.RO.StringUtil.DMSStr[:index])
 
     def _keyPress(self, evt):
         keysym = evt.keysym

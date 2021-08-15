@@ -94,7 +94,7 @@ class _CoordSysConst(object):
         if self._defDate:
             return self._defDate
         if self._dateIsYears:
-            return opscore.RO.Astro.Tm.epJFromMJD(RO.Astro.Tm.utcFromPySec())
+            return opscore.RO.Astro.Tm.epJFromMJD(opscore.RO.Astro.Tm.utcFromPySec())
         else:
             return opscore.RO.Astro.Tm.utcFromPySec()
 

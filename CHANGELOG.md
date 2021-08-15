@@ -3,6 +3,13 @@
 This document records the main changes to the opscore code.
 
 
+## Next version
+
+### 🔧 Fixed
+
+* Fix more internal `RO` imports.
+
+
 ## 3.0.1 (2021-08-12)
 
 ### 🔧 Fixed
