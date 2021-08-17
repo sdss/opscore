@@ -150,7 +150,7 @@ class Socket(BaseSocket):
         stateCallback = nullCallback,
         timeLim = None,
         name = "",
-        lineTerminator = b"\r\n",
+        lineTerminator = "\r\n",
     ):
         """Construct a Socket
 
@@ -350,7 +350,7 @@ class TCPSocket(Socket):
         stateCallback = None,
         timeLim = None,
         name = "",
-        lineTerminator = b"\r\n",
+        lineTerminator = "\r\n",
     ):
         """Construct a TCPSocket
 
