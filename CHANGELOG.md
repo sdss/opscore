@@ -3,11 +3,12 @@
 This document records the main changes to the opscore code.
 
 
-## Next version
+## 3.0.2 (2021-08-17)
 
 ### 🔧 Fixed
 
 * Fix more internal `RO` imports.
+* `TCPSocket` end of line changed to `\r\n` (as unicode).
 
 
 ## 3.0.1 (2021-08-12)
