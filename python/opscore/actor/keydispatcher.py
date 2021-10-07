@@ -106,7 +106,7 @@ class KeyVarDispatcher(object):
         """
         # parse message; if that fails, log it as an error
         try:
-            reply = self.parser.parse(replyStr)
+            reply = self.parser.parse(replyStr.decode())
         except Exception as e:
             self.logMsg(
                 msgStr="CouldNotParse; Reply=%r; Text=%r"
