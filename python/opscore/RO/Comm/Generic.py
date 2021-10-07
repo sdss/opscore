@@ -246,7 +246,7 @@ if __name__ == "__main__":
             )
 
         def sockReadCallback(self, sock):
-            readLine = sock.readLine(default="")
+            readLine = sock.readLine(default=b"")
             sock.writeLine(readLine)
 
     print("*** Starting echo server on port", port)
