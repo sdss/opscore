@@ -449,15 +449,9 @@ class KeysDictionary(object):
         if not forceReload and dictname in KeysDictionary.registry:
             return KeysDictionary.registry[dictname]
 
-
         try:
             # get the path corresponding to the actorkeys package
             import actorkeys  # noqa
-
-            # The filename is usually the same as the dictname, but in some cases
-            # actorkeys overrides it, for example tcc (APO) and lcotcc (LCO) have
-            # different filenames (tcc.py, lcotcc.py) but apply to the same actor tcc.
-            filename = actorkeys.FILENAME_OVERRIDES.get(dictname, dictname)
 
             keyspath = sys.modules["actorkeys"].__path__
         except ImportError:
@@ -465,7 +459,7 @@ class KeysDictionary(object):
 
         try:
             # open the file corresponding to the requested keys dictionary
-            (dictfile, name, description) = imp.find_module(filename, keyspath)
+            (dictfile, name, description) = imp.find_module(dictname, keyspath)
             # create a global symbol table for evaluating the keys dictionary expression
             symbols = {
                 "__builtins__": __builtins__,
