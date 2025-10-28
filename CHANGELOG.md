@@ -7,6 +7,7 @@ This document records the main changes to the `opscore` code.
 ### 🔧 Fixed
 
 * Do not show errors during logging when the stream is `None`.
+* Fix deprecation of `collections.MutableMapping`.
 
 ### ⚙️ Engineering
 

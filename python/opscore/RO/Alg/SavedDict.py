@@ -8,11 +8,11 @@ History:
 """
 __all__ = ["SavedDict"]
 
-import collections
+import collections.abc
 import json
 import os.path
 
-class SavedDict(collections.MutableMapping):
+class SavedDict(collections.abc.MutableMapping):
     """A dictionary that is automatically read from and written to a file
 
     The data is saved to the file for every update, so this is intended only for
