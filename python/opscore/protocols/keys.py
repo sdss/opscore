@@ -8,8 +8,8 @@ Refer to https://trac.sdss3.org/wiki/Ops/Validation for details.
 
 import collections
 import hashlib
-import importlib.util as imp
-import sys
+import importlib.util
+import io
 import textwrap
 
 from opscore.utility import html as utilHtml
@@ -452,14 +452,22 @@ class KeysDictionary(object):
         try:
             # get the path corresponding to the actorkeys package
             import actorkeys  # noqa
-
-            keyspath = sys.modules["actorkeys"].__path__
         except ImportError:
             raise KeysDictionaryError("no actorkeys package found")
 
         try:
             # open the file corresponding to the requested keys dictionary
-            dictfile = imp.find_spec(dictname, keyspath).loader.open_resource(dictname)
+
+            spec = importlib.util.find_spec(f"actorkeys.{dictname}")
+            if spec is None or spec.loader is None:
+                raise ImportError("No module named %s" % dictname)
+            source = spec.loader.get_source(spec.name)
+            if source is None:
+                raise ImportError("Cannot load source for %s" % dictname)
+            dictfile = io.StringIO(source)
+            name = spec.name
+            description = None
+
             # create a global symbol table for evaluating the keys dictionary expression
             symbols = {
                 "__builtins__": __builtins__,
