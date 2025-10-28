@@ -2,6 +2,13 @@
 
 This document records the main changes to the `opscore` code.
 
+## Next release
+
+### 🔧 Fixed
+
+* Do not show errors during logging when the stream is `None`.
+
+
 ## 3.0.4 (2021-10-07)
 
 ### 🔧 Fixed

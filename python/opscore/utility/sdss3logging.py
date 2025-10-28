@@ -134,7 +134,10 @@ class OpsRotatingFileHandler(logging.StreamHandler):
 
         # logging.StreamHandler.emit(self, record)
         # return
-
+        
+        if self.stream is None:
+            return
+        
         try:
             msg = self.format(record)
             fs = "%s\n"
