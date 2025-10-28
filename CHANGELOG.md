@@ -8,6 +8,10 @@ This document records the main changes to the `opscore` code.
 
 * Do not show errors during logging when the stream is `None`.
 
+### ⚙️ Engineering
+
+* Use `importlib` instead of deprecated `imp` module.
+
 
 ## 3.0.4 (2021-10-07)
 

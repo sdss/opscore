@@ -8,7 +8,7 @@ Refer to https://trac.sdss3.org/wiki/Ops/Validation for details.
 
 import collections
 import hashlib
-import imp
+import importlib.util as imp
 import sys
 import textwrap
 
@@ -459,7 +459,7 @@ class KeysDictionary(object):
 
         try:
             # open the file corresponding to the requested keys dictionary
-            (dictfile, name, description) = imp.find_module(dictname, keyspath)
+            dictfile = imp.find_spec(dictname, keyspath).loader.open_resource(dictname)
             # create a global symbol table for evaluating the keys dictionary expression
             symbols = {
                 "__builtins__": __builtins__,

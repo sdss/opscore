@@ -40,7 +40,7 @@ import opscore.RO.AddCallback
 import opscore.RO.ScriptRunner
 from . import Button
 from . import StatusBar
-import imp
+import importlib
 
 # compute _StateSevDict which contains
 # state:severity for non-normal severities
@@ -430,7 +430,7 @@ class ScriptModuleWdg(_BaseUserScriptWdg):
         it may also contain HelpURL.
         """
         if not isFirst:
-            imp.reload(self.module)
+            importlib.reload(self.module)
 
         scriptClass = getattr(self.module, "ScriptClass", None)
         if scriptClass:
