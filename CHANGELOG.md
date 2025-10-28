@@ -11,6 +11,7 @@ This document records the main changes to the `opscore` code.
 ### ⚙️ Engineering
 
 * Use `importlib` instead of deprecated `imp` module.
+* Require Python 3.9+ and `numpy<2.0.0`.
 
 
 ## 3.0.4 (2021-10-07)
