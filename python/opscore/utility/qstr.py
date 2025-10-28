@@ -2,7 +2,7 @@ __all__ = ["qstr"]
 
 
 def qstr(o, tquote='"', equotes=None, doNewlines=True):
-    """ Put a string representation of an object into quotes and escape it minimally.
+    r""" Put a string representation of an object into quotes and escape it minimally.
 
     Return the string wrapped in tquotes.
     Escape all the characters in equotes, as well as backslashes. If equotes are
