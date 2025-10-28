@@ -2,7 +2,7 @@
 
 This document records the main changes to the `opscore` code.
 
-## Next release
+## 3.1.0 (2025-10-28)
 
 ### 🔧 Fixed
 
